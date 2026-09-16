@@ -240,12 +240,34 @@ $$
 
 | slug | 标题 | 类型 |
 |---|---|---|
+| `math-analysis` | 数学分析 · 章节索引 | 数学 |
 | `latex-math` | LaTeX 公式测试 | 数学 |
 | `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 |
 | `general-physics-1` | 普通物理（一）复习笔记 | 数学 |
 
 作者还有一批 ElegantBook 排版的数学笔记待转换（抽象代数、数值分析初步、测度论），
 **流程与工具已备好**，见下一节。
+
+---
+
+## 八之二、系列文章（重要）
+
+作者用**「一篇文章 = 一章」+ 共享标签**组织长内容（如数学分析）。
+**约定与坑见 [`series-convention.md`](./series-convention.md)，新开一章前必读。**
+
+三个必须先知道的结论：
+
+1. **目录不能嵌套**。`lib/content.ts:368` 是单层 `readdir`，
+   `content/blog/数学分析/第一章/index.mdx` 会被**完全忽略**。每章必须是
+   `content/blog/<slug>/index.mdx`
+2. **`/tags/<系列名>/` 里顺序是发布时间倒序**，不是章节顺序。
+   `getPostsByTag`（`content.ts:421`）只过滤不排序，继承 `getAllPostMeta` 的降序。
+   **这是 tag 方案的固有短板，配置改不了**
+3. **严格顺序靠手动维护**：索引页的表格 + 每章首尾的「上一章/下一章」链接。
+   模板**不会**改写文章间相对链接，导航必须用 `/blog/<slug>/` 绝对路径
+
+标签不需要注册——`generateStaticParams` 从 frontmatter 自动收集，
+写了 `tags: ["数学分析"]` 就会生成 `/tags/数学分析/` 页面。
 
 ---
 
