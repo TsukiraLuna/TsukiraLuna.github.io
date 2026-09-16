@@ -273,6 +273,63 @@ git push
 
 ---
 
+## 自检基准（已完成的实例）
+
+新接手时可用这个已完成的案例校准自己的做法。**这些数字都是实测的，不是估计**。
+
+### 普物1（`general-physics-1`）
+
+源码：`E:\pdf workspace\普物1\pdf workspace\普物1.tex`
+
+**转换前探雷报出的风险**：
+
+| 项 | 值 |
+|---|---|
+| 章节 | 6 个 `\chapter`、27 个 `\section` |
+| 高风险宏包 | `physics`、`siunitx` |
+| 数学环境 | `equation` ×60、`align` ×23 |
+| 块级公式合计 | **83 个** |
+| 行内公式 | 约 30 个 |
+| 结构命令 | `\label` ×6、`\tableofcontents`、`\maketitle`、`\frontmatter`、`\mainmatter` |
+
+**转换后 `--check-output` 的期望值**：
+
+| 指标 | 值 |
+|---|---|
+| `katex-error` | **0** |
+| 成功渲染公式数 | **112** |
+| `menclose`（`\boxed`） | 27 |
+| `mtable`（`aligned`） | 110 |
+| `mathcolor`（红色） | 88 |
+| 页面体积 | 约 1797 KB |
+| 结构 | 6 章 27 节 |
+
+**公式数对照**：转换前"块级 83 个"，转换后"全部 112 个"——两者**不是同一个口径**，
+差值是行内公式。核对时用 `--check-output` 的数，不要拿 83 去比 112。
+
+**这轮用到的替换**：
+
+| 原写法 | 出现 | 替换为 |
+|---|---|---|
+| `\dv` / `\pdv` / `\vb` | 0（源码未实际使用，但宏包已引入） | `\frac{\mathrm{d}}{\mathrm{d}x}` 等 |
+| `\color{annotationred}` | 88 处 | `\color{red}` |
+| `\begin{align}` | 23 个 | `$$\begin{aligned}...\end{aligned}$$` |
+| `\chapter` / `\section` | 6 / 27 | `## 一、xxx` / `### xxx` |
+
+### 另外三份的探雷结果（尚未转换）
+
+| 文档 | 源文件 | 探雷报出的主要风险 |
+|---|---|---|
+| 测度论 | 13 KB | **6 个自定义宏**：`\Pow`→`\mathcal P`、`\calC`→`\mathcal C`、`\calF`、`\calN`、`\calU`、`\sig[1]`→`\sigma(#1)`。仅转录到原扫描件第 1–6 页 |
+| 数值分析初步 | 37 KB | 29 处 `theorem` 环境；无自定义宏 |
+| 抽象代数 | **73 KB** | **178 处定理环境**（`definition`×68、`proposition`×62、`theorem`×34、`property`×14）；6 个 `\thetcb@cnt@*` 宏 |
+
+**抽象代数要注意**：73 KB 源文件按普物 14.6 KB → 112 公式的比例推算，
+可能有 **500+ 个公式 → 单页 8–10 MB**。必须按章拆分。
+且 178 处定理环境需人工决定改成加粗标题行还是引用块，**脚本无法代劳**。
+
+---
+
 ## 一页速查
 
 ```
@@ -283,3 +340,5 @@ git push
 4. npm run build:verify  →  --check-output  →  人工抽查
 5. commit + push（改了站名才需要 npm run og）
 ```
+
+仓库整体情况、部署方式、命令清单见 [`AI-HANDOFF.md`](./AI-HANDOFF.md)。
