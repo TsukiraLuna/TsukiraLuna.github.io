@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllPosts, getAllTags } from "@/lib/content";
+import { getAllPosts, getAllTags, getAllSeries } from "@/lib/content";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -16,6 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/blog/`, lastModified: new Date() },
     { url: `${baseUrl}/friends/`, lastModified: new Date() },
     { url: `${baseUrl}/guestbook/`, lastModified: new Date() },
+    { url: `${baseUrl}/series/`, lastModified: new Date() },
     { url: `${baseUrl}/tags/`, lastModified: new Date() },
     { url: `${baseUrl}/tools/`, lastModified: new Date() },
     { url: `${baseUrl}/tools/random-number/`, lastModified: new Date() },
@@ -36,5 +37,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
-  return [...staticRoutes, ...postRoutes, ...tagRoutes];
+  // 系列页面
+  const series = await getAllSeries();
+  const seriesRoutes = series.map(({ name }) => ({
+    url: `${baseUrl}/series/${encodeURIComponent(name)}/`,
+    lastModified: new Date(),
+  }));
+
+  return [...staticRoutes, ...postRoutes, ...tagRoutes, ...seriesRoutes];
 }

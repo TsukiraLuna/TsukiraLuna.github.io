@@ -62,6 +62,33 @@ export function absoluteUrl(path = "/"): string {
 }
 
 /**
+ * 规范化动态路由参数里捕获的**标签名 / 系列名**，使其能直接用于数据查找。
+ *
+ * 为什么需要它：`generateStaticParams` 返回明文，但**页面渲染时**
+ * Next 传给 `params` 的是 URL 编码后的值 —— 对 `tags`、`series` 这类
+ * 允许非 ASCII 的路由段，页面里拿到的是 `%E6%95%B0%E5%AD%A6...`。
+ * 而 `getAllTags()` / `getAllSeries()` 返回的是明文，两者直接比较恒不相等。
+ *
+ * 真实后果（修复前实测）：`/tags/数学分析/` 显示「0 篇文章」且标题是编码串，
+ * 而 `/tags/LaTeX/` 正常 —— 即**所有含中文的标签页都是空的**，且不报错。
+ * `generateMetadata` 同一时刻却拿到明文，所以 meta 里章数正确、页面却为空，
+ * 排查时极易误判成数据层问题。
+ *
+ * 之所以要 try/catch：标签名可能含**裸 `%`**（如「100%增长」），
+ * 此时 `decodeURIComponent` 会抛 `URIError`，未捕获会让整个构建失败。
+ * 解码失败就说明它本来就不是编码串，原样返回即可。
+ */
+export function normalizeRouteParam(raw: string): string {
+  try {
+    const decoded = decodeURIComponent(raw);
+    // 已经是明文时，解码结果与原值相同，直接返回
+    return decoded;
+  } catch {
+    return raw;
+  }
+}
+
+/**
  * 为 `public/` 下的资源路径补上 basePath 前缀。
  *
  * **为什么需要它**：Next.js 只会自动改写 `next/link` 的 href 与 `next/image` 的 src，

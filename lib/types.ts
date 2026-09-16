@@ -12,6 +12,10 @@ export interface Post {
   description?: string;
   tags: string[];
   category?: PostCategory;
+  /** 所属系列名，见 lib/schemas.ts 的说明 */
+  series?: string;
+  /** 系列内序号，决定系列页顺序与上下章导航 */
+  seriesOrder?: number;
   content: string;
   /** 构建期读出的图片尺寸，用于渲染时预留空间 —— 见 lib/content.ts 的 collectImageSizes */
   imageSizes: ImageSizeMap;
@@ -28,6 +32,8 @@ export interface PostMeta {
   description?: string;
   tags: string[];
   category?: PostCategory;
+  series?: string;
+  seriesOrder?: number;
   wordCount: number;
   readingTime: number;
 }

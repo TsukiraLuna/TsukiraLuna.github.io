@@ -1,50 +1,24 @@
-# 系列章节写作约定
+# 系列文章写作约定
 
-本站用**「一篇文章 = 一章」+ 共享标签**来组织系列（如数学分析）。
-本文件记录约定与坑，新开一章时照抄模板即可。
-
----
-
-## 为什么不用目录嵌套
-
-`lib/content.ts:368` 是**单层读取**：
-
-```js
-const entries = await fs.readdir(CONTENT_DIR, { withFileTypes: true });
-entries.filter((e) => e.isDirectory()).map((e) => getPostBySlug(e.name))
-```
-
-`content/blog/数学分析/第一章/index.mdx` 这种嵌套**会被完全忽略**。
-每章必须是 `content/blog/<slug>/index.mdx`，slug 即 URL。
-
-## 为什么顺序要手动管
-
-`getPostsByTag`（`lib/content.ts:421`）**只过滤不排序**，继承 `getAllPostMeta`
-的「`pubDate` 降序」。所以：
-
-> `/tags/<系列名>/` 里，**最新发布的在最前面** —— 对教程/教材类系列是反的。
-
-这不是配置能改的，除非开发系列功能。**因此在引入系列功能前，
-顺序由「索引页 + 章节内导航链接」保证。**
+本站用 **series 机制**组织成体系的长内容（数学分析、抽象代数等）：
+一篇文章 = 一章，系列页与章节导航**自动按 `seriesOrder` 排序**，无需手写链接。
 
 ---
 
-## 命名约定
+## 三个浏览入口的分工
 
-| 项 | 约定 | 例 |
+| 入口 | 排序 | 用途 |
 |---|---|---|
-| 目录 / slug | `<系列简称>-ch<章号>` | `math-analysis-ch1` |
-| 系列标签 | 与索引页一致的系列名 | `数学分析` |
-| 索引页 slug | 无章号后缀 | `math-analysis` |
-| 大类 | 统一 `category` | `数学` |
+| `/series/<系列名>/` | **按 `seriesOrder`** | 从头通读。文章页也会显示系列目录与上一章/下一章 |
+| `/tags/<标签>/` | 按发布时间倒序 | 跨系列按主题找文章（tag 与 series 是两套独立维度） |
+| `/archive/` | 按年月 | 按时间回看 |
 
-**章号用两位或不补零都可以**，但**保持一致**。补零的好处是自然排序对齐：
-`ch01`、`ch02` … `ch10`。不补零时 `ch10` 会排在 `ch2` 前面（字符串序），
-若将来做自动排序容易出错，**建议补零**。
+**series 与 tag 的区别**：tag 是宽泛主题词，聚合页只能按时间倒序；
+series 表达**有序的一组文章**，顺序由你显式指定，与发布日期无关。
 
 ---
 
-## frontmatter 模板
+## frontmatter
 
 ```yaml
 ---
@@ -54,67 +28,60 @@ updatedDate: 2026-09-20
 description: "数学分析第一章笔记：实数系、确界原理、函数概念。"
 tags: ["数学分析", "实数理论"]
 category: 数学
+series: 数学分析
+seriesOrder: 10
 tocDepth: 2
 ---
 ```
 
-要点：
+| 字段 | 说明 |
+|---|---|
+| `series` | 系列名，同一系列的文章写**完全相同**的值 |
+| `seriesOrder` | **数字**（不是字符串）。升序排列，决定系列页顺序与上下章导航 |
+| `tags` | 建议第一项写系列名，方便从标签页也能摸到这一组文章 |
+| `title` | **把章号写进标题** —— 标签页与搜索结果只显示标题不显示日期，标题带章号才认得出顺序 |
 
-- `title` **必须双引号**，且**章号写进标题**——标签页与搜索结果里只显示标题，
-  不显示日期，标题带章号才能一眼认出顺序
-- `tags` 第一项固定是系列名（保证聚合生效），后面可加该章的细粒度标签
-- `pubDate` 建议**递增**（第一章早于第二章）。虽然它不决定系列顺序，
-  但决定首页与归档的顺序，递增更符合直觉
-- `updatedDate` 可省。填了才显示「更新于」
+### `seriesOrder` 的三条规矩
 
----
-
-## 正文骨架（含导航）
-
-每章开头放一条「系列导航」，结尾放「上一章 / 下一章」：
-
-```markdown
-> **数学分析** 系列 ｜ [返回索引](/blog/math-analysis/) ｜ 下一章：[第二章 数列极限](/blog/math-analysis-ch2/)
-
-## 一、实数系
-
-（正文……）
+1. **用 10、20、30 留间隔**，方便以后在两章之间插入新章而不必重排全部
+2. **必须写数字**：`seriesOrder: 10` ✅ ／ `seriesOrder: "10"` ❌（后者是字符串，校验不通过）
+3. **没有序号的章节排到系列末尾**，且会在系列页标注「未写 seriesOrder」、构建时打印告警。
+   这是刻意的 —— 漏写是错误而非意图，让它显眼比默默插到最前面更容易发现
 
 ---
 
-**上一章**：无（这是第一章） ｜ **下一章**：[第二章 数列极限](/blog/math-analysis-ch2/)
-```
+## 索引页（可选）
 
-非首章 / 非末章就把上下链接都写上：
+如果某一章想承载导读文字，可以让它作为系列的第一章（`seriesOrder` 设成比其它章都小，如 `0`），
+于是它自动成为系列页的第一项。**不需要**手写章节链接表。
 
-```markdown
----
-
-**上一章**：[第一章 实数与函数](/blog/math-analysis-ch1/) ｜ **下一章**：[第三章 导数与微分](/blog/math-analysis-ch3/)
-```
-
-**链接必须用绝对路径** `/blog/<slug>/`。模板**不会**改写文章间的相对链接，
-写 `../math-analysis-ch2/index.mdx` 会 404。
+示例见 `content/blog/math-analysis/index.mdx`。
 
 ---
 
-## 新建一章的步骤
+## 命名约定
 
-1. 建目录 `content/blog/math-analysis-ch<N>/`，放 `index.mdx`
-2. 按上面模板写 frontmatter（**`tags` 第一项写 `数学分析`**）
-3. 正文首尾各加一条导航
-4. 把这一章加进索引页 `content/blog/math-analysis/index.mdx` 的表格
-5. 构建验证，**确认没有 `frontmatter 校验失败`**
-6. `git add` + `commit` + `push`
+| 项 | 约定 | 例 |
+|---|---|---|
+| 目录 / slug | `<系列简称>-ch<章号>`，章号**补零** | `math-analysis-ch01` |
+| 索引页 slug | 无章号后缀 | `math-analysis` |
+| 系列名 | 与 `series` 字段一致 | `数学分析` |
+| 大类 | 统一 `category` | `数学` |
 
-一个章节目录的完整样子：
+章号补零的理由：虽然排序已由 `seriesOrder` 决定、不再依赖字符串序，
+但补零让 slug 在文件管理器与 git 输出里也是自然顺序，减少误读。
 
-```
-content/blog/math-analysis-ch1/
-└── index.mdx
-```
+---
 
-配图（若有）放 `public/blog/math-analysis-ch1/`，**不是** content 目录下。
+## 新建一章
+
+1. 建目录 `content/blog/<slug>/`，放 `index.mdx`
+2. 按上面模板写 frontmatter（**`series` 与 `seriesOrder` 都要写**）
+3. **正文里不需要手写上下章链接** —— 页面会自动渲染系列导航
+4. 构建验证
+5. `git add` + `commit` + `push`
+
+配图（若有）放 `public/blog/<slug>/`，**不是** content 目录下。
 
 ---
 
@@ -124,13 +91,14 @@ content/blog/math-analysis-ch1/
 npm run build:verify
 ```
 
-检查三件事：
+检查：
 
-- [ ] 日志里**没有** `[content] frontmatter 校验失败，该文章已被跳过：<slug>`
-- [ ] `out/blog/<slug>/index.html` 存在
-- [ ] `out/tags/数学分析/index.html` 存在，且列出了新章节
+- [ ] 日志**没有** `[content] frontmatter 校验失败，该文章已被跳过：<slug>`
+- [ ] 日志**没有** `[content] 系列「X」的排序信息不完整` —— 有就说明漏写或重复了 `seriesOrder`
+- [ ] `out/blog/<slug>/index.html` 存在，且页面里有「上一章 / 下一章」导航
+- [ ] `out/series/<系列名>/index.html` 里本章位置正确
 
-公式较多时额外跑：
+公式多的章节额外跑：
 
 ```powershell
 node tools/latex-to-blog-probe.mjs --check-output <slug>
@@ -140,16 +108,18 @@ node tools/latex-to-blog-probe.mjs --check-output <slug>
 
 ---
 
-## 以后想要"自动系列导航"的话
+## 实现位置（改动逻辑时看这里）
 
-需要开发系列功能，改动面：
-
-| 文件 | 改什么 |
+| 关注点 | 位置 |
 |---|---|
-| `lib/schemas.ts` | 加 `series` / `seriesOrder` 校验 |
-| `lib/types.ts` | `Post` / `PostMeta` 加字段 |
-| `lib/content.ts` | 加 `getPostsBySeries()`，按 `seriesOrder` 排序 |
-| `app/blog/[slug]/page.tsx` | 渲染系列目录与上/下一章 |
-| 可选 `app/series/[name]/` | 系列独立页（比 tag 页更贴合"课程"语义） |
+| `series` / `seriesOrder` 校验 | `lib/schemas.ts` |
+| 字段类型 | `lib/types.ts` 的 `Post` / `PostMeta` |
+| 排序与聚合 | `lib/content.ts` 的 `compareSeriesOrder` / `getPostsBySeries` / `getAllSeries` / `getAdjacentSeriesPosts` |
+| 系列页 | `app/series/page.tsx`、`app/series/[name]/page.tsx` |
+| 文章页的系列导航 | `app/blog/[slug]/page.tsx` |
+| 导航菜单入口 | `components/layout/nav-data.ts` |
+| sitemap 收录 | `app/sitemap.ts` |
 
-那时就不必手写导航链接，标签页顺序问题也一并解决。
+> ⚠️ 动态路由页面（`[name]`、`[tag]`）**必须**用 `normalizeRouteParam()` 规范化 `params`。
+> 渲染时 Next 给的是 URL 编码值，不规范化会导致含中文的路由段查库恒为空 —— 且完全不报错。
+> 详见 `app/AGENTS.md` 第 8 条。

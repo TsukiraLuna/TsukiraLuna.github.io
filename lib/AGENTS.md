@@ -11,7 +11,7 @@
 |------|------|
 | `constants.ts` | 全局共享常量（`POST_CATEGORIES` 文章类型枚举、`CATEGORY_UI` 类型展示配置：图标/描述/配色） |
 | `types.ts` | 全局 TypeScript 类型/接口定义 (`Post`, `TocItem`, `Friend`) |
-| `content.ts` | 博客内容核心 API：读取 `content/blog/` 目录、解析 frontmatter、计算阅读时间、提取目录、标签聚合、类型分组（`getPostsGroupedByCategory`）、相邻文章。另导出 `collectImageSizes`（构建期用 sharp 读正文图片原始尺寸）、`enhanceRawImages`（给手写 `<img>` 补懒加载与宽高）与 `extractToc`（目录提取，按 `/[
+| `content.ts` | 博客内容核心 API：读取 `content/blog/` 目录、解析 frontmatter、计算阅读时间、提取目录、标签聚合、**系列聚合**（`getAllSeries` / `getPostsBySeries` / `getAdjacentSeriesPosts`，按 `seriesOrder` 排序）、类型分组（`getPostsGroupedByCategory`）、相邻文章。另导出 `collectImageSizes`（构建期用 sharp 读正文图片原始尺寸）、`enhanceRawImages`（给手写 `<img>` 补懒加载与宽高）与 `extractToc`（目录提取，按 `/[
 ?
 ]/` 切分以兼容 CRLF，见下）—— 见下方「正文图片」条 |
 | `content.test.ts` | `content.ts` 的 vitest 单元测试（`npm test` / `npm run test:watch`，配置见根目录 `vitest.config.ts`） |
@@ -19,9 +19,10 @@
 | `a11y.ts` | 无障碍工具函数（`prefersReducedMotion()` 媒体查询检测、平滑滚动至目标元素） |
 | `mdx.ts` | MDX 编译配置（remark/rehype 插件组合） |
 | `readingTime.ts` | 中文/英文混合阅读时间估算 |
-| `schemas.ts` | Zod 数据校验 Schema（frontmatter、友链等） |
+| `schemas.ts` | Zod 数据校验 Schema（frontmatter、友链等）。frontmatter 含 `series`（系列名）与 `seriesOrder`（系列内序号，数字） |
 | `tools.ts` | 工具页面配置数据（`ToolItem[]` 数组） |
 | `timeTheme.ts` | 按本地时间自动切换日/夜主题的纯工具：边界常量（06:00/18:00）、`themeForDate` / `msUntilNextBoundary`、`buildTimeThemeScript`（注入 layout 的预绘种子脚本）、`theme-mode` 锁定标记常量（缺席=自动，`"pinned"`=手动锁定） |
+| `site.ts` | 站点身份出口：导出 `site`（读 `site.config.mjs`）、`absoluteUrl`、`publicUrl`，以及 **`normalizeRouteParam()`**。动态路由页面必须用它规范化 `params`，否则含中文的路由段（标签/系列）查库恒为空，详见 `app/AGENTS.md` 第 8 条 |
 | `bamboo.ts` | 竹苗彩蛋纯逻辑：`BAMBOO_STAGES` 阶段表（竹笋/幼苗/小节竹/青竹/开花竹）与 `getBambooStageIndex` 阈值计算、存储键名常量，消费方为 `components/ui/BambooSprout.tsx` |
 | `bamboo.test.ts` | `bamboo.ts` 的 vitest 单元测试（阶段阈值边界、阶段表完整性） |
 | `random.ts` | 随机数工具的纯逻辑：`parseInt10` / `parseDecimal` 严格解析（整数与小数分开，避免 `parseFloat` 放过 `"1.2.3"` 这类输入）、`roundTo`（含 -0 归一）、`sampleByRequest` 按请求分发到 `sampleNumbers`（按取样密度二选一：Set 拒绝采样 / Fisher-Yates 洗牌）/ `sampleUniformDecimals` / `sampleNormal`（Box–Muller），以及 `MAX_ABS`、`MAX_COUNT`、`MAX_DECIMALS` 上限，消费方为 `components/tools/RandomNumber.tsx` |

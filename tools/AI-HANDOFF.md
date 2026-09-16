@@ -87,6 +87,20 @@ git remote -v
 
 `git add .` 的 `.` 是当前目录。在 `C:\Users\Rakari` 执行会把整个用户目录纳入仓库。
 
+### 6. 动态路由必须规范化 `params`（模板既有 bug，已修）
+
+**渲染时** `params.tag` / `params.name` 拿到的是 **URL 编码值**（`%E6%95%B0...`），
+而 `getAllTags()` / `getAllSeries()` 返回明文，**直接比较恒不相等**。
+
+真实症状：`/tags/数学分析/` 显示「**0 篇文章**」且标题是编码串，而 `/tags/LaTeX/` 正常 ——
+即**所有含中文的标签页都是空的，且不报任何错**。
+更隐蔽的是 `generateMetadata` 同一时刻拿到的是**明文**，于是 meta 里章数正确、页面却为空，
+极易误判成数据层问题（我当时就是这样，查了三轮才发现）。
+
+**写法**：页面里一律 `const name = normalizeRouteParam(rawName)`（`lib/site.ts`），
+**不要**直接调 `decodeURIComponent` —— 少了 try/catch 的保护，标签含裸 `%`（如「100%增长」）
+会抛 `URIError` 让整个构建失败。详见 `app/AGENTS.md` 第 8 条。
+
 ---
 
 ## 三、目录导览
@@ -99,9 +113,12 @@ components/                      ← React 组件
 lib/constants.ts                 ← ★ 文章类型枚举与配色
 lib/content.ts                   ← ★ 内容读取核心
 lib/mdx.ts                       ← ★ MDX 插件链
-lib/schemas.ts                   ← frontmatter 的 Zod 校验
+lib/schemas.ts                   ← frontmatter 的 Zod 校验（含 series / seriesOrder）
+lib/site.ts                      ← ★ normalizeRouteParam() 在此，动态路由必用
 site.config.mjs                  ← ★ 站点身份唯一来源
 .env.local                       ← NEXT_PUBLIC_SITE_URL（已被 gitignore）
+app/series/[name]/page.tsx       ← 系列页（按 seriesOrder 排序）
+tools/series-convention.md       ← 系列写作约定
 tools/latex-to-blog.md           ← LaTeX 转化流程
 tools/latex-to-blog-probe.mjs    ← LaTeX 探雷脚本
 .github/workflows/deploy.yml     ← 推送 main 即部署
@@ -252,22 +269,23 @@ $$
 
 ## 八之二、系列文章（重要）
 
-作者用**「一篇文章 = 一章」+ 共享标签**组织长内容（如数学分析）。
-**约定与坑见 [`series-convention.md`](./series-convention.md)，新开一章前必读。**
+作者用**「一篇文章 = 一章」+ `series` 字段**组织长内容（数学分析等）。
+**约定见 [`series-convention.md`](./series-convention.md)，新开一章前必读。**
 
-三个必须先知道的结论：
+四个必须先知道的结论：
 
-1. **目录不能嵌套**。`lib/content.ts:368` 是单层 `readdir`，
+1. **目录不能嵌套**。`lib/content.ts` 的 `getAllPosts` 是单层 `readdir`，
    `content/blog/数学分析/第一章/index.mdx` 会被**完全忽略**。每章必须是
    `content/blog/<slug>/index.mdx`
-2. **`/tags/<系列名>/` 里顺序是发布时间倒序**，不是章节顺序。
-   `getPostsByTag`（`content.ts:421`）只过滤不排序，继承 `getAllPostMeta` 的降序。
-   **这是 tag 方案的固有短板，配置改不了**
-3. **严格顺序靠手动维护**：索引页的表格 + 每章首尾的「上一章/下一章」链接。
-   模板**不会**改写文章间相对链接，导航必须用 `/blog/<slug>/` 绝对路径
+2. **顺序由 `seriesOrder` 决定，与发布日期无关**。文章页会自动渲染
+   系列目录与「上一章/下一章」，**不需要手写导航链接**
+3. **`seriesOrder` 必须是数字**（`10` 而非 `"10"`），建议用 10/20/30 留间隔。
+   漏写的章节排到末尾，构建时会打印 `[content] 系列「X」的排序信息不完整` 告警
+4. **动态路由页面必须用 `normalizeRouteParam()` 规范化 `params`** ——
+   这是本仓库踩过的一个**模板既有 bug**，详见下方第 6 条硬约束
 
-标签不需要注册——`generateStaticParams` 从 frontmatter 自动收集，
-写了 `tags: ["数学分析"]` 就会生成 `/tags/数学分析/` 页面。
+标签与系列都不需要注册——`generateStaticParams` 从 frontmatter 自动收集，
+写了 `series: 数学分析` 就会生成 `/series/数学分析/` 页面。
 
 ---
 

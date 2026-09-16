@@ -316,6 +316,8 @@ async function getPostMetaBySlug(slug: string): Promise<PostMeta | null> {
     description: frontmatter.description,
     tags: frontmatter.tags ?? [],
     category: frontmatter.category,
+    series: frontmatter.series,
+    seriesOrder: frontmatter.seriesOrder,
     wordCount: file.content.length,
     readingTime: calculateReadingTime(file.content),
   };
@@ -338,6 +340,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     description: frontmatter.description,
     tags: frontmatter.tags ?? [],
     category: frontmatter.category,
+    series: frontmatter.series,
+    seriesOrder: frontmatter.seriesOrder,
     wordCount: file.content.length,
     readingTime: calculateReadingTime(file.content),
   };
@@ -436,6 +440,135 @@ export async function getAdjacentPosts(
   return {
     prev: posts[index + 1] || null,
     next: posts[index - 1] || null,
+  };
+}
+
+/* ============================================================
+ * 系列（series）
+ *
+ * 为什么需要它：tag 是宽泛的主题词，聚合页只能按发布日期倒序
+ * （`getPostsByTag` 只过滤不排序，继承 `getAllPostMeta` 的降序）。
+ * 而教程/教材类内容需要**明确的阅读顺序** —— 第六章不该排在第一章前面。
+ * series + seriesOrder 就是为此存在的。
+ * ============================================================ */
+
+/**
+ * 系列内排序：`seriesOrder` 升序，未写序号的排在最后，
+ * 同级按 `pubDate` 升序（早发的在前）。
+ *
+ * 为什么未写序号的排最后而不是最前：漏写序号是**错误**而非意图，
+ * 排到末尾并配上一个 warning（见 `warnSeriesWithoutOrder`）比默默插到最前面更容易发现。
+ */
+function compareSeriesOrder(a: PostMeta, b: PostMeta): number {
+  const ao = a.seriesOrder;
+  const bo = b.seriesOrder;
+  if (ao === undefined && bo === undefined) {
+    return new Date(a.pubDate).getTime() - new Date(b.pubDate).getTime();
+  }
+  if (ao === undefined) return 1;
+  if (bo === undefined) return -1;
+  if (ao !== bo) return ao - bo;
+  return new Date(a.pubDate).getTime() - new Date(b.pubDate).getTime();
+}
+
+/** 模块级标记，保证同一进程内每个缺序号的系列只告警一次 */
+const warnedSeries = new Set<string>();
+
+/**
+ * 检查系列里是否有序号缺失/重复，并打印一次告警。
+ *
+ * 两者都不会让构建失败 —— 但会导致顺序与预期不符，属于必须当回事的日志。
+ * 与 `data/AGENTS.md` 的「降级但大声报错」原则一致。
+ */
+function warnSeriesWithoutOrder(name: string, posts: PostMeta[]): void {
+  if (warnedSeries.has(name)) return;
+  const missing = posts.filter((p) => p.seriesOrder === undefined);
+  const orders = posts
+    .map((p) => p.seriesOrder)
+    .filter((o): o is number => o !== undefined);
+  const duplicated = orders.filter((o, i) => orders.indexOf(o) !== i);
+
+  if (missing.length === 0 && duplicated.length === 0) {
+    warnedSeries.add(name);
+    return;
+  }
+  warnedSeries.add(name);
+
+  const parts: string[] = [];
+  if (missing.length) {
+    parts.push(
+      `${missing.length} 篇未写 seriesOrder（已排到系列末尾）：${missing
+        .map((p) => p.slug)
+        .join(", ")}`
+    );
+  }
+  if (duplicated.length) {
+    parts.push(`seriesOrder 重复：${[...new Set(duplicated)].join(", ")}`);
+  }
+  console.warn(
+    `[content] 系列「${name}」的排序信息不完整 —— ${parts.join("；")}`
+  );
+}
+
+/** 按顺序返回某系列的全部文章；系列不存在时返回空数组 */
+export async function getPostsBySeries(name: string): Promise<PostMeta[]> {
+  const posts = await getAllPostMeta();
+  const normalized = name.toLowerCase();
+  const inSeries = posts.filter(
+    (p) => p.series?.toLowerCase() === normalized
+  );
+  if (inSeries.length === 0) return [];
+  warnSeriesWithoutOrder(name, inSeries);
+  return inSeries.sort(compareSeriesOrder);
+}
+
+/**
+ * 全部系列及其文章数，按系列名聚合。
+ *
+ * 排序：文章多的在前，同数量按名称 —— 与 `getAllTags` 的规则保持一致。
+ */
+export async function getAllSeries(): Promise<
+  { name: string; count: number }[]
+> {
+  const posts = await getAllPostMeta();
+  const map = new Map<string, number>();
+  for (const post of posts) {
+    if (!post.series) continue;
+    map.set(post.series, (map.get(post.series) ?? 0) + 1);
+  }
+  return Array.from(map.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+/**
+ * 某篇文章在**所属系列内**的相邻章节。
+ *
+ * 与 `getAdjacentPosts` 的区别：后者按全站发布时间排序，跨系列混在一起；
+ * 本函数只在系列内比较，按 `seriesOrder` 排。
+ * 文章不属于任何系列、或系列内只有一篇时，两者都返回 null。
+ */
+export async function getAdjacentSeriesPosts(slug: string): Promise<{
+  prev: PostMeta | null;
+  next: PostMeta | null;
+  total: number;
+  index: number;
+}> {
+  const posts = await getAllPostMeta();
+  const current = posts.find((p) => p.slug === slug);
+  if (!current?.series) {
+    return { prev: null, next: null, total: 0, index: -1 };
+  }
+  const chapters = await getPostsBySeries(current.series);
+  const index = chapters.findIndex((p) => p.slug === slug);
+  if (index === -1) {
+    return { prev: null, next: null, total: chapters.length, index: -1 };
+  }
+  return {
+    prev: chapters[index - 1] ?? null,
+    next: chapters[index + 1] ?? null,
+    total: chapters.length,
+    index,
   };
 }
 

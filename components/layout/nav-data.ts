@@ -7,6 +7,7 @@ export const navItems: NavItem[] = [
     label: "内容",
     children: [
       { href: "/blog", label: "文章" },
+      { href: "/series", label: "系列" },
       { href: "/types", label: "类型" },
       { href: "/tags", label: "标签" },
       { href: "/archive", label: "归档" },

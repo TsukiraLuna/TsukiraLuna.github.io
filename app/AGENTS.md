@@ -17,6 +17,8 @@
 | `app/about/page.tsx` | 个人简介页（About） |
 | `app/tags/page.tsx` | 标签云页 |
 | `app/tags/[tag]/page.tsx` | 单标签文章聚合页 |
+| `app/series/page.tsx` | 系列列表页（成体系的长内容，按阅读顺序组织） |
+| `app/series/[name]/page.tsx` | 单系列页，章节按 frontmatter 的 `seriesOrder` 排序 |
 | `app/types/page.tsx` | 文章类型聚合页（按 category 分组） |
 | `app/friends/page.tsx` | 友链页 |
 | `app/guestbook/page.tsx` | 留言 (Waline) |
@@ -45,6 +47,9 @@
 | `app/blog/[slug]/loading.tsx` | 文章详情页加载骨架 |
 | `app/tags/loading.tsx` | 标签云页加载骨架 |
 | `app/tags/[tag]/loading.tsx` | 单标签聚合页加载骨架 |
+| `app/series/error.tsx` | 系列列表页错误边界 |
+| `app/series/[name]/error.tsx` | 单系列页错误边界 |
+| `app/series/[name]/loading.tsx` | 单系列页加载骨架 |
 | `app/friends/loading.tsx` | 友链页加载骨架 |
 | `app/about/loading.tsx` | 个人简介页加载骨架 |
 | `app/types/loading.tsx` | 类型聚合页加载骨架 |
@@ -62,12 +67,24 @@
    - 交互逻辑、状态、事件监听、动画在 Client Component（文件首行 `"use client"`）完成。
 6. **CSS 导入** —— 项目全局样式集中在 `app/globals.css` 中通过 `@import` 导入。第三方库 CSS（如 KaTeX、Waline）和对应的组件级覆盖样式可在使用时按需导入。
 7. **内容读取路径** —— 服务端读取本地数据时使用 `path.join(process.cwd(), "data", ...)` 或 `path.join(process.cwd(), "content", ...)`。
-8. **generateStaticParams 值保持原始** —— 返回的参数字段值应当是原始字符串（如中文标签 `"测试"`），Next.js 会自动处理 URL 编码/解码。
-   在**返回值里**禁止手动 `encodeURIComponent`，否则会导致客户端导航路由不匹配。
-   同理，读到的 `params.tag` / `params.slug` **已经是原始值，不要再 `decodeURIComponent`** ——
-   标签含裸 `%`（如「100%增长」）时它会抛 `URIError` 让整个构建失败（见 `app/tags/[tag]/page.tsx` 的注释）。
-   需要编码的只有一处：写进 HTML 的 canonical / sitemap 链接，那里要用 `encodeURIComponent`，
-   与 `app/sitemap.ts` 的标签 URL 保持同一形态。
+8. **动态路由参数的编码处理（易错，务必按此写）** —— 分两个阶段，行为不同：
+   - **`generateStaticParams` 的返回值**：必须是**原始字符串**（如中文标签 `"测试"`），
+     禁止手动 `encodeURIComponent`，否则客户端导航路由不匹配。
+   - **页面渲染时读到的 `params`**：对含非 ASCII 的路由段，Next 给的是**URL 编码值**
+     （`/tags/数学分析/` 的 `params.tag` 是 `%E6%95%B0...`），而 `getAllTags()` /
+     `getAllSeries()` 返回明文，**直接比较恒不相等**。
+     所以必须先经 `normalizeRouteParam()`（`lib/site.ts`）规范化再用于数据查找。
+
+   > 实测教训：`/tags/数学分析/` 曾长期显示「0 篇文章」且标题是编码串，
+   > 而 `/tags/LaTeX/` 正常 —— 即**所有含中文的标签页都是空的，且不报任何错**。
+   > 更隐蔽的是 `generateMetadata` 同一时刻拿到的是**明文**，于是 meta 里章数正确、
+   > 页面却为空，极易误判成数据层问题。
+
+   `normalizeRouteParam` 内部用 try/catch 兜住裸 `%`（如「100%增长」）导致的
+   `URIError`，解码失败即原样返回。**不要在页面里直接调 `decodeURIComponent`** ——
+   少了这层保护会让整个构建失败。
+   需要编码的只有写进 HTML 的 canonical / sitemap 链接，那里用 `encodeURIComponent`，
+   与 `app/sitemap.ts` 保持同一形态。
 
 ## 禁止事项
 

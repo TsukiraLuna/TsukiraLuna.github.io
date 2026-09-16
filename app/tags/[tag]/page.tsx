@@ -1,5 +1,5 @@
 import { getAllTags, getPostsByTag } from "@/lib/content";
-import { site, absoluteUrl } from "@/lib/site";
+import { site, absoluteUrl, normalizeRouteParam } from "@/lib/site";
 import { PostCard } from "@/components/blog/PostCard";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageTitle } from "@/components/layout/PageTitle";
@@ -8,16 +8,15 @@ import { Hash } from "lucide-react";
 import { BackLink } from "@/components/layout/BackLink";
 
 /**
- * 标签路由参数就是**原始标签字符串**，不要在这里再解码一次。
+ * 标签路由参数需要经 `normalizeRouteParam` 规范化后再用于数据查找。
  *
- * 依据：`generateStaticParams` 直接返回标签原文，静态导出时落成的目录名就是它
- * （见 `out/tags/<标签>/`；`app/AGENTS.md` 也把「值保持原始、禁止手动编码」写成了规则）。
- * 先前这里调了 `decodeURIComponent`，带来两个后果：
- * - 标签含裸 `%`（如「100%增长」）→ 抛 `URIError: URI malformed`，**整个构建失败**；
- * - 标签含 `%20` 这类序列 → 被静默解码成另一个字符串，页面渲染成「该标签下暂无文章」。
+ * `generateStaticParams` 返回明文，但**渲染时** `params.tag` 是 URL 编码值
+ * （中文标签会变成 `%E6%95%B0...`），直接查库恒为 0 条 —— 表现为
+ * `/tags/数学分析/` 显示「0 篇文章」，而 `/tags/LaTeX/` 正常。
+ * 详见 `lib/site.ts` 的 `normalizeRouteParam` 注释。
  *
- * 需要编码的地方只有一处：写进 HTML 的 canonical 要用 `encodeURIComponent`，
- * 与 `app/sitemap.ts` 里标签 URL 的编码方式保持一致。
+ * 注意：**不要**在 `generateMetadata` 里再解一次，那里的 params 已是明文，
+ * 重复解码对含裸 `%` 的标签会抛 `URIError` 导致构建失败。
  */
 
 export async function generateStaticParams() {
@@ -45,7 +44,8 @@ export default async function TagPage({
 }: {
   params: Promise<{ tag: string }>;
 }) {
-  const { tag } = await params;
+  const { tag: rawTag } = await params;
+  const tag = normalizeRouteParam(rawTag);
   const posts = await getPostsByTag(tag);
 
   return (

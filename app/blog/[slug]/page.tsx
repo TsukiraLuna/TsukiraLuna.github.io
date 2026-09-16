@@ -4,6 +4,7 @@ import {
   getAllPosts,
   getPostBySlug,
   getAdjacentPosts,
+  getAdjacentSeriesPosts,
 } from "@/lib/content";
 import { CATEGORY_UI } from "@/lib/constants";
 import { PageShell } from "@/components/layout/PageShell";
@@ -12,7 +13,7 @@ import { TableOfContents } from "@/components/blog/TableOfContents";
 import { JsonLd } from "@/components/layout/JsonLd";
 
 import { PageTitle } from "@/components/layout/PageTitle";
-import { Calendar, Clock, Tag, ArrowLeft, ArrowRight } from "lucide-react";
+import { Calendar, Clock, Tag, ArrowLeft, ArrowRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { BackLink } from "@/components/layout/BackLink";
 import { WalineComments } from "@/components/blog/WalineComments";
@@ -68,6 +69,7 @@ export default async function PostPage({
   }
 
   const { prev, next } = await getAdjacentPosts(slug);
+  const seriesCtx = await getAdjacentSeriesPosts(slug);
   const CategoryIcon = post.category ? CATEGORY_UI[post.category].icon : null;
 
   return (
@@ -179,6 +181,24 @@ export default async function PostPage({
                     ))}
                   </div>
                 )}
+
+                {/* 所属系列：指向系列页，并标明是第几章 */}
+                {post.series && seriesCtx.total > 0 && (
+                  <div className="mt-4">
+                    <Link
+                      href={`/series/${encodeURIComponent(post.series)}`}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-caption bg-primary/10 text-primary-strong border border-primary/25 hover:border-primary/50 transition-colors duration-200"
+                    >
+                      <Layers className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      <span className="font-medium">{post.series}</span>
+                      {seriesCtx.index >= 0 && (
+                        <span className="opacity-70">
+                          第 {seriesCtx.index + 1} / {seriesCtx.total} 章
+                        </span>
+                      )}
+                    </Link>
+                  </div>
+                )}
               </header>
 
               {/* Divider */}
@@ -212,41 +232,101 @@ export default async function PostPage({
                 </div>
               )}
 
-              {/* Prev / Next Navigation */}
-              <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {prev ? (
-                  <Link
-                    href={`/blog/${prev.slug}`}
-                    className="group flex flex-col gap-1 p-4 rounded-xl bg-card border border-borderline hover:border-primary/30 hover:bg-hover transition-all duration-200"
-                  >
-                    <span className="text-caption text-muted flex items-center gap-1">
-                      <ArrowLeft className="w-3.5 h-3.5" />
-                      上一篇
-                    </span>
-                    <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
-                      {prev.title}
-                    </span>
-                  </Link>
-                ) : (
-                  <div />
-                )}
-                {next ? (
-                  <Link
-                    href={`/blog/${next.slug}`}
-                    className="group flex flex-col gap-1 p-4 rounded-xl bg-card border border-borderline hover:border-primary/30 hover:bg-hover transition-all duration-200 sm:text-right sm:items-end"
-                  >
-                    <span className="text-caption text-muted flex items-center gap-1 sm:flex-row-reverse">
-                      下一篇
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                    <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
-                      {next.title}
-                    </span>
-                  </Link>
-                ) : (
-                  <div />
-                )}
-              </nav>
+              {/* 系列章节导航 —— 按 seriesOrder 排，与全站时间序无关。
+                  有系列时替代下面的通用上/下一篇，避免两套导航语义打架 */}
+              {seriesCtx.total > 0 ? (
+                <nav className="mb-10 p-5 rounded-2xl bg-card border border-borderline">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <Link
+                      href={`/series/${encodeURIComponent(post.series!)}`}
+                      className="inline-flex items-center gap-2 text-body-sm text-title font-medium font-serif hover:text-primary transition-colors"
+                    >
+                      <Layers className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                      {post.series}
+                    </Link>
+                    {seriesCtx.index >= 0 && (
+                      <span className="text-caption text-muted">
+                        第 {seriesCtx.index + 1} / {seriesCtx.total} 章
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-borderline">
+                    {seriesCtx.prev ? (
+                      <Link
+                        href={`/blog/${seriesCtx.prev.slug}`}
+                        className="group flex flex-col gap-1 p-3 rounded-xl hover:bg-hover transition-colors duration-200"
+                      >
+                        <span className="text-caption text-muted flex items-center gap-1">
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          上一章
+                        </span>
+                        <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
+                          {seriesCtx.prev.title}
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center px-3 text-caption text-muted">
+                        已是第一章
+                      </div>
+                    )}
+                    {seriesCtx.next ? (
+                      <Link
+                        href={`/blog/${seriesCtx.next.slug}`}
+                        className="group flex flex-col gap-1 p-3 rounded-xl hover:bg-hover transition-colors duration-200 sm:text-right sm:items-end"
+                      >
+                        <span className="text-caption text-muted flex items-center gap-1 sm:flex-row-reverse">
+                          下一章
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </span>
+                        <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
+                          {seriesCtx.next.title}
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center justify-end px-3 text-caption text-muted">
+                        已是最后一章
+                      </div>
+                    )}
+                  </div>
+                </nav>
+              ) : (
+                /* Prev / Next Navigation（非系列文章按发布时间） */
+                <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {prev ? (
+                    <Link
+                      href={`/blog/${prev.slug}`}
+                      className="group flex flex-col gap-1 p-4 rounded-xl bg-card border border-borderline hover:border-primary/30 hover:bg-hover transition-all duration-200"
+                    >
+                      <span className="text-caption text-muted flex items-center gap-1">
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        上一篇
+                      </span>
+                      <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
+                        {prev.title}
+                      </span>
+                    </Link>
+                  ) : (
+                    <div />
+                  )}
+                  {next ? (
+                    <Link
+                      href={`/blog/${next.slug}`}
+                      className="group flex flex-col gap-1 p-4 rounded-xl bg-card border border-borderline hover:border-primary/30 hover:bg-hover transition-all duration-200 sm:text-right sm:items-end"
+                    >
+                      <span className="text-caption text-muted flex items-center gap-1 sm:flex-row-reverse">
+                        下一篇
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="text-body-sm text-title group-hover:text-primary transition-colors line-clamp-1">
+                        {next.title}
+                      </span>
+                    </Link>
+                  ) : (
+                    <div />
+                  )}
+                </nav>
+              )}
 
               <WalineComments key={slug} />
             </div>
