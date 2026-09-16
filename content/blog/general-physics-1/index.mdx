@@ -1,0 +1,665 @@
+---
+title: "普通物理（一）复习笔记"
+pubDate: 2026-09-16
+description: "普通物理（一）复习笔记：运动与力、运动守恒量、刚体运动、相对论基础、气体动理论与热力学基础。公式为主，便于考前速查。"
+tags: ["普通物理", "力学", "热学", "相对论", "复习笔记"]
+category: 数学
+tocDepth: 2
+---
+
+> 本文由手写笔记扫描件转录整理而来，公式以红色标出原稿中的红笔重点标记。
+
+## 一、运动与力
+
+### 位置与运动方程
+
+位置（位矢）：
+
+$$
+\begin{aligned}
+\vec{r} = \left|\vec{r}\right| &= \sqrt{x^2 + y^2 + z^2} \\
+\vec{r} &= x\,\hat{i} + y\,\hat{j} + z\,\hat{k}
+\end{aligned}
+$$
+
+直角坐标系下的运动方程：
+
+$$
+\vec{r}(t) = x(t)\,\hat{i} + y(t)\,\hat{j} + z(t)\,\hat{k}
+$$
+
+位移：
+
+$$
+\Delta\vec{r} = \vec{r}_B - \vec{r}_A = \Delta x\,\hat{i} + \Delta y\,\hat{j} + \Delta z\,\hat{k},
+\qquad \left|\Delta\vec{r}\right| \le \Delta s
+$$
+
+其中 $\Delta s$ 为路径长度。
+
+### 速度与速率
+
+平均速度与瞬时速度：
+
+$$
+\begin{aligned}
+\vec{\bar v} &= \frac{\Delta\vec{r}}{\Delta t} \\
+\vec{v} &= \frac{\mathrm{d}\vec{r}}{\mathrm{d}t}
+\end{aligned}
+$$
+
+平均速率与瞬时速率：
+
+$$
+\begin{aligned}
+\bar v &= \frac{\Delta s}{\Delta t} \\
+\text{一般地，有}\quad v &= \left|\vec{v}\right| = \left|\frac{\mathrm{d}\vec{r}}{\mathrm{d}t}\right| = \frac{\mathrm{d}s}{\mathrm{d}t}
+\end{aligned}
+$$
+
+速度的分量表示与大小：
+
+$$
+\begin{aligned}
+\vec{v} &= v_x\,\hat{i} + v_y\,\hat{j} + v_z\,\hat{k} \\
+\left|\vec{v}\right| &= v = \sqrt{v_x^2 + v_y^2 + v_z^2}
+\end{aligned}
+$$
+
+### 加速度
+
+平均加速度与瞬时加速度：
+
+$$
+\begin{aligned}
+\vec{\bar a} &= \frac{\Delta\vec{v}}{\Delta t} \\
+\vec{a} &= \frac{\mathrm{d}\vec{v}}{\mathrm{d}t} = \frac{\mathrm{d}^2\vec{r}}{\mathrm{d}t^2}
+\qquad \text{指向曲线凹向}
+\end{aligned}
+$$
+
+加速度的分量表示与大小：
+
+$$
+\begin{aligned}
+\vec{a} &= a_x\,\hat{i} + a_y\,\hat{j} + a_z\,\hat{k} \\
+\left|\vec{a}\right| &= a = \sqrt{a_x^2 + a_y^2 + a_z^2}
+\end{aligned}
+$$
+
+### 自然坐标系
+
+取切线方向单位矢量 $\vec{e}_\tau$ 与法线方向单位矢量 $\vec{e}_n$，加速度分解为：
+
+$$
+\color{red}{\vec{a} = \frac{\mathrm{d}v}{\mathrm{d}t}\,\vec{e}_\tau + \frac{v^2}{\rho}\,\vec{e}_n}
+$$
+
+其中
+
+$$
+\begin{aligned}
+\text{切向加速度}\quad a_\tau &= \frac{\mathrm{d}v}{\mathrm{d}t} \\
+\text{法向加速度}\quad a_n &= \frac{v^2}{\rho}
+\end{aligned}
+$$
+
+### 圆周运动的角量描述
+
+角位置、角位移 $\Delta\theta$、角速度与角加速度：
+
+$$
+\begin{aligned}
+\omega &= \frac{\mathrm{d}\theta}{\mathrm{d}t} \\
+\alpha &= \frac{\mathrm{d}\omega}{\mathrm{d}t}
+\end{aligned}
+$$
+
+角量与线量的关系（半径 $R$）：
+
+$$
+\begin{aligned}
+v &= R\,\omega \\
+a_\tau &= R\,\alpha \\
+a_n &= R\,\omega^2 = \frac{v^2}{R}
+\end{aligned}
+$$
+
+### 牛顿运动定律与常见力
+
+牛顿第二定律：
+
+$$
+\vec{F} = m\vec{a}
+$$
+
+动量：
+
+$$
+\begin{aligned}
+\vec{p} &= m\vec{v} \\
+\vec{F} &= \frac{\mathrm{d}\vec{p}}{\mathrm{d}t} = m\,\frac{\mathrm{d}^2\vec{r}}{\mathrm{d}t^2}
+\end{aligned}
+$$
+
+常见力：
+
+$$
+\begin{aligned}
+\text{万有引力}\quad F &= G\frac{m_1 m_2}{r^2} \\
+\text{弹性力}\quad \vec{F} &= -k\vec{x} \\
+\text{摩擦力（动摩擦）}\quad f &= \mu N
+\end{aligned}
+$$
+
+## 二、运动守恒量 守恒定律
+
+### 质心与质心运动定理
+
+质心：
+
+$$
+\vec{r}_c = \frac{\int\vec{r}\,\mathrm{d}m}{m},\qquad
+\vec{v}_c = \frac{\sum m_i\vec{v}_i}{\sum m_i},\qquad
+\vec{a}_c = \frac{\sum m_i\vec{a}_i}{\sum m_i}
+$$
+
+质心运动定理：
+
+$$
+\sum\vec{F}_i = m\,\vec{a}_c
+$$
+
+### 动量定理与动量守恒
+
+动量定理：
+
+$$
+\vec{I} = \int_{t_1}^{t_2}\vec{F}\,\mathrm{d}t = \vec{p}_2 - \vec{p}_1
+$$
+
+质心系中的动量定理：
+
+$$
+\int_{t_1}^{t_2}\sum\vec{F}_i\,\mathrm{d}t = \sum m_i\vec{v}_i - \sum m_i\vec{v}_{i0}
+$$
+
+动量守恒定律：若合外力为零，则系统动量不变：
+
+$$
+\sum\vec{F}_i = 0 \quad\Longrightarrow\quad \sum\vec{p}_i = \text{常量}
+$$
+
+### 角动量、力矩与角动量守恒
+
+角动量：
+
+$$
+\color{red}{\boxed{\vec{L} = \vec{r}\times\vec{p}}}
+$$
+
+力矩：
+
+$$
+\color{red}{\boxed{\vec{M} = \vec{r}\times\vec{F}}}
+$$
+
+角动量定理：
+
+$$
+\color{red}{\boxed{\vec{M} = \frac{\mathrm{d}\vec{L}}{\mathrm{d}t}}}
+$$
+
+角动量守恒定律：若合力矩为零，则角动量不变：
+
+$$
+\sum\vec{M}_i = 0 \quad\Longrightarrow\quad \sum\vec{L}_i = \text{常量}
+$$
+
+### 功、功率与动能定理
+
+功：
+
+$$
+\begin{aligned}
+A &= \vec{F}\cdot\Delta\vec{r} \\
+A &= \int_a^b F\cos\theta\,\mathrm{d}s
+\end{aligned}
+$$
+
+功率：
+
+$$
+P = \frac{\mathrm{d}A}{\mathrm{d}t} = \vec{F}\cdot\vec{v}
+$$
+
+动能定理：
+
+$$
+\begin{aligned}
+E_k &= \frac{1}{2}mv^2 \\
+A &= E_k - E_{k0}
+\end{aligned}
+$$
+
+**保守力**：重力、弹力、引力（保守力做功与路径无关）。
+
+### 势能
+
+保守力做功等于势能增量的负值：
+
+$$
+A_c = -\Delta E_p
+$$
+
+常见势能：
+
+$$
+\begin{aligned}
+\text{重力势能}\quad E_p &= mgh \\
+\text{弹性势能}\quad E_p &= \frac{1}{2}kx^2 \\
+\text{引力势能}\quad E_p &= -G\frac{m_1 m_2}{r}
+\end{aligned}
+$$
+
+### 功能原理与机械能守恒
+
+质点系动能定理：
+
+$$
+A_{\text{外}} + A_{\text{内非}} = \Delta E_k
+$$
+
+质点系功能原理：
+
+$$
+A_{\text{外}} + A_{\text{内非}} = \Delta E_{\text{机}} = \Delta E_k + \Delta E_p
+$$
+
+机械能守恒定律：若只有保守力做功，则机械能不变：
+
+$$
+\Delta E_{\text{机}} = 0
+$$
+
+### 碰撞
+
+碰撞的恢复系数：
+
+$$
+e = \frac{v_2 - v_1}{v_{10} - v_{20}},\qquad
+\Delta E = \frac{1}{2}(1-e^2)\frac{m_1 m_2}{m_1+m_2}\left(v_{10}-v_{20}\right)^2
+$$
+
+完全弹性碰撞 $e=1$，完全非弹性碰撞 $e=0$。
+
+碰后速度（$e$ 为恢复系数）：
+
+$$
+\begin{aligned}
+v_1 &= v_{10} - \frac{(1+e)m_2(v_{10}-v_{20})}{m_1+m_2}
+     = \frac{(m_1-e\,m_2)v_{10} + (1+e)m_2 v_{20}}{m_1+m_2} \\
+v_2 &= v_{20} + \frac{(1+e)m_1(v_{10}-v_{20})}{m_1+m_2}
+     = \frac{(m_2-e\,m_1)v_{20} + (1+e)m_1 v_{10}}{m_1+m_2}
+\end{aligned}
+$$
+
+## 三、刚体运动
+
+### 力矩与角动量
+
+力矩：
+
+$$
+\vec{M} = \vec{r}\times\vec{F}
+$$
+
+角动量：
+
+$$
+\vec{L} = \vec{r}\times\vec{p}
+$$
+
+### 刚体定轴转动
+
+定轴转动的转动定律：
+
+$$
+\color{red}{\boxed{\vec{M} = J\vec{\alpha} = J\frac{\mathrm{d}\vec{\omega}}{\mathrm{d}t}}}
+$$
+
+转动惯量：
+
+$$
+J = \int r^2\,\mathrm{d}m
+$$
+
+常见刚体的转动惯量：
+
+$$
+\color{red}{\begin{aligned}
+\text{圆盘}\quad J &= \frac{1}{2}mR^2 \\
+\text{细棒（过中心垂直轴）}\quad J &= \frac{1}{12}ml^2 \\
+\text{细棒（过端点垂直轴）}\quad J &= \frac{1}{3}ml^2 \\
+\text{球体（过直径）}\quad J &= \frac{2}{5}mR^2 \\
+\text{圆环}\quad J &= mR^2
+\end{aligned}}
+$$
+
+### 转动动能与动能定理
+
+力矩的功：
+
+$$
+\color{red}{A = \int_{\theta_1}^{\theta_2}\sum M\,\mathrm{d}\theta}
+$$
+
+刚体定轴转动的动能：
+
+$$
+\color{red}{E_k = \frac{1}{2}J\omega^2}
+$$
+
+刚体定轴转动的动能定理：
+
+$$
+\color{red}{A = \int_{\theta_1}^{\theta_2}\sum M\,\mathrm{d}\theta = \frac{1}{2}J\omega_2^2 - \frac{1}{2}J\omega_1^2}
+$$
+
+刚体的重力势能：
+
+$$
+E_p = mgh_c
+$$
+
+### 刚体转动的角动量与守恒
+
+刚体转动的角动量：
+
+$$
+\color{red}{\vec{L} = J\vec{\omega}}
+$$
+
+刚体转动的角动量定理：
+
+$$
+\color{red}{\int_{t_1}^{t_2}\sum\vec{M}\,\mathrm{d}t = J\vec{\omega}_2 - (J\vec{\omega})_0}
+$$
+
+刚体转动的角动量守恒：若合力矩为零，则 $J\vec{\omega}$ 不变：
+
+$$
+\color{red}{\sum\vec{M} = 0 \quad\Longrightarrow\quad J\vec{\omega} = \text{常量}}
+$$
+
+## 四、相对论基础
+
+### 相对性原理与洛伦兹变换
+
+相对性原理；光速不变原理。
+
+洛伦兹变换（设 $u$ 为参考系相对运动速度，$\beta = u/c$）：
+
+$$
+\color{red}{\boxed{
+x' = \frac{x-ut}{\sqrt{1-\beta^2}},\qquad
+t' = \frac{t-\frac{u}{c^2}x}{\sqrt{1-\beta^2}},\qquad
+v_x' = \frac{v_x-u}{1-\frac{u}{c^2}v_x}
+}}
+$$
+
+### 同时的相对性与时空效应
+
+同时的相对性：
+
+$$
+t_2' - t_1' = \frac{\frac{u}{c^2}(x_1-x_2)}{\sqrt{1-\beta^2}}
+$$
+
+时间延缓：
+
+$$
+t = \frac{t_0}{\sqrt{1-\beta^2}}
+$$
+
+长度收缩：
+
+$$
+L' = L_0\sqrt{1-\beta^2}
+$$
+
+### 质能关系
+
+质能方程：
+
+$$
+\begin{aligned}
+E &= mc^2 \\
+E_0 &= m_0c^2
+\end{aligned}
+$$
+
+相对论质量：
+
+$$
+m = \frac{m_0}{\sqrt{1-\beta^2}}
+$$
+
+相对论能量与动量关系：
+
+$$
+\color{red}{\boxed{E^2 = c^2p^2 + m_0^2c^4}}
+$$
+
+## 五、气体动理论
+
+### 理想气体物态方程与压强
+
+理想气体物态方程：
+
+$$
+\color{red}{\boxed{pV = \frac{m}{M}RT}}
+$$
+
+理想气体压强公式（$n$ 为单位体积分子数，$\bar\varepsilon_k$ 为一个分子的平均平动动能）：
+
+$$
+\color{red}{p = \frac{1}{3}nm\bar v^2 = \frac{2}{3}n\bar\varepsilon_k}
+$$
+
+其中：
+
+$$
+\color{red}{n = \frac{N}{V}},\qquad \color{red}{p = nkT}
+$$
+
+玻尔兹曼常量：
+
+$$
+\color{red}{k = \frac{R}{N_A}}
+$$
+
+由此得温度与分子平均平动动能的关系：
+
+$$
+\color{red}{\bar\varepsilon_k = \frac{1}{2}m_0\bar v^2 = \frac{3}{2}kT}
+$$
+
+方均根速率（$m_0$ 为单个分子质量）：
+
+$$
+\color{red}{\boxed{\sqrt{\bar v^2} = \sqrt{\frac{3RT}{M}} = \sqrt{\frac{3kT}{m_0}}}}
+$$
+
+### 能量均分定理
+
+分子自由度：单原子 $i=3$，双原子 $i=5$，多原子 $i=6$。
+
+每个分子的平均动能：
+
+$$
+\bar\varepsilon_k = \frac{i}{2}kT
+$$
+
+理想气体的内能：
+
+$$
+\color{red}{E = \frac{m}{M}\frac{i}{2}RT}
+$$
+
+### 麦克斯韦速率分布律
+
+速率分布函数与分布律：
+
+$$
+\begin{aligned}
+f(v) &= \frac{\mathrm{d}N}{N\,\mathrm{d}v} \\
+\color{red}{f(v)} &= \color{red}{4\pi\left(\frac{m_0}{2\pi kT}\right)^{3/2}v^2\exp\!\left(-\frac{m_0 v^2}{2kT}\right)}
+\end{aligned}
+$$
+
+平均速率：
+
+$$
+\bar v = \int_0^\infty v\,f(v)\,\mathrm{d}v = \color{red}{\sqrt{\frac{8RT}{\pi M}}}
+$$
+
+方均根速率：
+
+$$
+\sqrt{\bar v^2} = \int_0^\infty v^2 f(v)\,\mathrm{d}v = \color{red}{\sqrt{\frac{3RT}{M}}}
+$$
+
+最概然速率：
+
+$$
+\color{red}{\boxed{v_p = \sqrt{\frac{2RT}{M}}}}
+$$
+
+分子的平均自由程（$d$ 为分子有效直径）：
+
+$$
+\color{red}{\bar\lambda = \frac{1}{\sqrt{2}\,\pi d^2 n} = \frac{kT}{\sqrt{2}\,\pi d^2 p}}
+$$
+
+若令 $\dfrac{m_0}{2kT}=b$，则
+
+$$
+f(v) = 4\pi\left(\frac{b}{\pi}\right)^{3/2}v^2 e^{-bv^2}
+$$
+
+## 六、热力学基础
+
+### 热力学第一定律
+
+功：
+
+$$
+\mathrm{d}A = p\,\mathrm{d}V
+$$
+
+热力学第一定律（$A$ 为系统对外做功）：
+
+$$
+\color{red}{\begin{aligned}
+Q &= A + \Delta E \\
+Q &= E_2 - E_1 + \int_{V_1}^{V_2}p\,\mathrm{d}V
+\end{aligned}}
+$$
+
+### 等值过程与摩尔热容
+
+**等体过程**（$V$ 不变），$Q_V = E_2 - E_1$，摩尔定容热容 $C_{V,m}$：
+
+$$
+\begin{aligned}
+\delta Q_V &= \frac{m}{M}C_{V,m}\,\mathrm{d}T,\qquad \color{red}{\mathrm{d}E = \frac{m}{M}C_{V,m}\,\mathrm{d}T} \\
+\color{red}{C_{V,m}} &= \color{red}{\frac{i}{2}R}
+\end{aligned}
+$$
+
+**等压过程**（$p$ 不变）：$A = p(V_2-V_1) = \dfrac{m}{M}R(T_2-T_1)$，摩尔定压热容 $C_{p,m}$：
+
+$$
+\begin{aligned}
+\delta Q_p &= E_2-E_1+\frac{m}{M}R(T_2-T_1),\qquad \delta Q_p = \frac{m}{M}C_{p,m}\,\mathrm{d}T \\
+\color{red}{C_{p,m}} &= \color{red}{C_{V,m}+R = \frac{i+2}{2}R}
+\end{aligned}
+$$
+
+摩尔热容比：
+
+$$
+\color{red}{\gamma = \frac{C_{p,m}}{C_{V,m}} = \frac{i+2}{i}}
+$$
+
+**等温过程**（$T$ 不变）：$p_1V_1=p_2V_2$，
+
+$$
+\begin{aligned}
+Q_T = A &= \int_{V_1}^{V_2}p\,\mathrm{d}V = \int_{V_1}^{V_2}\frac{p_1V_1}{V}\,\mathrm{d}V
+         = p_1V_1\ln\frac{V_2}{V_1} = \frac{m}{M}RT\ln\frac{V_2}{V_1} \\
+&= \color{red}{\frac{m}{M}RT\ln\frac{p_1}{p_2}}
+\end{aligned}
+$$
+
+**绝热过程**（$\mathrm{d}Q=0$）：$A = -\dfrac{m}{M}C_{V,m}(T_2-T_1)$，绝热方程：
+
+$$
+\color{red}{pV^{\gamma} = C;\qquad VT^{\gamma-1} = C;\qquad p^{\gamma-1}T^{-\gamma} = C}
+$$
+
+### 循环过程与热机
+
+循环过程：
+
+$$
+\Delta E = 0,\qquad Q = A
+$$
+
+热机效率：
+
+$$
+\color{red}{\eta = \frac{A}{Q_{\text{吸}}} = \frac{Q_{\text{吸}}-Q_{\text{放}}}{Q_{\text{吸}}} = 1-\frac{Q_{\text{放}}}{Q_{\text{吸}}}}
+$$
+
+制冷机的制冷系数：
+
+$$
+w = \frac{Q_{\text{吸}}}{A}
+$$
+
+卡诺循环：
+
+$$
+\color{red}{\eta_c = 1-\frac{Q_2}{Q_1} = 1-\frac{T_2}{T_1}},\qquad
+\frac{Q_2}{Q_1} = \frac{T_2}{T_1}
+$$
+
+### 热力学第二定律与熵
+
+热力学第二定律：开尔文表述、克劳修斯表述；可逆过程与不可逆过程。
+
+卡诺定理：
+
+$$
+\color{red}{\eta \le 1-\frac{T_2}{T_1}}
+$$
+
+熵与熵增原理：
+
+$$
+\color{red}{\Delta S = \left(\frac{\delta Q}{T}\right)_{\text{可逆}}}
+$$
+
+熵的统计意义（玻尔兹曼熵）：
+
+$$
+S = k\ln W
+$$
+
+等温膨胀的熵变：
+
+$$
+\Delta S = \frac{m}{M}R\ln\frac{V_2}{V_1} = \frac{Q}{T}
+$$
