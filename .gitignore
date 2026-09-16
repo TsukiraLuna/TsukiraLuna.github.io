@@ -53,3 +53,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# npm 本地缓存（本机把 npm cache 指到了项目内，避免系统缓存目录权限问题）
+/.npm-cache/
