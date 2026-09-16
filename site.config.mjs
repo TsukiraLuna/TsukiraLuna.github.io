@@ -111,12 +111,12 @@ export function normalizeBasePath(raw) {
 /** @type {SiteConfig} */
 export const siteConfig = {
   name: "TsukiraLuna",
-  tagline: "记录、思考与折腾",
-  description: "TsukiraLuna 的个人博客，记录学习笔记、技术折腾与一些杂想。",
+  tagline: "月夜下的旅人",
+  description: "TsukiraLuna 的个人博客，数学但又不止于数学",
   author: "TsukiraLuna",
   github: "TsukiraLuna",
   lang: "zh-CN",
   ogLocale: "zh_CN",
-  keywords: ["博客", "LaTeX", "Next.js", "技术笔记", "TsukiraLuna"],
-  ogTagline: "记录、思考与折腾",
+  keywords: ["博客", "LaTeX", "Next.js", "技术笔记", "TsukiraLuna","数学", "算法"],
+  ogTagline: "月夜下的旅人",
 };
