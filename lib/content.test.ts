@@ -29,7 +29,7 @@ describe("getPostBySlug — frontmatter 解析与归一化", () => {
     expect(post!.title).toBe("夹具文章 Alpha");
     expect(post!.pubDate).toBe("2026-03-02");
     expect(post!.tags).toEqual(["Alpha", "公共"]);
-    expect(post!.category).toBe("技术");
+    expect(post!.category).toBe("数学");
   });
 
   it("产出正数阅读时间与字数，且 content 已剥离 frontmatter", async () => {

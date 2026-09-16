@@ -29,6 +29,16 @@ const PUBLIC_DIR = path.join(process.cwd(), "public");
 const IMAGE_SRC_RE = /!\[[^\]]*\]\(([^)\s]+)[^)]*\)|<img\b[^>]*?\bsrc=["']([^"']+)["']/gi;
 
 /**
+ * 行内代码跨度（反引号包裹），支持 `` ` `` 与 ``` `` ``` 两种长度。
+ *
+ * `stripFencedLines` 只去掉围栏代码块，行内代码里的图片语法仍会被
+ * `IMAGE_SRC_RE` 命中 —— 而讲 Markdown 写法的文章恰恰会把
+ * `![说明](/blog/x/图.png)` 写在行内代码里当作示例。不去掉它就会误报
+ * 「图片缺失」。JS 的 `.` 不匹配换行，故不会跨行误吞正文。
+ */
+const INLINE_CODE_RE = /``[^`]*``|`[^`\n]*`/g;
+
+/**
  * 已报告过的缺失图片，用于抑制同一进程内的重复告警。
  *
  * 说明：Next 的静态生成会开多个 worker 进程，各自持有独立的模块实例，所以同一处
@@ -106,9 +116,11 @@ export async function collectImageSizes(
   slug: string,
 ): Promise<ImageSizeMap> {
   const srcs = new Set<string>();
-  // 先剔除代码围栏：讲 Markdown / MDX 语法的文章里会出现 ![alt](/img.png) 这类
-  // 代码示例，那不是真实引用，不该触发缺失警告（规则与 extractToc 一致）。
-  for (const m of stripFencedLines(content).matchAll(IMAGE_SRC_RE)) {
+  // 先剔除代码围栏与行内代码：讲 Markdown / MDX 语法的文章里会出现
+  // ![alt](/img.png) 这类代码示例（围栏里或反引号里），那不是真实引用，
+  // 不该触发缺失警告（规则与 extractToc 一致）。
+  const prose = stripFencedLines(content).replace(INLINE_CODE_RE, "");
+  for (const m of prose.matchAll(IMAGE_SRC_RE)) {
     const src = m[1] ?? m[2];
     if (src?.startsWith("/")) {
       srcs.add(src);

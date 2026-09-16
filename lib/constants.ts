@@ -5,11 +5,19 @@ import {
   FlaskConical,
   Gamepad2,
   Lightbulb,
+  Sigma,
+  SquareFunction,
   type LucideIcon,
 } from "lucide-react";
 
-/** 文章类型（category）枚举，同时也是 /types 页的展示顺序 */
+/**
+ * 文章类型（category）枚举，同时也是 /types 页的展示顺序。
+ *
+ * 顺序即展示顺序：数学与算法放最前，反映本站的写作重心。
+ */
 export const POST_CATEGORIES = [
+  "数学",
+  "算法",
   "技术",
   "生活",
   "观点",
@@ -36,11 +44,23 @@ export const CATEGORY_UI: Record<
     chip: string;
   }
 > = {
+  数学: {
+    icon: Sigma,
+    desc: "笔记、证明与推导",
+    mark: "bg-accent-3/15 text-accent-3",
+    chip: "border-accent-3/25 bg-accent-3/10 text-accent-3",
+  },
+  算法: {
+    icon: SquareFunction,
+    desc: "算法设计与实现",
+    mark: "bg-info/15 text-info",
+    chip: "border-info/25 bg-info/10 text-info",
+  },
   技术: {
     icon: Cpu,
     desc: "代码、工具与折腾实录",
-    mark: "bg-info/15 text-info",
-    chip: "border-info/25 bg-info/10 text-info",
+    mark: "bg-primary/15 text-primary-strong",
+    chip: "border-primary/25 bg-primary/10 text-primary-strong",
   },
   生活: {
     icon: Coffee,
