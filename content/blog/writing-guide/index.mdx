@@ -1,0 +1,170 @@
+---
+title: "写作指南 — 从 Hexo 迁移到 Next.js 模板"
+pubDate: 2025-01-02
+description: "一篇讲清 frontmatter 字段、常用 Markdown 写法、LaTeX 公式，以及从 Hexo/Butterfly 迁移过来时需要改什么。"
+tags: ["写作", "Markdown", "MDX", "LaTeX"]
+category: 技术
+tocDepth: 2
+---
+
+这篇既是写作备忘录，也是渲染能力的自查清单。**建议保留它作为参考，写顺手之后再删。**
+本站由 **Next.js 16 静态导出 + MDX** 驱动，公式走 KaTeX，代码高亮走 Shiki。
+
+## 一、Frontmatter 字段
+
+每篇文章开头 `---` 之间的部分是 frontmatter。`title` 与 `pubDate` 必填：
+
+```yaml
+---
+title: "文章标题"
+pubDate: 2025-01-02
+description: "首页列表与 SEO 显示的摘要"
+tags: ["标签1", "标签2"]
+category: 教程
+tocDepth: 2
+---
+```
+
+几点说明：
+
+- `pubDate` 决定排序与归档归属，格式为 `YYYY-MM-DD`
+- `category` 只写一个；`tags` 可以写多个
+- `tocDepth` 控制右侧目录收录到几级标题
+- frontmatter 写错会让构建失败，改完记得本地跑一次 `npm run build:verify`
+
+## 二、文件与目录约定
+
+一篇文章 = **一个目录 + 一个 `index.mdx`**：
+
+```
+content/blog/my-first-post/index.mdx
+```
+
+配图放 `public/blog/<slug>/`，正文里用绝对路径引用：`![说明](/blog/my-first-post/图.png)`。
+注意 `public/` 是静态导出下唯一会被发布的位置。
+
+## 三、常用 Markdown
+
+行内代码 `code`、**加粗**、*斜体*、~~删除线~~、[链接](https://nextjs.org)。
+
+带高亮的代码块（Shiki 渲染，支持行号与一键复制）：
+
+```javascript
+// 支持语言高亮与右上角复制按钮
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+console.log(greet('TsukiraLuna'));
+```
+
+表格（GFM）：
+
+| 框架 | 语言 | 构建速度 | 适合场景 |
+| --- | --- | --- | --- |
+| Hexo | Node.js | 中等 | 中文博客、主题生态好 |
+| Hugo | Go | 极快 | 内容量大、想少折腾 |
+| Next.js | Node.js | 中等 | 想写组件、做作品集 |
+
+## 四、LaTeX 公式
+
+模板原生支持 `remark-math` + `rehype-katex`，**在构建时渲染为 HTML 与 CSS，不依赖浏览器端 JS**。
+
+行内公式用单个 `$`：
+
+质能方程 $E = mc^2$，带下标的 $x_1, x_2, \dots, x_n$，希腊字母 $\alpha_i$、$\beta_{ij}$。
+
+带下标的写法**不会**被当成斜体——这是 Hexo 默认渲染器的经典问题，这里的插件链没有这个坑。
+
+块级公式用 `$$`，独立成段：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+矩阵用 `pmatrix` / `bmatrix`，其中的 `&` 与 `\\` 都安全：
+
+$$
+A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix}
+\qquad
+B = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}
+$$
+
+分段函数：
+
+$$
+f(x) = \begin{cases}
+x^2, & x \ge 0 \\
+-x, & x < 0
+\end{cases}
+$$
+
+多行对齐：
+
+$$
+\begin{aligned}
+(a+b)^2 &= a^2 + 2ab + b^2 \\
+(a-b)^2 &= a^2 - 2ab + b^2
+\end{aligned}
+$$
+
+> 注意：`$$` 与公式内容之间**不要留空行**，否则可能不被识别为块级公式。
+
+## 五、从 Hexo / Butterfly 迁移要改什么
+
+如果你和我一样是从 Hexo 换过来的，下面这些**必须改写**，因为它们是 Hexo 主题的标签插件，MDX 不认识：
+
+| Hexo / Butterfly 写法 | 新模板的等价做法 |
+| --- | --- |
+| `{% note info %}内容{% endnote %}` | 用 `> **提示：** 内容` 引用块，或直接写普通段落 |
+| `{% hideToggle 标题 %}内容{% endhideToggle %}` | 用 `<details><summary>标题</summary>内容</details>` |
+| `{% tabs %}` / `{% endtabs %}` | MDX 里可以直接写 JSX 组件，或改用并列小节 |
+| `{% btn %}` | `[文字](链接)` 或 HTML `<a>` |
+| `{% link text url %}` | 标准 Markdown 链接 `[text](url)` |
+| `{% raw %}...{% endraw %}` | MDX 里不需要，用行内代码或反引号即可 |
+| `source/_posts/xxx.md` | `content/blog/xxx/index.mdx` |
+| `_config.yml` / `_config.butterfly.yml` | `site.config.mjs` + `.env.local` |
+| `hexo new` / `hexo server` | 手动建目录，`npm run dev` |
+
+折叠块在 MDX 里这样写（原生 HTML，无需插件）：
+
+```html
+<details>
+  <summary>点我展开</summary>
+
+  藏起来的内容，支持 Markdown。
+
+</details>
+```
+
+实际效果：
+
+<details>
+  <summary>点我展开</summary>
+
+  藏在这里的内容，默认收起，适合放长代码或剧透。
+
+</details>
+
+## 六、写作工作流
+
+```bash
+# 本地实时预览 http://localhost:3000
+npm run dev
+
+# 构建静态产物到 out/
+npm run build
+
+# 写完提交，GitHub Actions 会自动构建并发布
+git add .
+git commit -m "post: 新增文章"
+git push
+```
+
+写完推送后，到 GitHub 仓库的 **Actions** 标签页可以看到构建进度，绿勾即发布成功。
+
+## 七、几个需要留意的坑
+
+1. **站名是烧进 PNG 像素的** —— 改了 `site.config.mjs` 的 `name` 之后，必须重跑 `npm run og` 重新生成分享图，否则分享到社交平台时还是旧站名。
+2. **`next build` 与 `next dev` 不能同时跑** —— 两者共用 `.next` 目录。在 dev server 运行时执行构建，会导致部分路由此后永久挂起（症状极具迷惑性：首页正常、某个子页卡死）。遇到就先停 dev，删掉 `.next` 再重启。
+3. **引用 `public/` 下的资源要用 `publicUrl()`** —— 若将来部署到子路径，裸写的 `"/favicon.svg"` 会去根路径找而 404。
+4. **删除页面要同步三处** —— 文件式路由删掉即下线，但要同时清 `app/sitemap.ts` 的路由清单、`components/layout/nav-data.ts` 的导航项、`app/about/page.tsx` 的模块导览。

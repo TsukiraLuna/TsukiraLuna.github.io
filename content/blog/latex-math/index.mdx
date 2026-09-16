@@ -1,0 +1,120 @@
+---
+title: "LaTeX 公式测试"
+pubDate: 2025-01-03
+description: "验证本站的 LaTeX 渲染能力，覆盖行内公式、多行对齐、矩阵、分段函数、积分、希腊字母下标等容易出问题的写法。同时作为自查清单。"
+tags: ["LaTeX", "KaTeX", "公式"]
+category: 技术
+tocDepth: 2
+---
+
+这篇用来验证公式渲染。**如果你能看到公式正常显示（不是乱码、不是斜体错乱、不是表格），说明一切正常。**
+
+本站使用 `remark-math` + `rehype-katex`，公式在**构建期**渲染为 HTML 与 CSS，不依赖访问者的浏览器执行 JavaScript。
+
+## 一、行内公式
+
+质能方程 $E = mc^2$ 写在句子里。带下标的变量 $x_1, x_2, \dots, x_n$ 是旧渲染器最容易搞坏的地方（`_` 被当成斜体）。
+
+希腊字母与下标组合：$\alpha_i$、$\beta_{ij}$、$\theta^{(t)}$、$\mathcal{L}(\theta)$。
+
+行内分式 $\frac{1}{2}$、根式 $\sqrt{x^2+y^2}$、求和 $\sum_{i=1}^{n} i$、极限 $\lim_{n \to \infty} a_n$。
+
+## 二、块级公式
+
+高斯积分：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+麦克斯韦方程组：
+
+$$
+\begin{aligned}
+\nabla \cdot \vec{\mathbf{E}} &= 4\pi\rho \\
+\nabla \cdot \vec{\mathbf{B}} &= 0 \\
+\nabla \times \vec{\mathbf{E}} &= -\frac{1}{c}\frac{\partial \vec{\mathbf{B}}}{\partial t} \\
+\nabla \times \vec{\mathbf{B}} &= \frac{1}{c}\left(4\pi\vec{\mathbf{j}} + \frac{\partial \vec{\mathbf{E}}}{\partial t}\right)
+\end{aligned}
+$$
+
+## 三、矩阵
+
+矩阵里的 `|` 在 Hexo 默认渲染器里会被当成 Markdown 表格分隔符，导致排版崩坏。这里用 `pmatrix` 和 `bmatrix`：
+
+$$
+A = \begin{pmatrix} a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} & a_{23} \\ a_{31} & a_{32} & a_{33} \end{pmatrix}
+\qquad
+B = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}
+$$
+
+行列式与范数：
+
+$$
+\det(A) = \sum_{\sigma \in S_n} \operatorname{sgn}(\sigma) \prod_{i=1}^{n} a_{i,\sigma(i)},
+\qquad
+\|x\|_p = \left( \sum_i |x_i|^p \right)^{1/p}
+$$
+
+## 四、分段函数
+
+反斜杠 `\\` 在旧渲染器里会被当转义符吃掉：
+
+$$
+f(x) = \begin{cases}
+x^2, & x \ge 0 \\
+-x, & x < 0
+\end{cases}
+$$
+
+## 五、多行对齐
+
+$$
+\begin{align}
+(a+b)^2 &= a^2 + 2ab + b^2 \\
+(a-b)^2 &= a^2 - 2ab + b^2 \\
+a^2 - b^2 &= (a+b)(a-b)
+\end{align}
+$$
+
+## 六、概率与统计
+
+贝叶斯公式：
+
+$$
+P(H \mid E) = \frac{P(E \mid H)\,P(H)}{P(E)}
+$$
+
+正态分布密度：
+
+$$
+p(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left( -\frac{(x-\mu)^2}{2\sigma^2} \right)
+$$
+
+## 七、箭头
+
+$$
+A \xrightarrow{\text{加热}} B \quad\Longrightarrow\quad C
+$$
+
+> 化学式 `\ce{}` 需要 mhchem 扩展，KaTeX 默认不加载，所以本文不含该类用例。
+
+## 八、公式与正文混排
+
+当 $\Delta t \to 0$ 时，平均速度 $\bar{v} = \frac{\Delta s}{\Delta t}$ 趋于瞬时速度 $v = \frac{ds}{dt}$，这就是导数的物理意义。
+
+## 九、常见问题自查
+
+| 现象 | 原因 |
+| --- | --- |
+| 公式里 `_` 让后面文字变斜体 | 用了 `hexo-renderer-marked` 这类会解析公式内容的渲染器 |
+| 矩阵变成一张表格 | 同上，`\|` 被当表格分隔符 |
+| 公式原样显示 `$...$` | 没启用 `remark-math` + `rehype-katex` |
+| 公式显示但字体不对 | 缺少 KaTeX 的 CSS（`katex/dist/katex.min.css`） |
+| `$$` 块级公式不生效 | `$$` 与内容之间留了空行 |
+
+## 十、长 LaTeX 文档怎么办
+
+单篇公式用上面的写法即可。如果是**整篇论文或长文档**，更合适的做法是本地用 XeLaTeX 编译成 PDF，再把 PDF 放进 `public/` 供人阅读或下载，而不是把几百行 LaTeX 塞进 MDX。
+
+关键限制：GitHub Pages 站点总体积上限 **1 GB**，仓库建议同样不超过 1 GB。所以 PDF 文件名建议用 ASCII（`latex-notes-2025.pdf`），中文显示名放在链接文字里，避免 URL 编码与工具链的兼容问题。

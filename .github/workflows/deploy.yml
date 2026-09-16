@@ -1,0 +1,154 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # 定时重建：默认关闭。
+  # 模板本身没有需要定时刷新的数据，但如果你之后加了抓取类脚本，
+  # 可以取消下面两行的注释让站点每 12 小时重建一次 —— 注意它会占用 Actions 额度。
+  # schedule:
+  #   - cron: '0 0,12 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      # 供 deploy 作业判断是否真的部署（见 Check Pages availability 一步）
+      pages_available: ${{ steps.pages.outputs.available }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          # Node >= 20.19（见 package.json 的 engines）：Next 16 与 vitest 的依赖都要求它
+          node-version: "20"
+          cache: "npm"
+
+      - name: Restore cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 先探一下 Pages 是否真的启用了，没启用就跳过部署。
+      #
+      # 为什么需要这一步：fork 出来的仓库默认没开 Pages，而本工作流在 push 时就会触发 ——
+      # 于是第一次推送必然得到一个「部署失败」的红叉，但失败原因藏在日志深处
+      # （deploy-pages 报 "Get Pages site failed"），很容易被误读成代码有问题。
+      # 这里改成显式跳过并打印一条 notice，把该做的事直接说清楚：
+      # 构建与检查照常跑（CI 价值保留），只有部署这一步不做。
+      - name: Check Pages availability
+        id: pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" > /dev/null 2>&1; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Pages 已启用，继续部署。"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::仓库尚未启用 GitHub Pages，已跳过部署。到 Settings → Pages 把 Source 设为 \"GitHub Actions\" 后重跑本工作流即可。"
+          fi
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      # 站点地址与 basePath 默认**自动推导**，无需任何配置：
+      #   - 仓库名为 <owner>.github.io  → 用户站点，地址在根，无 basePath
+      #   - 其他仓库名（如 fork 出来的模板）→ 项目页，地址带子路径，需 basePath
+      # 用自定义域名时，改用仓库变量覆盖（Settings → Secrets and variables →
+      # Actions → Variables，注意不是 Secrets）：
+      #   SITE_URL   例 https://blog.example.com
+      #   BASE_PATH  自定义域名下通常留空
+      - name: Resolve site URL
+        id: site
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          CUSTOM_URL: ${{ vars.SITE_URL }}
+          CUSTOM_BASE: ${{ vars.BASE_PATH }}
+        run: |
+          # GitHub 的仓库名/用户名大小写不敏感，而 shell 的字符串比较敏感 ——
+          # 仓库若是 Alice/alice.github.io，直接比较会掉进「项目页」分支，
+          # 得出 https://Alice.github.io/alice.github.io 这种地址（资源全 404）。
+          # 统一转小写再比。
+          OWNER_LC="${OWNER,,}"
+          REPO_LC="${REPO,,}"
+
+          # 1) 先定 URL：自定义域名优先，否则按「用户站点 / 项目页」推导
+          if [ -n "$CUSTOM_URL" ]; then
+            url="$CUSTOM_URL"
+            derived_base=""
+          elif [ "$REPO_LC" = "$OWNER_LC.github.io" ]; then
+            url="https://$OWNER.github.io"
+            derived_base=""
+          else
+            url="https://$OWNER.github.io/$REPO"
+            derived_base="/$REPO"
+          fi
+
+          # 2) 再定 basePath：显式设置的 BASE_PATH 独立生效（不再依赖是否设了 SITE_URL），
+          #    没设才回落到推导值。先前只设 BASE_PATH 会被静默忽略。
+          base="${CUSTOM_BASE:-$derived_base}"
+          # 去掉尾斜杠：Next 的 basePath 不接受尾斜杠，而 "/" 的语义就是「部署在根路径」
+          base="${base%/}"
+
+          # 3) 两者矛盾时提前警告：这是「整站白屏 / canonical 指向错处」的典型成因。
+          #    注意必须用 [[ ]] —— 单括号 [ ] 里的 * 只是普通字符，判断会恒为真。
+          if [ -n "$base" ] && [[ "${url%/}" != *"$base" ]]; then
+            echo "::warning title=站点地址与 basePath 可能不一致::SITE_URL ($url) 未以 BASE_PATH ($base) 结尾。子路径部署下 SITE_URL 应包含该子路径"
+          fi
+
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "base_path=$base" >> "$GITHUB_OUTPUT"
+          echo "解析结果：SITE_URL=$url  BASE_PATH=${base:-（空）}"
+
+      - name: Build with Next.js
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ steps.site.outputs.url }}
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.site.outputs.base_path }}
+          NEXT_PUBLIC_WALINE_SERVER_URL: ${{ secrets.WALINE_SERVER_URL }}
+        run: npm run build
+
+      - name: Upload artifact
+        if: steps.pages.outputs.available == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./out
+
+  deploy:
+    # 未启用 Pages 时整个部署作业跳过 —— 否则会以一个看不懂的错误收场
+    if: needs.build.outputs.pages_available == 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
