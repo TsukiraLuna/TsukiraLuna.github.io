@@ -1,0 +1,597 @@
+---
+title: "抽象代数 第 2 章 群论"
+pubDate: 2025-04-02
+description: "抽象代数群论：群与子群、陪集与 Lagrange 定理、正规子群与商群、同态基本定理与同构定理、循环群、置换群与 A_n、群对集合的作用与类方程、Sylow 定理、群直积、有限生成 Abel 群。"
+tags: ["抽象代数", "群论", "Sylow 定理", "置换群"]
+category: 数学
+series: 抽象代数
+seriesOrder: 20
+tocDepth: 2
+---
+
+> 本文由手写笔记《抽象代数》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 2.1 群的概念
+
+> **定义 1-1（半群、幺半群）**
+>
+> $S\neq\emptyset$，在 $S$ 上存在一个二元运算“$\ast$”（乘）．满足
+> $\textcolor{red}{\text{(1) 封闭性}}\ \forall x,y\in S$，有 $x\ast y\in S$；
+> 且满足 $\textcolor{red}{\text{(2) 结合律}}$，则称为**半群**．
+> （若又满足交换律，则称为交换半群．）
+> 若 $S$ 半群，且 $\exists e\in S$，st $\forall a\in S$，有
+> $\textcolor{red}{\text{(1) 有单位元}}\ ae=ea=a$（$e$ 为 $S$ 的单位元、幺元），称为**幺半群**．
+
+> **定义 1-2（群）**
+>
+> 一个群 $G$，若 $\forall a\in G$，$\exists a'\in G$，st
+> $\textcolor{red}{\text{(1) 有逆元}}\ aa'=a'a=e$（$a'$ 写为 $a^{-1}$）．若 $G$ 的运算满足交换律，称为**交换群**（Abel 群）．
+> 有限群：$|G|=n$．
+> $S_n$ 的交换群：$|S_n|=n!$．
+> 模 $n$ 的剩余类加群．
+
+> **性质 1-1**
+>
+> 1. $G$ 的幺元唯一．
+> 2. $\forall a\in G$，$a^{-1}$ 唯一．
+> 3. $\forall a\in G$，$(a^{-1})^{-1}=a$．
+> 4. $\forall a,b\in G$，$(ab)^{-1}=b^{-1}a^{-1}$．
+> 5. $\forall a,b\in G$，$ax=b$ 与 $ya=b$ 在 $G$ 中解唯一．
+> 6. $ac=bc\Rightarrow a=b$；$ca=cb\Rightarrow a=b$．
+> 7. $a^m a^n=a^{m+n}$．
+> 8. $(a^m)^n=a^{mn}$．
+> 9. $(a^n)^m=a^{nm}$．
+> 10. $(a^n)^{-1}=a^{-n}$．
+
+## 2.2 子群与陪集
+
+> **定义 2-1（子群）**
+>
+> 设 $G$ 为一个群，$H$ 为 $G$ 的子集，若 $H$ 在 $G$ 的运算下也成为一个群，则称 $H$ 为 $G$ 的子群，$H\leq G$．
+> 显然有：$H\leq G$，$K\leq H\Rightarrow K\leq G$；$K\leq G$，$H\leq G$，$K\leq H\Rightarrow K\leq H$．
+
+> **命题 2-1（子群判定）**
+>
+> $H\leq G$，$H\neq\emptyset$，$H$ 为 $G$ 的子群 $\iff$ 下列条件之一：
+> 1. $\forall a,b\in H$，$ab\in H$ 且 $a\in H\Rightarrow a^{-1}\in H$；
+> 2. $\forall a,b\in H$，$ab^{-1}\in H$．
+
+**推论 2-1**　$H\leq G$，$H$ 有限，$\forall a,b\in H$ 有 $ab\in H$，则 $H\leq G$．
+
+**补充 2-1**　子群的交仍是子群．
+
+1. 设 $\{H_i\}_{i\in I}$ 为 $G$ 的一族子群，则 $\bigcap_{i\in I}H_i\leq G$．
+2. $H_1\leq G$，$H_2\leq G$，$(H_1\cup H_2)\leq G\iff H_1\subseteq H_2$ 或 $H_2\subseteq H_1$．[子群的并不一定是子群]
+3. 设 $S\subseteq G$，$T\subseteq G$，$S,T\neq\emptyset$．
+
+**性质**　记 $ST=\{xy\mid x\in S,\ y\in T\}$．$S=\{a\}$ 时，$\{a\}T$ 又称为 $aT$．
+
+1. $(ST)^{-1}=T^{-1}S^{-1}$．
+2. $TS=\bigcup_{t\in T}tS=\bigcup_{s\in S}Ts$．
+3. $H\leq G$，$K\leq G\Rightarrow H\subseteq HK$，$K\subseteq HK$．
+4. $H\leq G$，$K\leq G$，$HK\leq G\iff HK=KH$．[子群并不一定是子群]
+
+**补充 2-2**　$H\leq G$，$e$ 为 $G$ 的单位元．
+
+1. $e\in H$，$e$ 为 $H$ 的单位元；
+2. $\forall a\in H$，有 $a^{-1}\in H$．
+
+> **定义 2-2（群的中心）**
+>
+> $G$ 为群，$C=\{c\in G\mid gc=cg,\ \forall g\in G\}$，$C$ 中元素与 $G$ 中任一元素可换，称 $C$ 为 $G$ 的中心．
+
+> **命题 2-2**
+>
+> $C\leq G$．
+
+> **定义 2-3（生成子群）**
+>
+> 设 $S\subseteq G$，$G$ 中包含集合 $S$ 的所有子群之交，称为由 $S$ 生成的**子群**，记为 $\langle S\rangle$．
+
+> **命题 2-3**
+>
+> $S\subseteq G$，则
+> $$
+> \textcolor{red}{\langle S\rangle=\{a_1^{\,n_1}a_2^{\,n_2}\cdots a_k^{\,n_k}\mid n_i\in\mathbb{Z},\ a_i\in S,\ k\in\mathbb{Z}\}}\ .
+> $$
+> 若 $H=\langle S\rangle$，则 $S$ 中元素称为 $H$ 的**生成元**．若 $S$ 有限，$H$ 称为有限生成的子群．若 $G$ 可由一个有限集生成，则称 $G$ 是有限生成的群．若 $G$ 可由一个元素生成，则称 $G$ 为一个**循环群**，$\langle a\rangle=\{a^n\mid n\in\mathbb{N}\}$．
+
+> **定义 2-4（元素的周期）**
+>
+> $a\in G$，$\exists n\in\mathbb{N}^*$ 最小 st $a^n=e$，称 $n$ 为 $a$ 的**周期**．
+
+> **命题 2-4**
+>
+> $a\in G$，$o(a)=n$ 则 $|\langle a\rangle|=n$．
+
+> **命题 2-5**
+>
+> $a\in G$，$o(a)=n$，若 $m\in\mathbb{N}$ 且 $a^m=e$，则 $n\mid m$．
+
+> **定义 2-5（左、右陪集）**
+>
+> $H\leq G$，$a\in G$ 则 $Ha=\{ha\mid h\in H\}$ 为 $G$ 的一个**右陪集**；$aH=\{ah\mid h\in H\}$ 为 $G$ 的一个**左陪集**．
+
+> **性质 2-1（陪集性质）**
+>
+> $a,b\in G$，$aH=bH$，$H\leq G$：
+> 1. $\textcolor{red}{Ha=Hb\iff ab^{-1}\in H}$（$a^{-1}b\in H$）．
+> 2. $|Ha|=|Hb|$（即 $|aH|=|bH|$）．
+> 3. 若 $Ha\neq Hb$（$aH\neq bH$），则 $Ha\cap Hb=\emptyset$（即 $aH\cap bH=\emptyset$）．
+> 4. $\forall a\in G$，$a\in Ha$（即 $a\in aH$）．
+> 5. $\forall b\in G$，$|Hb|=|H|$．
+
+> **性质 2-2**
+>
+> (续) 定义：$a\sim b$，$a\sim b\iff Ha=Hb\iff ab^{-1}\in H$，$\sim$ 为等价关系．
+> $\forall a\in G$，$Sa=\bar{a}=Ha$；$\forall b\in G$，$b\in Sa\Rightarrow b\in Ha$．从而 $G$ 上左陪集构成 $G$ 的一个划分，每一块．
+
+> **定理 2-1（Lagrange 定理）**
+>
+> $H\leq G$，$G$ 有限 $\Rightarrow |H|$ 整除 $|G|$．在上述等价关系下，商集为 $G$ 右陪集的全体，$[G:H]$ 为 $H$ 在 $G$ 中的**指数**，记为 $[G:H]$．
+
+> **定理 2-2**
+>
+> $H\leq G$，$G$ 有限，则 $|G|=|H|\cdot[G:H]$．
+
+**推论 2-2**　$G$ 有限，$G$ 中任一元素的周期为 $|G|$ 的因子．
+
+**推论 2-3**　$G$ 有限，$\forall a\in G$，$a^{|G|}=e$．
+
+**推论 2-4**　$|G|=p$，$p$ 为素数，则 $G$ 为**循环群**．
+
+**补充 2-3**　设 $G$ 为群，$H\leq G$，$\sim$ 为 $H$ 在 $G$ 上的等价关系：
+
+1. 在 $G/\sim$ 上按下列方式定义的运算合理：$\forall Ha,Hb\in G/\sim$，$(Ha)(Hb)=Hab$．
+2. $\forall a\in G$，$\forall h\in H$，$aha^{-1}\in H$．
+
+## 2.3 正规子群与商群
+
+> **定义 3-1（正规子群）**
+>
+> 设 $H\leq G$，$\forall a\in G$，有 $aH=Ha$，则称 $H$ 为 $G$ 的**正规子群**，记为 $H\triangleleft G$．
+
+> **命题 3-1**
+>
+> $H\leq G$，下列各式等价：
+> 1. $\textcolor{red}{H\triangleleft G}$．
+> 2. $\forall a\in G$，$aHa^{-1}\subseteq H$．
+> 3. $\textcolor{red}{\forall a\in G\text{，}h\in H\text{，}aha^{-1}\in H}$．
+> 4. $\forall a\in G$，$aHa^{-1}=H$．
+> 5. $\forall a\in G$，$Ha=aH$．
+
+一个群 $G$ 至少有两个正规子群：$e$ 与 $G$，称为**平凡正规子群**．**单群**：若除平凡正规子群外没有其他正规子群，则称 $G$ 为单群．
+
+**例 4**　设 $G$ 为群，$a,b\in G$，$[a,b]=a^{-1}b^{-1}ab$，称 $[a,b]$ 为 $a$ 和 $b$ 的**换位子**．$G$ 的所有换位子元素生成的子群称为 $G$ 的**换位子群**（导群），记为 $[G,G]$、$G'$，且 $G'\triangleleft G$．
+
+**补充 3-1**　$N\triangleleft G$，$G/N$ 交换 $\iff G'\subseteq N$．
+
+若 $S$ 为 $G$ 的子集，由 $S$ 生成的正规子群为所有包含 $S$ 的 $G$ 的正规子群之交．
+
+**例 7**　设 $H\leq G$，def：$N(H)=\{g\in G\mid gH=Hg\}$ 为 $H$ 的正规化子，则 $H\triangleleft N(H)$，$N(H)$ 称为 $H$ 在 $G$ 中的**正规化子**．
+
+> **命题 3-2**
+>
+> 设 $H\leq G$，若 $H$ 为 $G$ 全体右陪集生成的商集，则定义 $G$ 上 $(Ha)(Hb)=H(ab)$ 的“$\cdot$”为运算 $\iff H\triangleleft G$．
+
+> **定义 3-2（商群）**
+>
+> 设 $G$ 为一个群，$H\triangleleft G$，记为 $H$ 在 $G$ 中的商群．把 $Ha\cdot Hb=Hab$ 定义 $G$ 上构成的群称为**商群**，记为 $G/H$．从而有 $\bar{a}=Ha$，$\bar{b}=Hb$，且有 $\bar{a}\cdot\bar{b}=\overline{ab}$，$\bar{a}^{-1}=\overline{a^{-1}}$．
+
+## 2.4 同态与同构
+
+> **定义 4-1（群同态）**
+>
+> $G_1,G_2$ 为群，$f:G_1\to G_2$，$\forall a,b\in G_1$，有 $f(ab)=f(a)f(b)$，则称 $f$ 为 $G_1$ 到 $G_2$ 的（群）**同态**．若 $f$ 单，称为**单同态**；若 $f$ 满，称为**满同态**；若 $f$ 双，称为**同构**，记为 $G_1\cong G_2$．
+
+> **性质 4-1**
+>
+> $f:G_1\to G_2$ 为群同态，则：
+> 1. $f(e_1)=e_2$，$e_2$ 为 $G_2$ 的幺元．
+> 2. $f(a^{-1})=[f(a)]^{-1}$．
+> 3. $\operatorname{Im}f\leq G_2$．
+> 4. $\operatorname{Ker}f=\{x\in G_1\mid f(x)=e_2\}\triangleleft G_1$，称为 $f$ 的**核**．
+> 5. 同构关系为等价关系．
+
+**补充 4-1**　设 $f:G_1\to G_2$ 同态，$H_1\leq G_1$，$H_2\leq G_2$，$K_1\triangleleft G_1$，$K_2\triangleleft G_2$：
+
+1. $f(H_1)\leq G_2$．[子群像为子群]
+2. $f^{-1}(H_2)\leq G_1$．[子群原像为子群]
+3. $f(K_1)\triangleleft G_2$ 但 $f(K_1)\triangleleft G_2$ 不一定成立．
+
+**(4)**　若 $f$ 满，则 $f(N)\triangleleft G_2$。
+
+> **定义 4-2（自然投影）**
+>
+> $N\triangleleft G$，定义 $\pi:G\to G/N$：$\forall g\in G$，$\pi(g)=\bar g=[g]=\textcolor{red}{gN=Ng}$，则 $\textcolor{red}{\pi\text{ 满}}$，$\textcolor{red}{\ker\pi=N}$。
+
+> **定理 4-1（同态基本定理）**
+>
+> $f:G_1\to G_2$ 为群同态，则 $f$ $\textcolor{red}{\text{诱导出 }G_1/\ker f\cong G_2}$。其中 $\forall a\in G_1$，$\bar f(\bar a)=f(a)$。
+
+> **命题 4-1**
+>
+> $f:G_1\to G_2$ 为同态，从而 $\textcolor{red}{G_1/\ker f\cong\operatorname{Im} f}$。
+
+> **定理 4-2（对应定理）**
+>
+> $f:G_1\to G_2$ 为满同态，则：
+> 1. $H\le G_1\implies f(H)\le G_2$；
+> 2. $K\le G_2\implies f^{-1}(K)\le G_1$，且 $f^{-1}(K)\supseteq\ker f$；
+> 3. 设 $H_1,H_2\le G_1$ 且 $\ker f\subseteq H_1$、$\ker f\subseteq H_2$，则 $H\mapsto f(H)$ 给出 $\{H\le G_1:\ker f\subseteq H\}$ 与 $\{K\le G_2\}$ 之间的一个一一对应；在此对应下 $H_1\subseteq H_2\iff f(H_1)\subseteq f(H_2)$，且 $H\triangleleft G_1\iff f(H)\triangleleft G_2$。此时有 $\dfrac{G_1}{H}\cong\dfrac{G_2}{f(H)}$。
+
+> **命题 4-2**
+>
+> $f:G_1\to G_2$ 为群同态，则：
+> 1. $f$ 单 $\iff$ $\textcolor{red}{\ker f=\{e\}}$；
+> 2. 若 $H_1\triangleleft G_1$，$H_2\triangleleft G_2$ 且 $f(H_1)\subseteq H_2$，则 $\exists\bar f:G_1/H_1\to G_2/H_2$ 为同态，且 $\bar f(\bar a)=\overline{f(a)}$（即 $\textcolor{red}{\bar f}$ 为自然同态）。
+
+> **定理 4-3（第三同构定理）**
+>
+> 设 $H\triangleleft G$，$N\triangleleft G$，$H\subseteq N$，则 $\dfrac{G/H}{N/H}\cong\dfrac{G}{N}$。
+
+> **定理 4-4（第二同构定理）**
+>
+> 设 $H\triangleleft G$，$K\le G$，则 $KH\le G$ 且 $\dfrac{KH}{H}\cong\dfrac{K}{K\cap H}$。
+
+## 2.5 循环群
+
+**回顾**　设 $\mathbb{Z}$ 为整数加群，$n\mathbb{Z}=\{0,\pm n,\pm 2n,\ldots\}\subseteq\mathbb{Z}$，$n\mathbb{Z}\triangleleft\mathbb{Z}$。则 $\mathbb{Z}/n\mathbb{Z}=\mathbb{Z}_n=\{\bar 0,\bar 1,\ldots,\overline{n-1}\}$，$\mathbb{Z}_n$ 中加法为 $\bar a+\bar b=\overline{a+b}$（$\mathrm{mod}\ n$），故 $\mathbb{Z}_n$ 为模 $n$ 剩余类群。
+
+> **定理 5-1**
+>
+> 设 $G$ 为循环群。
+> 1. 若 $|G|=\infty$，则 $G\cong\mathbb{Z}$；
+> 2. 若 $|G|=n$，则 $G\cong\mathbb{Z}_n$。
+
+> **定理 5-2**
+>
+> 任一无限循环群的$\textcolor{red}{\text{非平凡子群仍为无限循环群}}$；若 $|G|=n$ 且 $G$ 为循环群，则 $G$ 的任一子群均为循环群；若 $r\mid n$，则 $\textcolor{red}{\exists!\,N}$ 使 $N\le G$ 且 $|N|=r$。
+
+> **命题 5-1**
+>
+> 对 $\mathbb{Z}$，若 $m,n\in\mathbb{Z}$，则：
+> 1. $m\mathbb{Z}\subseteq n\mathbb{Z}\iff n\mid m$；
+> 2. $m\mathbb{Z}+n\mathbb{Z}=d\mathbb{Z}$，$d=(m,n)$。
+
+> **命题 5-2**
+>
+> 设 $G$ 为群，$a\in G$，$o(a)=n$。
+> 1. 对 $n$ 的正因数 $d$，有 $o(a^d)=\dfrac{n}{d}$；
+> 2. 对 $m\in\mathbb{Z}$，有 $\langle a^m\rangle=\langle a^{(m,n)}\rangle$；
+> 3. $m_1,m_2\in\mathbb{Z}$，有 $\langle a^{m_1}\rangle=\langle a^{m_2}\rangle\iff o(a^{m_1})=o(a^{m_2})\iff(m_1,n)=(m_2,n)$；
+> 4. $m\in\mathbb{Z}$，则 $\langle a^m\rangle=\langle a\rangle\iff(m,n)=1$。
+
+> **定理 5-3**
+>
+> 设 $G$ 为有限阶交换群，则 $G$ 为循环群 $\iff$ 存在 $a\in G$，使 $a^n=e$ 的所有 $n$ 中最小者为 $|G|$（即 $o(a)=|G|$）。
+
+> **命题 5-3**
+>
+> 设 $G$ 为群，$\sigma$ 为 $G$ 的自同构，$S\subseteq G$，则：
+> 1. $o(\sigma(a))=o(a)$，$\forall a\in G$；
+> 2. $G=\langle S\rangle\implies G=\langle\sigma(S)\rangle$。
+
+> **命题 5-4**
+>
+> $G$ 为无限阶循环群 $\iff$ $\textcolor{red}{|\operatorname{Aut}(G)|=2}$（此时 $\operatorname{Aut}(G)$ 为 $2$ 阶循环群）。
+
+> **命题 5-5**
+>
+> 对 $\bar m\in\mathbb{Z}_n$，$\langle\bar m\rangle=\mathbb{Z}_n\iff(m,n)=1$。
+
+> **命题 5-6**
+>
+> 设 $\varphi:G\to H$ 为群同态，$G=\langle a\rangle$，则：
+> 1. $\varphi(G)=\textcolor{red}{\langle\varphi(a)\rangle}$；
+> 2. $\varphi:G\to H$ 为单同态 $\iff o(\varphi(a))=o(a)$；$\varphi$ 为满同态 $\iff\langle\varphi(a)\rangle=H$。
+
+> **命题 5-7**
+>
+> 1. 对 $\bar m\in\mathbb{Z}_n$，定义 $\psi_{\bar m}:\mathbb{Z}_n\to\mathbb{Z}_n$，$\bar n\mapsto\bar m\,\bar n$，则 $\psi_{\bar m}$ 为群同态；
+> 2. 对 $\bar m \neq \bar n \in\mathbb{Z}_n$，$\psi_{\bar m} \neq \psi_{\bar n}$；
+> 3. 若 $f:\mathbb{Z}_n\to\mathbb{Z}_n$ 为群同态，则 $\exists\bar m\in\mathbb{Z}_n$ 使 $f=\psi_{\bar m}$（即 $f(\bar n)=\bar m\,\bar n$）；
+> 4. 对 $\bar m\in\mathbb{Z}_n$，$\psi_{\bar m}$ 为同构 $\iff(m,n)=1$。
+
+> **定理 5-4**
+>
+> 设 $G$ 为 $n$ 阶循环群，则 $\textcolor{red}{\operatorname{Aut}(G)\cong U_n}$，其中 $\textcolor{red}{U_n=\{\bar m\in\mathbb{Z}_n:(m,n)=1\}}$。
+
+## 2.6 置换群
+
+置换、对换、循环、$k$ 循环、置换群 $S_n$（$|S_n|=n!$）。循环记法 $(i_1\,i_2\,\ldots\,i_k)=(i_2\,i_3\,\ldots\,i_k\,i_1)=\cdots$。
+
+> **命题 6-1**
+>
+> 设 $\sigma\in S_n$。若 $a_1,a_2,\ldots,a_k$ 两两不同，且 $\sigma(a_1)=a_2$，$\sigma(a_2)=a_3$，…，$\sigma(a_k)=a_1$，则 $\textcolor{red}{\sigma=(a_1\,a_2\,\ldots\,a_k)}$。
+
+> **命题 6-2**
+>
+> 设 $\sigma\in S_n$，则 $\sigma$ 的阶等于其不交循环分解中各循环长度 $k_1,\ldots,k_t$ 的最小公倍数。[此处字迹不清，请人工核对]
+
+> **命题 6-3**
+>
+> 设 $e\ne\sigma\in S_n$，则 $\sigma$ 可写成两两不交的循环之积；不同循环因子可交换；若不计因子的次序，则表法唯一。
+
+> **性质 6-1**
+>
+> $\textcolor{red}{\text{对换即 }2\text{ 循环}}$。
+
+> **性质 6-2**
+>
+> $(i_1\,i_2\,\ldots\,i_k)=(i_2\,i_3\,\ldots\,i_k\,i_1)=\cdots$。
+
+> **性质 6-3**
+>
+> $\textcolor{red}{k\text{ 循环的周期为 }k}$。
+
+> **性质 6-4**
+>
+> $\textcolor{red}{(i_1\,i_2\,\ldots\,i_k)^{-1}=(i_k\,\ldots\,i_2\,i_1)}$。
+
+> **性质 6-5**
+>
+> $\textcolor{red}{\text{设 }\sigma\text{ 为置换，则 }\sigma(i_1\,i_2\,\ldots\,i_k)\sigma^{-1}=(\sigma(i_1)\,\sigma(i_2)\,\ldots\,\sigma(i_k))}$。
+
+> **性质 6-6**
+>
+> $\textcolor{red}{\text{循环可写成若干对换之积；在把置换写成循环与对换之积的写法中，对换个数的奇偶性相同}}$。
+
+**奇置换、偶置换**　记 $A_n$ 为全体 $n$ 阶偶置换之集合。
+
+> **命题 6-4**
+>
+> $\textcolor{red}{A_n\triangleleft S_n\text{，}[S_n:A_n]=2}$。
+
+> **命题 6-5**
+>
+> $|A_n|=\dfrac{n!}{2}$。
+
+> **命题 6-6**
+>
+> 1. $S_n=\langle(1\,2),(1\,3),\ldots,(1\,n)\rangle$；
+> 2. $A_n=\langle(1\,2\,3),(1\,2\,4),\ldots,(1\,2\,n)\rangle$；
+> 3. $S_n=\langle(1\,2),(2\,3),\ldots,(n-1\,n)\rangle$。
+
+> **定理 6-1**
+>
+> 若 $n\ge5$，则 $A_n$ 为单群。
+
+## 2.7 群对集合的作用
+
+> **定义 7-1**
+>
+> 设 $G$ 为群，$S$ 为集合，设 $\rho:G\times S\to S$ 为映射，$(g,s)\mapsto g\cdot s$，满足：
+> 1. $e\cdot s=s$；
+> 2. $(g_1g_2)\cdot s=g_1\cdot(g_2\cdot s)$，$\forall s\in S$，$g_1,g_2\in G$。
+>
+> 则称 $\rho$ 为 $G$ 在 $S$ 上的作用（$G$ 对 $S$ 有作用），并称 $S$ 为 $G$-集。
+
+群 $G$ 对集合 $S$ 的作用是 $S$ 上的一种等价关系。
+
+def. $x\sim y \iff x$ 可被 $y$ 作用；$\sim$ 为 $S$ 上等价关系，$\sim$ 为作用关系。
+
+> **定义 7-2**
+>
+> 设 $S$ 为一个 $G$-集合，$x\in S$。
+> 则 $[x]=\{y\in S \mid x\sim y\}=\{g\cdot x \mid g\in G\}\triangleq Gx$，
+> 称为 $x$ 的轨道，记为 $\operatorname{Orb}(x)$，$|\operatorname{Orb}(x)|$ 为 $x$ 的轨道长。
+> 若 $T$ 为作用关系的完全集，则 $S=\displaystyle\dot{\bigcup}_{t\in T}\operatorname{Orb}(t)$。
+> $T$ 有限时，设 $T$ 有 $k$ 个元素，从而有
+> $$
+> |S|=\sum_{t\in T}|\operatorname{Orb}(t)|
+> $$
+
+> **定义 7-3**
+>
+> 设 $S$ 为一个 $G$-集合，$x\in S$，$G$ 子群
+> $$
+> \operatorname{Stab}(x)=\{g\in G \mid g\cdot x=x\}\triangleq G_x
+> $$
+> 称为稳定子。
+
+> **命题 7-1**
+>
+> $\textcolor{red}{|\operatorname{Orb}(x)|=[G:\operatorname{Stab}(x)]=|G|/|\operatorname{Stab}(x)|}$
+> 从而 $|S|$ 为 $|G|$ 一些因数的和。
+
+> **定理 7-1**
+>
+> $\textcolor{red}{|S|=\sum_{t\in T}[G:\operatorname{Stab}(t)]}$
+> $T$ 为作用关系的完全集。
+
+设 $G$ 为群，$x\in G$，$G$ 对 $G$ 作用。
+
+$\forall a\in G$，$x\in G$，def. $a\ast x=axa^{-1}$，称为共轭作用。
+
+此时 $\operatorname{Stab}(x)=C(x)$。
+
+**群的类方程**
+
+> **定理 7-2**
+>
+> 设 $G$ 为有限群，$C$ 为 $G$ 中心，$T$ 为共轭类完全集。
+> 从而
+> $$
+> \color{red}{\begin{aligned}
+> |G|&=|C|+\sum_{t\in T-C}|\operatorname{Orb}(t)|\\
+> &=|C|+\sum_{t\in T-C}\frac{|G|}{|\operatorname{Stab}(t)|}
+> =|C|+\sum_{t\in T-C}\frac{|G|}{|C(t)|}
+> \end{aligned}}
+> $$
+> 等式右侧每一项为 $|G|$ 的一个因子。
+
+> **定义 7-4**
+>
+> 若有限群 $G$ 的阶为 $p^m$，$p$ 为素数，则 $G$ 为一个 $p$-群。
+
+> **定理 7-3**
+>
+> 任一 $p$-群中心有至少一个元素。
+
+> **性质 7-1**
+>
+> 若 $g\in G$，$x\in S$，有 $\operatorname{Stab}(g\cdot x)=g\operatorname{Stab}(x)g^{-1}$，
+> 从而 $|\operatorname{Stab}(g\cdot x)|=|\operatorname{Stab}(x)|$。
+
+**例 8**　（Burnside 定理）设 $S$ 为 $G$-集合，$G,S$ 有限，$G$ 中轨道数为 $n$，则
+
+$$
+n=\frac{1}{|G|}\sum_{g\in G}|S_g|,\qquad S_g=\{x\in S \mid g\cdot x=x\}
+$$
+
+**例 9**　$\textcolor{red}{p^m\text{ 阶群为 Abel 群，}p\text{ 为素数。}}$
+
+## 2.8 Sylow 定理
+
+> **命题 8-1（Cauchy 定理）**
+>
+> 设 $G$ 为有限群，$p$ 为素数，若 $p$ 为 $|G|$ 的一个因子，则 $G$ 有一个周期为 $p$ 的元素。
+
+> **定理 8-1（Sylow 第一定理）**
+>
+> 设 $G$ 为有限群，$p$ 为素数，若 $p^k\mid |G|$，则 $G$ 有一个阶为 $p^k$ 的子群。
+
+> **定理 8-2**
+>
+> 若 $p$ 为素数 $|G|$ 的一个因子，则 $G$ 有一个周期为 $p$ 的元素。
+
+> **定理 8-3（Sylow 第二定理）**
+>
+> (1) $G$ 的任意两个 $p$-Sylow 子群共轭，即若 $P_1,P_2$ 为 $G$ 的 $p$-Sylow 子群，则
+> $$
+> \exists\,g\in G\ \text{ s.t. }\ P_2=gP_1g^{-1}.
+> $$
+> (2) $G$ 的 $p$-Sylow 子群的个数 $r$ 为 $[G:P]$ 的一个因子，其中 $P$ 为 $G$ 的一个 $p$-Sylow 子群，且
+> $$
+> r\equiv 1\ (\mathrm{mod}\ p).
+> $$
+
+> **命题 8-2**
+>
+> 有限群 $G$ 只有一个 $p$-Sylow 子群，则该子群为 $G$ 的正规子群。
+
+> **定义 8-1**
+>
+> 设 $G$ 为一个有限群，$p$ 为素数，若 $p^m\mid |G|$，$m\ge 0$，$p^{m+1}$ 不整除 $|G|$，则 $G$ 的 $p^m$ 阶子群称为 $G$ 的 $p$-Sylow 子群。
+
+## 2.9 群直积
+
+> **定义 9-1**
+>
+> 设 $G_i$ 为 $n$ 个群，$G=G_1\times G_2\times\cdots\times G_n$，$\forall G_i$ 中乘法
+> $$
+> (g_1,g_2,\dots,g_n)(h_1,h_2,\dots,h_n)=(g_1h_1,g_2h_2,\dots,g_nh_n)
+> $$
+> 则 $G$ 在如上乘法下为群，为 $G$ 的外直积。
+
+> **定义 9-2**
+>
+> 设 $G$ 为一个群，$N_i\triangleleft G$，且有
+> $$
+> (1)\ G=N_1N_2\cdots N_n,\qquad
+> (2)\ N_i\cap N_1\cdots N_{i-1}N_{i+1}\cdots N_n=\{e\}
+> $$
+> 则称 $G$ 为 $N_i$ 的内直积。
+
+> **定理 9-1**
+>
+> 设 $N_i\triangleleft G$，$G$ 为 $N_i$ 的内直积 $\iff$
+> $$
+> (1)\ G=N_1\cdots N_n,\qquad
+> (2)\ G\text{ 中元素用 }N_i\text{ 元乘积表示唯一}.
+> $$
+> 或 $\textcolor{red}{(2)'\text{ 若 }g_1g_2\cdots g_n=e\text{，}g_i\in N_i\text{，则 }g_i=e\text{。}}$
+
+> **定理 9-2**
+>
+> 设 $G$ 为群，$N_i\triangleleft G$，$G$ 为 $N_i$ 的内直积，设 $T:N_1\times\cdots\times N_n$ 为 $N_i$ 的外直积，则 $G\cong T$。
+
+> **命题 9-1**
+>
+> $A_1,\dots,A_n$，$B_1,\dots,B_n$ 为群，$f_i:A_i\to B_i$ 为群同态，
+> $f=\prod f_i:A_1\times\cdots\times A_n\to B_1\times\cdots\times B_n$，
+> 则 $f(a_1,\dots,a_n)=(b_1,\dots,b_n)$ 为群同态，且
+> $$
+> \ker f=\ker f_1\times\cdots\times\ker f_n,\qquad
+> \operatorname{Im} f=\operatorname{Im} f_1\times\cdots\times\operatorname{Im} f_n.
+> $$
+> 若 $f_1,\dots,f_n$ 同构，则 $f$ 同构。
+
+> **命题 9-2**
+>
+> $$
+> |G_1\times\cdots\times G_n|=|G_1|\cdots|G_n|
+> $$
+
+## 2.10 有限生成Abel群
+
+> **定义 10-1**
+>
+> 设 $M$ 为 Abel 群, $x_1,\dots,x_n \in M$. 若有不全为 $0$ 的整数 $a_1,\dots,a_n \in \mathbb{Z}$, s.t.
+> $$
+> a_1x_1 + \cdots + a_nx_n = 0,
+> $$
+> 称 $x_1,\dots,x_n$ 线性相关. 若 $\forall\, y \in M$, $y = a_1x_1 + \cdots + a_nx_n$, 称 $y$ 可被 $x_1,\dots,x_n$ 线性表出, 此时 $y$ 的表达式唯一.
+
+> **命题 10-1**
+>
+> 设 $M$ 为 Abel 群, 若 $M = \langle x_1,\dots,x_n\rangle$ 且 $x_1,\dots,x_n$ 无关, 则
+> $$
+> M = \langle x_1\rangle \oplus \cdots \oplus \langle x_n\rangle \cong \mathbb{Z} \oplus \cdots \oplus \mathbb{Z}\quad (n\ \text{个}\ \mathbb{Z}).
+> $$
+
+> **命题 10-2**
+>
+> 设 $M$ 为 Abel 群, 若 $x_1,\dots,x_n$ 与 $y_1,\dots,y_m$ 为 $M$ 之无关生成元组, 则 $m = n$.
+
+**推论 10-1**　$\mathbb{Z}^m \cong \mathbb{Z}^n \iff m = n$.
+
+**例 10-2**　对有限生成 Abel 群 $M$, $S = \{x_1,\dots,x_n\} \subseteq M$ 为 $M$ 之生成元组, 即 $M = \langle S\rangle = \{a_1x_1 + \cdots + a_nx_n \mid a_i \in \mathbb{Z}\}$. 有无关生成元系的结构有限生成 Abel 群称为 $\textcolor{red}{\text{有限秩自由 Abel 群}}$, 而其无关生成元集中所含元的个数称为秩.
+
+> **定义 10-2**
+>
+> 设 $M$ 为 Abel 群.
+> 1. 对 $x \in M$, $o(x) < \infty$, 称 $x$ 为扭元; $o(x) = \infty$, $x$ 为非扭元.
+> 2. 记 $T(M) = \{x \in M \mid o(x) < \infty\}$, 则 $T(M) \le M$, $T(M)$ 为 $M$ 的子群.
+> 3. 若 $T(M) = M$, 则称 $M$ 为扭群; 若 $T(M) = \{0\}$, $M$ 为无扭群.
+> 4. $M/T(M)$ 为无扭群.
+> 5. 设 $M_1 \cong M_2$ 为 Abel 群, 则 $T(M_1) \cong T(M_2)$, 且有 $M_1/T(M_1) \cong M_2/T(M_2)$.
+
+> **性质 10-1**
+>
+> $\textcolor{red}{\text{有限生成自由 Abel 群为有限秩自由 Abel 群.}}$
+
+> **定理 10-1**
+>
+> 设 $M$ 为有限生成 Abel 群, 则 $\exists\, x_1,\dots,x_n \in M$, s.t. $x_1,\dots,x_n$ 无关, 且
+> $$
+> M = T(M) \oplus \langle x_1\rangle \oplus \cdots \oplus \langle x_n\rangle.
+> $$
+> 进一步, $\exists!$ 非负整数 $n$ 及同构意义下唯一的有限群 $N$, s.t. $M \cong N \oplus \mathbb{Z}^n$.
+
+> **命题 10-3**
+>
+> 设 $G$ 为有限 Abel 群, $|G| = p_1^{e_1}\cdots p_k^{e_k}$, $p_i$ 为素数, 则
+> $$
+> G = P_1 \oplus P_2 \oplus \cdots \oplus P_k,
+> $$
+> 其中 $P_i$ 为 $G$ 的 $p_i$-Sylow 子群, $|P_i| = p_i^{e_i}$.
+
+**推论 10-2**　有限循环群为素幂阶循环群直和. 即 $M = \langle x\rangle$, $|M| = o(x) = p_1^{e_1}\cdots p_k^{e_k}$, 从而 $M = \langle x_1\rangle \oplus \cdots \oplus \langle x_k\rangle$, 其中 $\langle x_i\rangle = M_i$ 为 $M$ 的 $p_i$-Sylow 子群, 即 $p_i^{e_i}$ 阶循环群.
+
+**子群**
+
+**推论 10-3**　$\textcolor{red}{\mathbb{Z}_n \cong \mathbb{Z}_{p_1^{e_1}} \oplus \cdots \oplus \mathbb{Z}_{p_k^{e_k}}}$, 其中 $\textcolor{red}{n = p_1^{e_1}\cdots p_k^{e_k}}$.
+
+**引理 10-1**　设 $G$ 为 $p$ 群, 则 $\textcolor{red}{G\text{ 循环 }\iff G\text{ 仅有一个 }p\text{ 阶子群.}}$
+
+**引理 10-2**　设 $G$ 为 $p$ 群, 则 $\textcolor{red}{\exists\, H \le G\text{, s.t. }G = \langle x\rangle \oplus H\text{, 其中 }x\text{ 的周期最大.}}$
+
+> **定理 10-2**
+>
+> 设 $n = p_1^{f_1}\cdots p_r^{f_r}$, 其中 $p_i$ 为互不相同的素数.$f_i$为自然数，则互不同构的 $n$ 阶 Abel 群的个数为
+> $$
+> P(f_1) \cdots P(f_r)
+> $$
+> 其中 $P(f)$ 为 $f$ 的分划数. $\textcolor{red}{\text{设 }n\text{ 为自然数, 则 }(e_1,\dots,e_k)\text{ 为 }n\text{ 的分划, 且 }1\leq e_1 \leq \cdots \leq e_k,e_1 + \cdots + e_k = n\text{.}}$

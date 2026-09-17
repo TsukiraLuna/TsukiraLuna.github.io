@@ -145,10 +145,16 @@ node tools/latex-to-blog-probe.mjs "<file.tex>"   # 1. 先探雷
 # 2. 按 tools/latex-to-blog.md 的规则表转换
 npm run build:verify                               # 3. 构建
 node tools/latex-to-blog-probe.mjs --check-output <slug>   # 4. 验证公式
+node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问题时对照实测结论
 ```
 
 **核心警告**：KaTeX 的失败是**静默的** —— 不认识的宏包命令（`physics`、`siunitx`）、
 自定义宏、定理环境都不报错，只是默默渲染错。所以第 1、4 步不能省。
+
+**第二条警告**：`\textcolor{red}{…}` 写在**正文里**（不在 `$…$` 内）会让整个构建失败，
+且报错信息与 LaTeX 无关（`Could not parse expression with acorn` 或
+`ReferenceError: red is not defined`）。正确写法是 `$\textcolor{red}{…}$`。
+`$$` 也必须**独占一行**，否则会被渲染成行内公式。细则见 `tools/latex-to-blog.md`。
 
 ### 改站点信息
 
@@ -201,22 +207,22 @@ node tools/latex-to-blog-probe.mjs --check-output <slug>   # 4. 验证公式
 
 ## 6. 当前内容状态
 
-| slug | 标题 | 类型 |
-|---|---|---|
-| `math-analysis` | 数学分析 · 章节索引 | 数学 |
-| `math-analysis-ch1` | 数学分析 第一章 实数与函数 | 数学 |
-| `math-analysis-ch2` | 数学分析 第二章 数列极限 | 数学 |
-| `latex-math` | LaTeX 公式测试 | 数学 |
-| `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 |
-| `general-physics-1` | 普通物理（一）复习笔记 | 数学 |
+| slug | 标题 | 类型 | 系列 |
+|---|---|---|---|
+| `math-analysis` | 数学分析 · 章节索引 | 数学 | — |
+| `math-analysis-seminar-01..06,08` | 数学分析 第 N 次讨论班补充 | 数学 | 数学分析讨论班补充 |
+| `numerical-analysis` | 数值分析初步 · 章节索引 | 算法 | 数值分析初步 |
+| `numerical-analysis-01..09` | 数值分析初步 第 N 章 | 算法 | 数值分析初步 |
+| `abstract-algebra` | 抽象代数 · 章节索引 | 数学 | 抽象代数 |
+| `abstract-algebra-ch01..ch05` | 抽象代数 第 N 章（预备知识 / 群论 / 环论 / 域论 / 综合例题） | 数学 | 抽象代数 |
+| `general-physics-1` | 普通物理（一）复习笔记 | 数学 | — |
+| `latex-math` | LaTeX 公式测试 | 数学 | — |
+| `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 | — |
 
-> `math-analysis-ch1` / `ch2` 是**验证系列功能用的占位测试文章**，
-> 作者发真实章节时应替换或删除。
->
 > 模板自带的 `hello-world` 与 `syntax-test` 已按作者要求删除。
 
-**待办**：作者还有一批 ElegantBook 排版的数学笔记要转换
-（`E:\pdf workspace\` 下的抽象代数、数值分析初步、测度论），流程与工具已备好。
+**待办**：`E:\pdf workspace\` 下只剩**测度论**未转换（仅转录到原扫描件第 1–6 页，
+需先补齐转录）。流程与工具见 `tools/latex-to-blog.md`。
 
 **状态会过期** —— 动手前先跑一遍验证命令确认现状，别完全信这张表。
 

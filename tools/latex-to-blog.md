@@ -155,7 +155,65 @@ x_n &= \frac{b_n}{u_{nn}},\\
 Select-String -Path 'content/blog/<slug>/index.mdx' -Pattern '\\end\{[a-z]+\}\$\$|\$\$\\begin\{'
 ```
 
+> ⚠️ **这条正则只覆盖 `aligned`/`array` 结尾这一类，不够**。它抓不到
+> `$$F(S)(T)=$\textcolor{...}$$$` 这种「`$$` 与正文同行」的破坏 ——
+> 2026 年转抽象代数时就是靠它放行了一批坏行，直到 `next build` 才炸。
+> 补一条更宽的自检，要求 0 处：
+
+```powershell
+Select-String -Path 'content/blog/<slug>/index.mdx' -Pattern '\$\$\S'
+```
+
+即：**`$$` 之后必须紧跟换行**（`$$` 独占一行）。
+
 > 另注：`$$` 前建议留空行（紧跟段落文字虽多数情况可渲染，但补齐更稳妥）。
+
+### ⚠️ 单行 `$$Ux=b,$$` 会被渲染成**行内**公式
+
+`remark-math` 只把**独占一行**的 `$$` 认作行间公式。实测：
+
+| 写法 | `katex-display` |
+|---|---|
+| `$$Ux=b,$$`（与文字同行） | **0** —— 渲染成行内公式，公式挤在文字行里 |
+| `$$\nUx=b\n$$` | **1** —— 真正的行间公式，居中独立成块 |
+
+**所以 `$$` 独占一行不只是为了躲 MDX 解析错误，也是显示模式的必要条件。**
+
+仓库既有文章（`numerical-analysis-*`）里确实有大量单行 `$$…$$`，那些是按行内公式
+在显示（观感尚可，不报错），但**新转的内容请一律 `$$` 独占一行**，与
+`general-physics-1` 的样板一致。
+
+判定产物是否真的成块：看 `--check-output` 的 `katex-display` 计数，或数公式块是否
+各有自己的 `<span class="katex-display">`。
+
+### ⚠️ `\textcolor{red}{…}` 写在**正文里**会炸构建
+
+这是抽象代数那一轮最费时间的坑，**四种写法必须分清**（全部用仓库真实插件链实测，
+`tools/mdx-math-quirks-probe.mjs` 可复现）：
+
+| 写法 | 结果 |
+|---|---|
+| `\textcolor{red}{自反性}`（正文里裸写） | ❌ 解析通过但渲染期 `ReferenceError: red is not defined`，整页生成失败 |
+| `$\textcolor{red}{\text{自反性}}$` | ✅ `katex-error=0`、`mathcolor=1`，真的红 |
+| `$$` 块内直接 `\textcolor{red}{…}` | ✅ 正常 |
+| `$$` 块内被单个 `$` 包住（`$\textcolor{…}$`） | ❌ `katex-error=1`（`$` 在数学模式里非法） |
+| `\textcolor{red}{$x\in R$}`（参数里嵌 `$`） | ❌ `Could not parse expression with acorn` |
+
+**规则**：
+
+1. 正文（不在数学模式内）要着色 → 整个包成 `$\textcolor{red}{…}$`
+2. 参数里**不要**出现 `$` 定界符（KaTeX 不支持嵌套数学）
+3. 已经在 `$…$` / `$$…$$` 里的，**不要**再动它的定界符
+
+**为什么「正文裸写」格外危险**：`\textcolor{red}{纯中文}` 能让 MDX 解析**通过**，
+但生成的代码把 `red` 当变量求值，直到渲染那一页才抛 `ReferenceError`——
+错误信息与 LaTeX 毫无关系，很难联想到根因。若内容里含全角标点（`；`、`，`），
+则在 acorn 阶段就报 `Could not parse expression with acorn`。
+
+**代价与取舍**：中文一旦进数学模式，KaTeX 按 CJK 回退字体渲染，会吃一条
+`unicodeTextInMathMode` 警告（`strict: "warn"`，不阻断构建）。若一个片段里
+中文占绝大多数，**改用加粗 `**…**` 更自然**（抽象代数第 3 章就是这么处理的：
+纯数学的红色片段用 `\textcolor{red}`，含中文的用加粗）。
 
 ### 颜色（原稿红笔重点）
 
@@ -367,17 +425,56 @@ git push
 | `\begin{align}` | 23 个 | `$$\begin{aligned}...\end{aligned}$$` |
 | `\chapter` / `\section` | 6 / 27 | `## 一、xxx` / `### xxx` |
 
-### 另外三份的探雷结果（尚未转换）
+### 另外两份的探雷结果（尚未转换）
 
 | 文档 | 源文件 | 探雷报出的主要风险 |
 |---|---|---|
 | 测度论 | 13 KB | **6 个自定义宏**：`\Pow`→`\mathcal P`、`\calC`→`\mathcal C`、`\calF`、`\calN`、`\calU`、`\sig[1]`→`\sigma(#1)`。仅转录到原扫描件第 1–6 页 |
-| 数值分析初步 | 37 KB | 29 处 `theorem` 环境；无自定义宏 |
-| 抽象代数 | **73 KB** | **178 处定理环境**（`definition`×68、`proposition`×62、`theorem`×34、`property`×14）；6 个 `\thetcb@cnt@*` 宏 |
 
-**抽象代数要注意**：73 KB 源文件按普物 14.6 KB → 112 公式的比例推算，
-可能有 **500+ 个公式 → 单页 8–10 MB**。必须按章拆分。
-且 178 处定理环境需人工决定改成加粗标题行还是引用块，**脚本无法代劳**。
+### 抽象代数（`abstract-algebra`，2026 年完成）
+
+源码：`E:\pdf workspace\抽象代数\pdf workspace\抽象代数.tex`（1548 行）
+产物：索引页 + 5 章，slug 为 `abstract-algebra` / `abstract-algebra-ch01..ch05`，
+`series: 抽象代数`、`seriesOrder` 0/10/20/30/40/50，`category: 数学`。
+
+**转换前探雷报出的风险**：
+
+| 项 | 值 |
+|---|---|
+| 章节 | 5 个 `\chapter`、25 个 `\section` |
+| 块级公式 | `equation` ×10、`align` ×1、`align*` ×1、`\[ \]` ×35 |
+| 行内公式 | 约 1775 个 |
+| 定理环境 | **178 处**：`definition` ×68、`proposition` ×62、`theorem` ×34、`property` ×14 |
+| 自定义宏 | 6 个 `\thetcb@cnt@*`（导数区定义，正文里并未实际使用） |
+
+**转换后 `--check-output` 实测值**：
+
+| slug | katex-error | 公式数 | mathcolor | 体积 |
+|---|---|---|---|---|
+| `abstract-algebra`（索引） | 0 | 14 | 0 | 102 KB |
+| `abstract-algebra-ch01` | 0 | 162 | 34 | 529 KB |
+| `abstract-algebra-ch02` | 0 | 688 | 80 | 2616 KB |
+| `abstract-algebra-ch03` | 0 | 363 | 8 | 974 KB |
+| `abstract-algebra-ch04` | 0 | 170 | 70 | 591 KB |
+| `abstract-algebra-ch05` | 0 | 411 | 14 | 1580 KB |
+
+合计 **1808 个公式**，`katex-error` 全为 0；构建 126 页零告警。
+
+**这轮新增的三条经验**（都已写进上面的规则表）：
+
+1. **`\textcolor{red}{中文}` 不能写在正文里** —— 见「颜色」一节。这是本轮最大的坑，
+   ch01/ch04/ch05 都栽在这里，其中 ch04 因此让整个构建失败。
+2. **`$$` 与正文同行会被渲染成行内公式** —— 单行 `$$X$$` 不是行间公式。
+3. **原自检正则 `\\end\{[a-z]+\}\$\$|\$\$\\begin\{` 有盲区** —— 它放行了
+   `$$F(S)(T)=$\textcolor{…}$$$` 这类破坏，必须补 `\$\$\S`（`$$` 后紧跟非换行字符）。
+
+**编号口径**：原稿按「节-序号」编号，且 definition / proposition / theorem /
+property **四类各自按节独立计数**。转写时逐节数，保留原编号（如「定义 2-3」），
+便于与手写原稿对照。
+
+**原稿批注原样保留**：`[此处字迹不清，请人工核对]`、`[子群的并不一定是子群]`
+这类方括号注记一律照抄，不改写、不"修正"原稿的数学笔误（例如原稿把
+「子群的并」写成「子群」、「$9$ 个对换之积，故为偶置换」等）。
 
 ---
 

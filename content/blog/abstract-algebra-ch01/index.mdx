@@ -1,0 +1,173 @@
+---
+title: "抽象代数 第 1 章 预备知识"
+pubDate: 2025-04-01
+description: "抽象代数预备知识：集合运算与 Cartesian 积、关系与等价关系、商集与等价类分解、映射（单射满射双射、可逆映射）、二元运算与单位元。"
+tags: ["抽象代数", "集合论", "等价关系", "映射"]
+category: 数学
+series: 抽象代数
+seriesOrder: 10
+tocDepth: 2
+---
+
+> 本文由手写笔记《抽象代数》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 1.1 集合
+
+属于、不属于、空集、子集、相等是集合论中的基本概念。
+
+> **定义 1-1（并集）**
+>
+> 设 $A,B$ 为两集合，$A,B$ 的并：
+> $$
+> A\cup B = \{x \mid x\in A\ \text{或}\ x\in B\}
+> $$
+
+> **定义 1-2（交集）**
+>
+> 设 $A,B$ 为两集合，$A,B$ 的交：
+> $$
+> A\cap B = \{x \mid x\in A\ \text{且}\ x\in B\}
+> $$
+
+> **命题 1-1（集合运算的性质）**
+>
+> 1. 若 $A\subseteq B$，则 $A\cup B = B$，$A\cap B = A$；
+> 2. 交换律；
+> 3. 结合律；
+> 4. 分配律；
+> 5. Morgan 公式：
+> $$
+> (A\cap B)^{c} = A^{c}\cup B^{c},\qquad (A\cup B)^{c} = A^{c}\cap B^{c}
+> $$
+
+> **定义 1-3（补集）**
+>
+> $U - A$，$C_U A$，$A^{c}$。对指标集可推广 Morgan 公式。
+
+## 1.2 Cartesian 积
+
+> **定义 2-1（Descartes 积）**
+>
+> 设 $A,B$ 为集合，$(a,b)$ 为有序偶（$a\in A,\ b\in B$）。全体组成的集合称为 $A,B$ 的 Descartes 积，记为 $A\times B$：
+> $$
+> A\times B = \{(a,b)\mid a\in A,\ b\in B\}
+> $$
+> 对一族集合 $\{A_\alpha\}_{\alpha\in\Gamma}$，也可取所有 $A_\alpha$ 的 Cartesian 积。
+
+## 1.3 等价关系与商集
+
+> **定义 3-1（关系）**
+>
+> 设 $A,B$ 为集合，积集合 $A\times B$ 的一个子集 $R$ 称为 $A$ 到 $B$ 的一个关系；$A\times A$ 的子集称为 $A$ 上的一个关系。
+
+若 $(a,b)\in R\subseteq A\times B$，称 $a$ 与 $b$ 为 $R$ 相关，记为 $aRb$。
+
+一般一个关系通过性质 $P$ 给出。$P$ 满足：$a,b\in A$，下面两种情况只有一种成立：
+
+- $a,b$ 满足 $P$：$(a,b)\in P$，记 $aRb$；
+- $a,b$ 不满足 $P$：$(a,b)\notin P$。
+
+这样也将关系称为 $P$ 关系。
+
+> **定义 3-2（等价关系）**
+>
+> 设 $R$ 为 $A$ 上的一个关系，若 $R$ 满足下列条件：
+>
+> 1. $\textcolor{red}{\text{自反性}}$：$a\in A \Rightarrow (a,a)\in R$；
+> 2. $\textcolor{red}{\text{对称性}}$：$(a,b)\in R \Rightarrow (b,a)\in R$；
+> 3. $\textcolor{red}{\text{传递性}}$：$(a,b)\in R,\ (b,c)\in R \Rightarrow (a,c)\in R$。
+>
+> 则 $\textcolor{red}{R\ \text{称为}\ A\ \text{上的等价关系}}$，记为 $a\sim b$。
+
+恒等关系是一种常见的等价关系。
+
+设 $\sim$ 为集合 $A$ 中的一个等价关系，$a$ 为 $A$ 的一个元素。与 $a$ 等价的元素全体组成 $A$ 的一个子集，称为 $a$ 的一个$\textcolor{red}{\textbf{等价类}}$，记为 $[a]$。
+
+$\textcolor{red}{\text{可推出}}$：
+
+$$
+\textcolor{red}{a\sim b \Longleftrightarrow [a]=[b] \Longleftrightarrow [a]\cap[b]\neq\varnothing}
+$$
+
+$\textcolor{red}{\text{集合上一个等价关系决定该集合的一个分割；给定 } A \text{ 的一个分割，可得到 } A \text{ 上的一个等价关系。}}$
+
+> **命题 3-1（等价关系与分割）**
+>
+> $R$ 为 $A$ 上的一个等价关系，则 $R$ 决定 $A$ 的一个分割；反之也成立（由分割可导出等价关系）。
+
+> **定义 3-3（商集）**
+>
+> 设 $\sim$ 为集合 $A$ 上的一个等价关系。$A$ 上所有等价类组成的集合称为 $A$ 关于等价关系 $\sim$ 的商集，$\textcolor{red}{\text{记为 } A/\sim \text{ 或 } \overline{A}}$。$a\in A$，$a$ 的$\textcolor{red}{\text{等价类为 } \overline{a}}$。
+
+> **定义 3-4（等价类分解）**
+>
+> 设 $\sim$ 为 $A$（关于 $\sim$）上一个等价关系，则 $A$ 可分解为各等价类之并（重复的只取一个）：
+> $$
+> \textcolor{red}{\boxed{A = \bigcup [a]}}
+> $$
+> 注意：$\forall a_i\in A$，有 $a_i\in [a_i]$。
+
+## 1.4 映射
+
+> **定义 4-1（映射）**
+>
+> 设 $A,B$ 为非空集合，$M\subseteq A\times B$。若 $\forall a\in A$，$\exists!\,b\in B$，使得 $(a,b)\in M$，则称 $M$ 为映射。
+> $A$ 为定义域，$B$ 为值域，记为 $a\mapsto b$，$f(a)=b$，$f: A\to B$。
+
+**例 1.** $S\to S$，$a\mapsto a$ 为恒等映射，记为 $I_d$ 或 $I_S$。
+
+设 $f: A\to B$，$a\in A$，$f(a)$ 为 $a$ 在 $f$ 下的像。
+令 $\operatorname{Im} f = \{b\in B \mid b = f(a)\}$，称为 $f$ 的值域，记为 $f(A)$。
+
+若 $b\in B$，$\exists a\in A$，使得 $f(a)=b$，则称 $a$ 为 $b$ 在 $f$ 下的原像：
+
+$$
+f^{-1}(b) = \{a\in A \mid b = f(a)\}
+$$
+
+> **定义 4-2（单射、满射、双射）**
+>
+> 设 $f: A\to B$：
+>
+> - 若 $\operatorname{Im} f = B$，则称 $f$ 为**满射**；
+> - 若 $\forall a\neq a'$ 有 $f(a)\neq f(a')$，则称 $f$ 为**单射**；
+> - 既单又满，则称 $f$ 为**双射**。
+>
+> 等价刻画：
+>
+> $$
+> \begin{aligned}
+> \textcolor{red}{f\ \text{满}} &\Longleftrightarrow \textcolor{red}{\forall b\in B\ \exists a\in A\ \text{st}\ f(a)=b}\\
+> \textcolor{red}{f\ \text{单}} &\Longleftrightarrow \textcolor{red}{\forall b\in \operatorname{Im} f\ \exists!\,a\in A\ \text{st}\ f(a)=b}\\
+> \textcolor{red}{f\ \text{双}} &\Longleftrightarrow \textcolor{red}{\forall b\in B\ \exists!\,a\in A\ \text{st}\ f(a)=b}
+> \end{aligned}
+> $$
+
+**逆映射**　若 $f: A\to B$ 为双射，则存在逆映射 $f^{-1}: B\to A$，$a\mapsto b$。定义 $g: B\to A$，$b\mapsto a$，记为 $f^{-1}$。
+
+**可逆映射**　$f: A\to B$，若存在 $g: B\to A$，使得 $f\circ g = I_B$，$g\circ f = I_A$，则称 $f$ 可逆。$f$ 可逆 $\Longleftrightarrow$ $f$ 双射。
+
+> **命题 4-1（复合的结合律）**
+>
+> 设 $f: A\to B$，$g: B\to C$，$h: C\to D$，则
+> $$
+> (h\circ g)\circ f = h\circ(g\circ f)
+> $$
+> （满足结合律）
+
+> **命题 4-2（单射、满射、双射的等价刻画）**
+>
+> 设 $f: A\to B$：
+>
+> 1. $f$ 单 $\Longleftrightarrow \exists g: B\to A$，使得 $g\circ f = I_A$；
+> 2. $f$ 满 $\Longleftrightarrow \exists g: B\to A$，使得 $f\circ g = I_B$；
+> 3. $f$ 双 $\Longleftrightarrow \exists g: B\to A$，使得 $g\circ f = I_A$，$f\circ g = I_B$。
+
+## 1.5 二元运算
+
+> **定义 5-1（二元运算）**
+>
+> $S$ 为集合，$S\times S\to S$ 的一个映射称为 $S$ 上的一个二元运算，用 $\ast$ 表示，记 $a\ast b$。
+
+**单位元**：$\exists e\in S$，使得 $e\ast x = x\ast e = x$。\
+**性质**：若 $\ast$ 有单位元，则单位元唯一。

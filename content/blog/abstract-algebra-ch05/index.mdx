@@ -1,0 +1,241 @@
+---
+title: "抽象代数 第 5 章 综合例题"
+pubDate: 2025-04-05
+description: "抽象代数综合例题 21 道：群指数公式与陪集、置换的不交循环分解与共轭、Abel 群同构类计数、Z_m 到 Z_n 的同态个数、PID 与 Bezout、Gauss 整数环为欧氏整环、域扩张与中间域次数。"
+tags: ["抽象代数", "例题", "群论", "环论"]
+category: 数学
+series: 抽象代数
+seriesOrder: 50
+tocDepth: 2
+---
+
+> 本文由手写笔记《抽象代数》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+>
+> 原稿部分推导较潦草，转录时未作臆改，凡标有「请人工核对」处请自行复核。
+
+### 例题 1（群指数的幂公式）
+
+设 $G$ 为群，$H,K\leq G$，证明：
+(1) $[G:H]\geq[K:K\cap H]$；
+(2) 若 $H\subseteq K$，则 $[G:H]=[G:K][K:H]$（幂公式）。
+
+**证明**　（2）设 $K$ 关于 $H$ 的左陪集完全集为 $T$，$[K:H]=|T|$；$G$ 关于 $K$ 的左陪集完全集为 $S$，$[G:K]=|S|$。从而
+
+$$
+K=\bigcup_{t\in T}tH,\qquad G=\bigcup_{s\in S}sK=\bigcup_{s\in S}\bigcup_{t\in T}stH=\bigcup_{st\in ST}(st)H
+$$
+
+故 $[G:H]=|S\times T|=|S|\,|T|=[G:K][K:H]$。$\square$
+
+（1）设 $K$ 关于 $H$ 的左陪集完全集为 $T$，$[K:H]=|T|$，$K=\bigcup_{t\in T}tH$。对 $K\cap H$ 讨论其左陪集：若 $x\in K\cap H$，则 $tH=t'H$；若 $t\in T$ 使 $tH$ 与 $K\cap H$ 相关，则 $tH\subseteq K\cap H$。从而 $K=\bigcup_{t\in T}$（$tH$ 中与 $K\cap H$ 相交者），故 $[K:K\cap H]=[G:H]$。[此处推导较潦草，请人工核对]
+
+### 例题 2（置换的分解与奇偶性）
+
+将 $\sigma=(1\,2\,4)(3\,5)(6\,5\,8)(7\,8\,9)$ 写成两两不交循环之积，并计算其周期与奇偶性。
+
+**解**　其不交循环分解为一个 $9$ 循环 $\sigma=(1\,9\,7\,8\,6\,5\,3\,2\,4)$，周期为 $9$；可写成 $9$ 个对换之积，故为偶置换。
+
+### 例题 3（置换的周期）
+
+求 $\sigma=(1\,2\,3)(5\,7\,8)(3\,9)(6\,11\,12\,13)$ 的周期。
+
+**解**　把 $\sigma$ 化为不交循环之积，其周期为各循环长度之最小公倍数，即 $12$。
+
+### 例题 4（置换的共轭）
+
+设 $x=(1\,3)(2\,4\,6)$，$y=(1\,8\,9)(4\,6\,7)$，求 $g$ 使 $g^{-1}xg=y$。
+
+**解**　由共轭性质 $\sigma(i_1\cdots i_k)\sigma^{-1}=(\sigma(i_1)\cdots\sigma(i_k))$，
+
+$$
+g^{-1}(1\,3)(2\,4\,6)g=(g(1)\,g(3))\,(g(2)\,g(4)\,g(6))
+$$
+
+取 $g$ 使 $g(1)=8$，$g(3)=9$，$g(2)=4$，$g(4)=6$，$g(6)=7$，即 $g=(1\,8\,3\,9\,5)(2\,4\,6\,7)$。[此处 $x$、$y$ 的循环类型是否一致，请人工核对]
+
+### 例题 5（多项式的既约分解）
+
+在 $\mathbb{Z}[x]$、$\mathbb{Q}[x]$、$\mathbb{R}[x]$ 中把 $f(x)=4x^3+4x^2+x$ 分解为既约元之积。
+
+**解**　在 $\mathbb{Z}[x]$：$f(x)=2^2(x^3+x^2+x+2)$（或其因式分解 $f(x)=x(2x+1)^2$）。[因式分解需人工核对]
+
+### 例题 6（元素的加法周期）
+
+判断 $\mathbb{Z}_{12}$ 中所有元素的加法周期。
+
+**解**　各元素加法周期如下表：
+
+$$
+\begin{array}{c|cccccccccccc}
+\text{元}&0&1&2&3&4&5&6&7&8&9&10&11\\\hline
+T&1&12&6&4&3&12&2&12&3&4&6&12
+\end{array}
+$$
+
+从而 $\mathbb{Z}_{12}$ 的生成元为 $1,5,7,11$；$U_{12}=U(\mathbb{Z}_{12})=\{1,5,7,11\}$，$\operatorname{Aut}(\mathbb{Z}_{12})\cong U_{12}$。
+
+$\mathbb{Z}_{12}$ 中幂等元（$x^2=x$）为 $0,1,4,9$；满足 $x^2=0$ 的元为 $0,6$。
+
+### 例题 7（Abel 群的同构类）
+
+求 $7^3\cdot 5^2$ 阶 Abel 群的同构类。
+
+**解**　$7^3\cdot 5^2$ 阶群数为 $p(3)\,p(2)=3\times 2=6$。其中 $7$ 元部分分拆为 $3,\;2+1,\;1+1+1$，$5$ 元部分分拆为 $2,\;1+1$，故同构类为：
+
+$$
+\mathbb{Z}_{7^3}\oplus\mathbb{Z}_{5^2},\quad \mathbb{Z}_{7^3}\oplus\mathbb{Z}_5\oplus\mathbb{Z}_5,\quad \mathbb{Z}_{7^2}\oplus\mathbb{Z}_7\oplus\mathbb{Z}_{5^2},\quad \mathbb{Z}_{7^2}\oplus\mathbb{Z}_7\oplus\mathbb{Z}_5\oplus\mathbb{Z}_5,\quad \mathbb{Z}_{7^3}\oplus\mathbb{Z}_{7^2}\oplus\mathbb{Z}_7\oplus\mathbb{Z}_7\oplus\mathbb{Z}_{5^2},\quad \mathbb{Z}_7^3\oplus\mathbb{Z}_{5^2}
+$$
+
+（共 $6$ 个）[表格与合成表述请人工核对]
+
+### 例题 8（群同态的个数）
+
+求 $\mathbb{Z}_m$ 到 $\mathbb{Z}_n$ 的群同态个数。
+
+**解**　设 $\phi:\mathbb{Z}_m\to\mathbb{Z}_n$ 为同态，令 $\phi(\bar 1)=\bar t$，则对 $i$ 有 $\phi(\bar i)=\overline{i\,t}$。
+
+$\phi$ 定义合理 $\Longleftrightarrow$ 若 $m\mid i-j$，则 $n\mid t(i-j)$ $\Longleftrightarrow$ $n\mid tm$ $\Longleftrightarrow$ $\frac{n}{(m,n)}\mid t$。
+
+故全体群同态为 $\phi_w,\phi_{2w},\dots,\phi_{mw}$（其中 $w=\frac{n}{(m,n)}$），同态个数为 $\gcd(m,n)$。[推导细节请人工核对]
+
+### 例题 9（PID 与最大公因子）
+
+设 $R$ 为整环，则 $R$ 为主理想整环 $\Longleftrightarrow$ 对 $\forall x,y\in R$，若 $d$ 为 $x,y$ 的最大公因子，则 $\exists a,b\in R$ 使 $ax+by=d$。
+
+**证明**　在 $R$ 中 $\textcolor{red}{x_1,\dots,x_n\in R}$ 生成的理想即由它们的最大公因子的元生成。反证：设 $R$ 有一理想 $I$ 有限生成，$\forall x\in I$ 有 $(x_1)\subseteq I$，$(x_1,x_2)\subseteq I$，…，若 $(x_1),(x_1,x_2),\dots$ 有 $x_1,x_2,\dots,x_n\in I$ 无…。[此处证明较潦草，请人工核对]
+
+从而 $I=(x_1)\subseteq(x_1,x_2)\subseteq\cdots\subseteq I$；设 $x_1,\dots,x_n$ 的最大公因子为 $y_n$，则 $\langle y_1\rangle\subseteq\langle y_2\rangle\subseteq\cdots\subseteq\langle y_n\rangle\subseteq I$。即 $y_1,\dots,y_n$ 构成无限上升链，矛盾，故 $R$ 为主理想整环。[此处证明较潦草，请人工核对]
+
+### 例题 10（商环的同构）
+
+设 $R=\mathbb{Z}[x]$，$I$ 为 $x+5$ 与 $x+10$ 生成的理想，证明 $\mathbb{Z}[x]/I\cong\mathbb{Z}_{10}$。
+
+**证明**　作同态 $\psi:\mathbb{Z}[x]\to\mathbb{Z}_{10}$，$f(x)\mapsto\overline{f(-5)}$（并作同态 $\mathbb{Z}\ni m\mapsto\bar m$，为同态）。由同态基本定理，$\mathbb{Z}[x]/\ker(\psi f)\cong\operatorname{Im}(\psi f)$。显然 $\operatorname{Im}(\psi f)=\mathbb{Z}_{10}$，而 $\ker(\psi f)=f^{-1}(\ker\pi)=f^{-1}(x+5,\,x+10)=I$，故 $\mathbb{Z}[x]/I\cong\mathbb{Z}_{10}$。
+
+### 例题 11（代数扩张的子域）
+
+设 $K/F$ 为代数扩张。
+
+(1) $K/F$ 的任一子域（即 $K$ 的含 $F$ 的子域）$L$ 为子域；
+
+(2) 只需证 $L$ 关于逆元封闭：$\forall\alpha\in L$，$\alpha$ 为 $F$ 上代数元。又 $\textcolor{red}{\alpha^{-1}\in F[\alpha]\subseteq F(\alpha)}$，故 $\exists f(\alpha),\,g(\alpha)\in F[\alpha]$，使 $\textcolor{red}{\alpha^{-1}=f(\alpha)/g(\alpha)}$。
+
+### 例题 12（中间域的次数）
+
+设 $K/F$ 为域扩张，$E$ 为中间域，$T\subseteq K$。证明：$[E(T):E]\leq[F(T):F]$。
+
+**证明**　若 $[F(T):F]=\infty$，显然。若 $[F(T):F]<\infty$，则 $E$ 为代数扩张，$\exists$ $F$ 上代数元 $\alpha_1,\dots,\alpha_n\in K$，使 $F(T)=F(\alpha_1,\dots,\alpha_n)$，从而 $E(T)=E(\alpha_1,\dots,\alpha_n)$。对 $n$ 用归纳：设 $p(x)$ 为 $\alpha$ 在 $E$ 上的极小多项式，则 $[E(\alpha):E]=\deg g$，$[F(\alpha):F]=\deg p$；又 $p$ 在 $E$ 上为 $\alpha$ 的零化多项式而 $g$ 为极小多项式，故 $g\mid p$，$\deg g\leq\deg p$。由归纳：
+
+$$
+[E(T):E]=[E(\alpha_1,\dots,\alpha_n):E]\cdots\leq[F(\alpha_1,\dots,\alpha_n):F]=[F(T):F].
+$$
+
+### 例题 13（无限循环群的子群）
+
+无限循环群的每个子群均为循环群。
+
+**证明**　设 $G=\langle g\rangle$ 为无限循环群。
+
+① 若子群为 $\{0\}$ 或 $G$，结论显然。
+
+② 若子群 $H$ 非 $\{0\}$，则 $\exists\,a\in\mathbb{Z}$，$a\neq0$，使 $g^a\in H$，从而取 $m\in\mathbb{N}^*$ 使 $g^m\in H$ 且 $m$ 为最小（取最小元排序）。
+
+对 $\forall g^n\in H$（$n\in\mathbb{Z}$），由 $n=pm+q$，$0\leq q<m$，有
+
+$$
+g^n=(g^m)^p\,g^q
+$$
+
+又 $g^m\in H$，$(g^m)^p\in H$，故 $g^q\in H$；而 $m$ 最小，故 $q=0$，即 $m\mid n$。
+
+从而 $\forall g^n\in H$，$\exists k$ 使 $(g^m)^k=g^n$，即 $\langle g^m\rangle=H$，故 $H$ 为循环群。
+
+### 例题 14（$p^2$ 阶群）
+
+设 $|G|=p^2$（$p$ 为素数），$G$ 为循环群。
+
+**证明**　$\forall g\in G$，$o(g)\mid|G|=p^2$，故 $o(g)=e$ 或 $p$ 或 $p^2$。若 $o(g)=p^2$，则 $\langle g\rangle=G$，即 $G$ 为 $g$ 生成的循环群；从而当 $o(g)=e$ 或 $p$ 时，$g^p=e$。
+
+### 例题 15（循环群的同构）
+
+任意 $n$ 阶循环群同构于 $(\mathbb{Z}_n,+)$。
+
+**证明**　设 $G=\langle g\rangle=\{e,g,g^2,\dots,g^{n-1}\}$，定义 $f:G\to(\mathbb{Z}_n,+)$，$f(g^i)=\bar i$（$\mathrm{mod}\ n$），$i=0,1,\dots,n-1$。
+
+① $f$ 满：$\forall\bar k\in\mathbb{Z}_n$，有 $f(g^k)=\bar k$。
+
+② 对 $\forall k,l$，有 $f(g^k g^l)=f(g^{k+l})=\overline{k+l}=\bar k+\bar l=f(g^k)+f(g^l)$，故 $f$ 为同态。
+
+于是 $f$ 为同构。
+
+### 例题 16（子群的乘积）
+
+设 $G$ 为群，$K\leq G$，$N\triangleleft G$，$H\triangleleft G$。证明：
+
+(1) $KN=NK$；　(2) $KN\leq G$；　(3) $NH\triangleleft G$。
+
+**证明**　(1) $\forall g\in KN$，$\exists k\in K,\,n\in N$ 使 $g=kn$；又 $N\triangleleft G$，对上述 $k\in K,n\in N$，$\exists m\in N$ 使 $knk^{-1}=m$，从而 $kn=mk$，故 $g=mk\in NK$，即 $KN\subseteq NK$；同理 $NK\subseteq KN$，故 $KN=NK$。
+
+(2) ① 乘法封闭：$\forall k_1n_1,k_2n_2\in KN$，由 $KN=NK$，$\exists k_3\in K,n_3\in N$ 使 $n_1k_2=k_3n_3$，故 $k_1n_1k_2n_2=k_1k_3n_3n_2\in KN$。
+
+② 单位元显然。③ 逆元封闭：$\forall kn\in KN$，$(kn)^{-1}=n^{-1}k^{-1}\in NK=KN$。
+
+(3) 由 (2) 得 $NH\leq G$；$\forall g\in G$，$\forall hn\in NH$，由 $N\triangleleft G$，$H\triangleleft G$，有 $gng^{-1}\in N$，$ghg^{-1}\in H$，从而 $g(hn)g^{-1}=gng^{-1}\cdot ghg^{-1}\in NH$。
+
+**注**　$\textcolor{red}{子群的并未必是子群；子群的子群为子群；正规子群的子群未必为正规子群。}$
+
+### 例题 17（同态原像）
+
+设 $f:G\to H$ 为同态，$A\leq G$，则 $\textcolor{red}{f^{-1}(f(A))=A\cdot\ker f}$。
+
+**证明**　① $\forall g\in f^{-1}(f(A))$，有 $f(g)\in f(A)$，则 $\exists a\in A$ 使 $f(a)=f(g)$。于是 $f(g)\big(f(a)\big)^{-1}=f(g)f(a)^{-1}=f(ga^{-1})=e$，从而 $ga^{-1}\in\ker f$，即 $g\in A\ker f$，故 $f^{-1}(f(A))\subseteq A\ker f$。
+
+② $\forall g\in A\ker f$，$\exists a\in A,\,b\in\ker f$ 使 $g=ab$，则 $f(g)=f(ab)=f(a)f(b)=f(a)\in f(A)$，即 $g\in f^{-1}(f(A))$，故 $A\ker f\subseteq f^{-1}(f(A))$。
+
+综上 $f^{-1}(f(A))=A\ker f$。
+
+### 例题 18（第二同态定理）
+
+设 $H\triangleleft G$，$K\triangleleft G$，$K\subseteq H$。
+
+(1) $H/K\triangleleft G/K$（商群中元素为陪集）；　(2) $(G/K)/(H/K)\cong G/H$（第二同态定理）。
+
+**证明**　(1) 设 $\psi$ 为 $G$ 到 $G/K$ 的自然同态，即 $\psi(a)=aK$（$a\in G$），$\psi$ 满，从而 $\psi(H)\triangleleft G/K$。$\textcolor{red}{记 \psi(H)=H/K}$：显然 $\psi(H)\subseteq H/K$；又 $\forall hK\in H/K$，$hK=\psi(h)\in\psi(H)$，故 $H/K\subseteq\psi(H)$，即 $H/K=\psi(H)$。
+
+(2) 定义 $f:G/K\to G/H$，$f(gK)=gH$。
+
+① 定义合理：若 $gK=g'K$，则 $g^{-1}g'\in K\subseteq H$，故 $g^{-1}g'\in H$，从而 $gH=g'H$。
+
+② 同态：$\forall gK,hK\in G/K$，有 $f(gK\,hK)=f(ghK)=ghH=gH\,hH=f(gK)\,f(hK)$。故由同态基本定理 $(G/K)/(H/K)\cong G/H$。
+
+③ 求 $\ker f$：若 $f(gK)=gH$，则 $gH=H$（即 $g\in H$）。于是 $\ker f=\{gK\mid g\in H\}=H/K$。由同态基本定理 $(G/K)/\ker f\cong\operatorname{Im} f$，即 $(G/K)/(H/K)\cong G/H$。
+
+### 例题 19（最大公因子的相伴元）
+
+设 $D$ 为唯一分解整环，$a,b$ 不全为 $0$，$d$ 为 $a,b$ 的最大公因子，则 $\forall c\in D$，$c\neq0$，$cd$ 为 $ac,bc$ 的最大公因子。
+
+**证明**　(1) $cd$ 为 $ac,bc$ 的公因子：因 $d$ 为 $a,b$ 的公因子，$\exists x,y\in D$ 使 $a=dx$，$b=dy$，故 $ac=cdx$，$bc=cdy$，从而 $cd\mid ac$，$cd\mid bc$。
+
+(2) 设 $a,b$ 的最大公因子为 $g$，由 (1) 有 $cd\mid g$。下证 $g\mid cd$：由 $cd\mid g$，$\exists x\in D$ 使 $g=xcd$；又 $g\mid ac$，$g\mid bc$，$\exists s,t\in D$ 使 $sg=ac$，$tg=bc$，从而 $a=xsd$，$b=xtd$，即 $d$ 为 $a,b$ 的公因子；又 $xd\mid d$ 且 $d\mid xd$，故 $d$ 与 $xd$ 相伴，从而 $x$ 为单位，故 $g=xcd$ 与 $cd$ 相伴，即 $cd$ 为 $ac,bc$ 的最大公因子。
+
+### 例题 20（Gauss 整数环）
+
+证明：所有形如 $a+bi$（$a,b\in\mathbb{Z}$）的复数构成一个环（Gauss 整数环），且 $\textcolor{red}{\mathbb{Z}[i] 为欧氏整环，故为 PID}$。
+
+**证明**　定义 Gauss 整数环的欧氏范数 $N(a+bi)=a^2+b^2$。
+
+(1) 若 $a+bi\neq0$，$c+di\neq0$，直接计算有 $N\big((a+bi)(c+di)\big)=N(a+bi)\,N(c+di)$。
+
+(2) 设 $\alpha=a+bi$，$\beta=c+di\neq0$。设 $\frac{\alpha}{\beta}=x+yi$（$x,y\in\mathbb{R}$）；每个有理数与最接近的整数距离 $\leq\frac12$，故 $\exists e,f\in\mathbb{Z}$ 使 $|x-e|\leq\frac12$，$|y-f|\leq\frac12$。令 $\theta=e+fi$，则 $\alpha-\beta\theta=\beta\big((x-e)+(y-f)i\big)$，从而
+
+$$
+N(\alpha-\beta\theta)=|\beta|^2\big((x-e)^2+(y-f)^2\big)\leq|\beta|^2\left(\frac14+\frac14\right)<|\beta|^2=N(\beta)
+$$
+
+故 $\mathbb{Z}[i]$ 为欧氏整环，从而为 PID。
+
+### 例题 21（PID 中的 Bezout 等式）
+
+设 $D$ 为 PID，$a,b\in D$，则 $\exists\,m,n\in D$ 使 $d=ma+nb$ 为 $a,b$ 的最大公因子。
+
+**证明**　若 $a,b$ 有一个为 $0$，设 $a=0$，则 $b$ 为 $a,b$ 的最大公因子，取 $m=1,n=0$ 即可。下设 $a,b$ 均不为 $0$。考虑 $\langle a,b\rangle$ 生成的理想 $I$，其每个元素形如 $xa+yb$。由 $D$ 为 PID，$\exists d\in I$ 使 $I=\langle d\rangle$，$d$ 为 $a,b$ 的最大公因子，故 $d=ma+nb$，$I=\langle a,b\rangle=\langle d\rangle$。因 $a\in I=\langle d\rangle$，知 $d\mid a$；同理 $d\mid b$。故 $d$ 为 $a,b$ 的公因子，对 $f\mid a,b$ 有 $f\mid(ma+nb)=d$，故 $d$ 为 $a,b$ 的最大公因子。

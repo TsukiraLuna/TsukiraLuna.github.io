@@ -132,6 +132,7 @@ app/series/[name]/page.tsx       ← 系列页（按 seriesOrder 排序）
 tools/series-convention.md       ← 系列写作约定
 tools/latex-to-blog.md           ← LaTeX 转化流程
 tools/latex-to-blog-probe.mjs    ← LaTeX 探雷脚本
+tools/mdx-math-quirks-probe.mjs  ← 公式/颜色的 MDX+KaTeX 实测对照（排怪问题时跑）
 .github/workflows/deploy.yml     ← 推送 main 即部署
 ```
 
@@ -309,7 +310,21 @@ node tools/latex-to-blog-probe.mjs "<file.tex>"   # 1. 先探雷
 # 2. 按规则表转换
 npm run build:verify                               # 3. 构建
 node tools/latex-to-blog-probe.mjs --check-output <slug>   # 4. 验证公式
+node tools/mdx-math-quirks-probe.mjs               # 5. 公式/颜色异常时对照实测结论
 ```
 
 **核心警告**：KaTeX 的失败是**静默的**——不认识的宏包命令、自定义宏、
 不支持的环境都不会报错，只是默默渲染错。所以第 1 步和第 4 步不能省。
+
+**第二条警告**：`\textcolor{red}{…}` 写在**正文里**（不在 `$…$` 内）会让整个构建失败，
+报错信息却与 LaTeX 无关（`Could not parse expression with acorn` /
+`ReferenceError: red is not defined`）。`$$` 也必须**独占一行**，否则只是行内公式。
+两种正确形态：
+
+```markdown
+正文里的红色：  $\textcolor{red}{\text{自反性}}$
+
+显示公式：      $$
+                \textcolor{red}{F[x]/(p(x))\cong F[\alpha]}
+                $$
+```
