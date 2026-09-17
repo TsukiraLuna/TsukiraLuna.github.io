@@ -1,0 +1,62 @@
+---
+title: "数学分析 第 6 次讨论班补充"
+pubDate: 2024-04-30
+description: "数项级数敛散性判断、Sapogov 判别法、部分和构成的级数，以及收敛级数导出的若干极限结论。"
+tags: ["数学分析讨论班补充", "数项级数", "敛散性", "Sapogov判别法"]
+category: 数学
+series: 数学分析讨论班补充
+seriesOrder: 60
+tocDepth: 2
+---
+
+## 一、判断敛散性
+
+**(1)**
+$$\sum_{n=1}^\infty \frac{1}{(\ln n)^{\ln n}}$$
+
+**(2)**
+$$\sum_{n=1}^\infty \left(\frac{1}{n}-\ln\frac{n+1}{n}\right)$$
+
+**(3)**
+$$\sum_{n=1}^\infty q^n\ln n$$
+
+（尝试使用下面两个引理）
+
+> (i) $\forall\varepsilon>0$，$n$ 足够大，有 $0<\ln n<n^\varepsilon$
+>
+> (ii) $\forall\varepsilon>0$，$0<q<1$ 定值，$n$ 足够大，有 $0<q^n<\dfrac{1}{n^\varepsilon}$
+
+**(4)**
+$$\sum_{n=1}^\infty \sin\left(\pi\sqrt{n^2+1}\right)$$
+
+## 二、部分和构成的级数
+
+$$\sum_{n=1}^\infty u_n \text{ 收敛},\quad S_n \text{ 是 } u_n \text{ 的部分和数列},\quad \text{讨论}\ \sum_{n=1}^\infty \frac{u_n}{(S_n)^p}\ \text{的敛散性}$$
+
+## 三、Sapogov 判别法
+
+$x_n$ 是一个单调下降的正数列，求证：
+$$\sum_{n=1}^\infty \left(1-\frac{x_{n+1}}{x_n}\right) \text{ 发散} \Longleftrightarrow \lim_{n\to\infty} x_n=0$$
+
+## 四、与部分和相关的敛散性
+
+$$u_n>0,\quad S_n \text{ 为部分和，求证：}\ \sum_{n=1}^\infty \frac{u_n}{S_n} \text{ 的敛散性和 } \sum_{n=1}^\infty u_n \text{ 相同}$$
+
+并据此证明：
+
+$x_n$ 单调增的恒正数列，求证：$\displaystyle\sum_{n=1}^\infty \left(1-\frac{x_n}{x_{n+1}}\right)$ 的敛散性和数列 $x_n$ 相同。
+
+## 五、收敛级数的极限问题
+
+设级数 $\displaystyle\sum_{n=1}^\infty a_n$ 收敛于 $a$。
+
+**(1)** 求极限
+$$\lim_{n\to\infty} \frac{n a_1+(n-1)a_2+\cdots+a_n}{n}$$
+
+**(2)** 证明
+$$\lim_{n\to\infty} \frac{a_1+2a_2+\cdots+n a_n}{n}=0$$
+
+## 六、单调减条件下的结论
+
+设级数 $\displaystyle\sum_{n=1}^\infty a_n$ 收敛，且 $a_n$ 单调减，则有
+$$\lim_{n\to\infty} n a_n=0$$

@@ -1,0 +1,45 @@
+---
+title: "数学分析 第 5 次讨论班补充"
+pubDate: 2024-04-09
+description: "无穷求和的极限、积分中值问题、变限积分求导、三角函数积分技巧与周期函数积分性质。"
+tags: ["数学分析讨论班补充", "定积分", "极限", "周期函数"]
+category: 数学
+series: 数学分析讨论班补充
+seriesOrder: 50
+tocDepth: 2
+---
+
+## 一、无穷求和的极限
+
+夹挤定理、定积分定义或微分学方法（上学期第七次讨论班第七题）。
+
+**计算：**
+$$\lim_{n\to\infty}\sum_{k=1}^n \frac{1}{n+\frac{1}{k}}\sin\frac{k\pi}{n}$$
+
+## 二、积分中值问题
+
+$f(x)$ 在 $[1,2]$ 连续，$(1,2)$ 可导，且有
+$$f(1)=\int_1^2 e^{(x-1)^2}f(x)\,dx$$
+证明：在 $(1,2)$ 间至少存在一点 $\xi$，使得 $f'(\xi)=2f(\xi)(1-\xi)$。
+
+## 三、变限积分求导
+
+$$\frac{d}{dx}\left(\int_{h(x)}^{g(x)} f(t)\,dt\right)=f(g(x))g'(x)-f(h(x))h'(x)$$
+
+## 四、三角函数积分技巧
+
+$f(x)$ 连续，则有
+$$\int_0^{\pi} xf(\sin x)\,dx=\frac{\pi}{2}\int_0^{\pi} f(\sin x)\,dx=\pi\int_0^{\frac{\pi}{2}} f(\sin x)\,dx$$
+
+**计算：**
+$$\int_0^{\pi}\frac{x\sin x}{1+(\cos x)^2}\,dx$$
+
+## 五、周期函数的积分
+
+设 $f(x)$ 为 $\mathbb{R}$ 上以 $T$ 为最小正周期的周期函数，则对任意正整数 $n$
+$$\int_a^{a+nT} f(x)\,dx=n\int_0^T f(x)\,dx$$
+
+## 六、（\*\*\*）
+
+$f(x)$ 在 $[0,1]$ 连续，证明：
+$$\lim_{n\to\infty}\int_0^1\frac{n}{n^2+x^2}f(x)\,dx=\frac{\pi}{2}f(0)$$

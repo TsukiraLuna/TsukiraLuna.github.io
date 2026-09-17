@@ -1,0 +1,41 @@
+---
+title: "数学分析 第 3 次讨论班补充"
+pubDate: 2024-03-31
+description: "用定义计算定积分、可积的等价定义及其应用（复合函数可积性、间断点收敛序列），以及两个带星号的极限问题。"
+tags: ["数学分析讨论班补充", "定积分", "可积性", "极限"]
+category: 数学
+series: 数学分析讨论班补充
+seriesOrder: 30
+tocDepth: 2
+---
+
+## 一、定积分定义
+
+1. 用定义计算
+2. 重要证明：教材 P197.2
+
+$f(x)$ 在 $[0,1]$ 连续，证明：
+$$\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^n f\!\left(\frac{k}{n}\right)=\int_0^1 f(x)\,dx$$
+
+## 二、可积的等价定义
+
+> **定理（可积的等价定义）**
+>
+> $f(x)$ 在 $[a,b]$ 可积 $\Longleftrightarrow$ $\forall\varepsilon>0$，$\forall\sigma>0$，$\exists$ 分划 $T=\{x_k\}_{k=0}^n$，使得
+> $$\sum_{k\in\mathcal{K}_\varepsilon}\Delta x_k<\sigma,\qquad\text{其中 } \mathcal{K}_\varepsilon=\{k;\omega_k\ge\varepsilon\}$$
+
+使用这个等价定义证明：
+
+**(1)（\*）** 如果 $f(x)$ 在 $[A,B]$ 上连续，$\varphi(x)$ 在 $[a,b]$ 上可积且 $\varphi([a,b])\subset[A,B]$，则 $(f\circ\varphi)(x)$ 在 $[a,b]$ 上可积。
+
+**(2)（尝试用两种方法证明）** 若 $f(x)$ 在 $[a,b]$ 有界，且其所有间断点构成一个收敛序列，则 $f(x)$ 在 $[a,b]$ 可积。
+
+## 三、（\*）书 P202T10
+
+$f(x)$ 在 $[a,b]$ 可积，求证：
+$$\lim_{n\to\infty}\int_a^b f(x)\sin nx\,dx=0$$
+
+## 四、（\*\*）抓大头法
+
+$f(x)$ 在 $[a,b]$ 连续且非负，证明：
+$$\lim_{n\to\infty}\left(\int_a^b f^n(x)\,dx\right)^{\frac{1}{n}}=\max_{a\le x\le b}f(x)$$

@@ -1,0 +1,43 @@
+---
+title: "数学分析 第 9 次讨论班补充"
+pubDate: 2024-04-30
+description: "广义积分的敛散性判断、由收敛性推出的常见结论（一致连续、单调递减），以及反例构造。"
+tags: ["数学分析讨论班补充", "广义积分", "敛散性", "反例"]
+category: 数学
+series: 数学分析讨论班补充
+seriesOrder: 70
+tocDepth: 2
+---
+
+## 一、判断敛散性
+
+**(1)**
+$$\int_0^{+\infty}\frac{(\sin x)^2}{\sqrt{x}}\,dx$$
+
+**(2)**
+$$\int_0^1\frac{\ln x}{1-x^2}\,dx$$
+
+**(3)**
+$$\int_0^{+\infty}\frac{dx}{x^p|\ln x|^q}\qquad(p,q>0)$$
+
+**(4)**
+$$\int_0^{+\infty}\frac{\sin x^2}{x^p}\,dx$$
+
+## 二、常见推论
+
+设
+$$\int_1^{+\infty} f(x)\,dx \text{ 收敛}$$
+
+**(1)** $f(x)$ 在区间 $[1,+\infty)$ 一致连续，则
+$$\lim_{x\to+\infty} f(x)=0$$
+
+**(2)** $f(x)$ 在区间 $[1,+\infty)$ 单调递减且连续，则
+$$\lim_{x\to+\infty} xf(x)=0$$
+
+## 三、反例
+
+**(1)** 存在不单调递减的函数 $f(x)$ 使得 $\int_1^{+\infty} f(x)\,dx$ 收敛，但 $f(x)$ 在 $+\infty$ 的极限不存在。
+
+$$\sin(x^2)$$
+
+**(2)** 存在 $[0,+\infty)$ 无界的连续函数 $f(x)$，但 $\int_0^{+\infty} f(x)\,dx$ 收敛。

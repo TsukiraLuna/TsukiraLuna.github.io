@@ -1,0 +1,37 @@
+---
+title: "数学分析 第 4 次讨论班补充"
+pubDate: 2024-04-02
+description: "积分的极限问题（分段估值、子区间、抓大头）与定积分计算技巧（区间反射、中点奇偶性）。"
+tags: ["数学分析讨论班补充", "定积分", "积分极限"]
+category: 数学
+series: 数学分析讨论班补充
+seriesOrder: 40
+tocDepth: 2
+---
+
+## 一、积分的极限
+
+### (1) 分段估值
+
+$$\lim_{n\to\infty}\int_0^1 (\sin x)^n\,dx=0$$
+
+### (2)（\*）子区间
+
+$f(x)$ 在 $[0,2\pi]$ 连续，求证：
+$$\lim_{n\to\infty}\int_0^{2\pi} f(x)\,|\sin nx|\,dx=\frac{2}{\pi}\int_0^{2\pi} f(x)\,dx$$
+
+### (3)（\*\*\*）
+
+$f(x)$ 在 $[0,1]$ 连续，求：
+$$\lim_{n\to\infty} n\int_0^1 x^n f(x)\,dx$$
+
+## 二、定积分计算的一些技巧
+
+**(1) 区间反射**
+$$\int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx$$
+
+**(2)** $f(x)$ 关于 $(a,b)$ 中点是偶函数
+$$\int_a^b f(x)\,dx=2\int_a^{\frac{a+b}{2}} f(x)\,dx=2\int_{\frac{a+b}{2}}^b f(x)\,dx$$
+
+**(3)** $f(x)$ 关于 $(a,b)$ 中点是奇函数
+$$\int_a^b f(x)\,dx=0$$
