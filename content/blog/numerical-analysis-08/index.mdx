@@ -1,0 +1,216 @@
+---
+title: "数值分析初步 第 8 章 微分方程数值解"
+pubDate: 2024-09-08
+description: "向前与向后 Euler 格式、梯形格式与改进 Euler 格式及其局部截断误差与精度阶，一般 Runge–Kutta 方法与线性多步格式，以及单步法的相容性、收敛性误差估计与绝对稳定域。"
+tags: ["数值分析初步", "常微分方程", "Euler法", "Runge-Kutta", "多步法", "稳定性"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 80
+tocDepth: 2
+---
+
+## 几个数值格式
+
+### 定理 8.1
+
+设 $f(x,y)$ 在区域 $G$ 上连续、有界，且关于 $y$ 满足 Lipschitz 条件，则初值问题
+
+$$y'=f(x,y),\qquad y(a)=y_0$$
+
+在 $[a,b]$ 上有唯一解 $y(x)$。若 $f\in C^k(G)$，则该解 $y(x)\in C^{k+1}([a,b])$。
+
+### 向前 Euler 格式
+
+$$\color{red}{y_{n+1}=y_n+h f(x_n,y_n).}$$
+
+其局部截断误差为
+
+$$\color{red}{R_n=\frac{h^2}{2}y''(\xi_n),}$$
+
+因而是显式格式。
+
+### 向后 Euler 格式
+
+$$\color{red}{y_{n+1}=y_n+h f(x_{n+1},y_{n+1}).}$$
+
+初值问题的一步法可写为
+
+$$
+\begin{cases}
+y_{n+1}=y_n+h\varphi(x_n,y_n,y_{n+1},h),\\
+y_0=y_{h,0}.
+\end{cases}
+$$
+
+按是否需要求解含 $y_{n+1}$ 的方程，分为显式与隐式格式。
+
+### 定义 8.1
+
+设 $y(x)$ 为初值问题的精确解。令
+
+$$
+\color{red}{\begin{aligned}
+R_n&=y(x_{n+1})-y_{n+1}\\
+&=y(x_{n+1})-y(x_n)-h\varphi\bigl(x_n,y(x_n),y(x_{n+1}),h\bigr),
+\end{aligned}}
+$$
+
+其中在一步计算中假设 $y_n=y(x_n)$，则 $R_n$ 称为局部截断误差。Euler 格式由 Taylor 展开得到
+
+$$\color{red}{R_n=\frac{h^2}{2}y''(x_n)+O(h^3)=O(h^2).}$$
+
+### 定义 8.2
+
+若存在 $p$，使得
+
+$$\color{red}{R_n=O(h^{p+1}),}$$
+
+则称格式具有 $p$ 阶精度。若进一步有
+
+$$\color{red}{R_n=\psi\bigl(x_n,y(x_n)\bigr)h^{p+1}+O(h^{p+2}),}$$
+
+则 $\psi\bigl(x_n,y(x_n)\bigr)h^{p+1}$ 为局部截断误差主项。
+
+向后 Euler 格式的局部截断误差为
+
+$$\color{red}{R_n=-\frac{h^2}{2}y''(x_n)+O(h^3),\qquad p=1.}$$
+
+### 定理 8.3
+
+若数值格式具有 $p$ 阶精度，则其节点整体误差 $e_n=y(x_n)-y_n$ 为 $O(h^p)$；向前和向后 Euler 格式均为一阶。
+
+### 梯形格式
+
+$$
+\color{red}{\begin{aligned}
+y_{n+1}&=y_n+\frac h2\bigl[f(x_n,y_n)+f(x_{n+1},y_{n+1})\bigr],\\
+R_n&=-\frac{h^3}{12}y'''(x_n)+O(h^4)=O(h^3).
+\end{aligned}}
+$$
+
+梯形格式为二阶格式，整体误差阶为 $O(h^2)$。
+
+### 改进 Euler 格式
+
+先作预测
+
+$$\color{red}{\bar y_{n+1}=y_n+h f(x_n,y_n),}$$
+
+再作校正
+
+$$\color{red}{y_{n+1}=y_n+\frac h2\bigl[f(x_n,y_n)+f(x_{n+1},\bar y_{n+1})\bigr].}$$
+
+亦即
+
+$$y_{n+1}=y_n+\frac h2\bigl[f(x_n,y_n)+f(x_{n+1},y_n+h f(x_n,y_n))\bigr].$$
+
+## 高阶数值格式
+
+一般 Runge–Kutta 方法写成
+
+$$
+\begin{cases}
+y_{n+1}=y_n+h\displaystyle\sum_{i=1}^{s}\alpha_i k_i,\\
+k_1=f(x_n,y_n),\\
+k_j=f\!\left(x_n+h c_j,y_n+h\displaystyle\sum_{i=1}^{j-1}\beta_{ji}k_i\right),\quad j=2,\ldots,s.
+\end{cases}
+$$
+
+按精度阶数可构造不同的格式。二级 Runge–Kutta 方法的局部截断误差 $R_h(x_n)=O(h^3)$，例如中点格式
+
+$$\color{red}{y_{n+1}=y_n+h f\!\left(x_n+\frac h2,y_n+\frac h2 f(x_n,y_n)\right).}$$
+
+四级 Runge–Kutta 方法的局部截断误差 $R_h(x_n)=O(h^5)$，相应地可得到四阶格式。
+
+由 Simpson 公式可写出多步格式
+
+$$\color{red}{y_{n+2}=y_n+\frac h3\bigl(f_{n+2}+4f_{n+1}+f_n\bigr).}$$
+
+一般线性 $k$ 步格式为
+
+$$\sum_{j=0}^{k}a_jy_{n+j}=h\sum_{j=0}^{k}b_j f(x_{n+j},y_{n+j}).$$
+
+将精确解代入时，其局部截断误差为
+
+$$\color{red}{L[y(x);h]=\sum_{j=0}^{k}\bigl[a_jy(x+jh)-hb_jy'(x+jh)\bigr].}$$
+
+可用 Taylor 展开计算误差阶。
+
+## 收敛性与稳定性
+
+考虑初值问题 $y'=f(x,y)$、$y(x_0)=y_0$，及其显式单步格式
+
+$$
+\begin{cases}
+y_{n+1}=y_n+h f_h(x_n,y_n),\\
+y_0=y_{h,0}.
+\end{cases}
+$$
+
+相容性条件为
+
+$$\color{red}{|y_{h,0}-y(x_0)|+h^{-1}\max_{x\in I_h}|R_h(x)|\longrightarrow0\qquad(h\to0),}$$
+
+其中 $R_h(x)$ 为局部截断误差。若 $R_h(x)=O(h^{p+1})$，且 $|y_{h,0}-y(x_0)|=O(h^p)$，则相容阶与精度阶均为 $p$。向前、向后 Euler 格式为一阶，梯形格式与改进 Euler 格式为二阶，四阶 Runge–Kutta 格式为四阶。
+
+### 定义 8.4（收敛性）
+
+设 $y(x)$ 为解，$y_{h,n}$ 为近似值。若对于固定的 $x=a+nh$，当 $h\to0$（即 $n\to\infty$）时有
+
+$$\color{red}{|y_{h,n}-y(x)|\longrightarrow0,}$$
+
+则称格式收敛。
+
+将离散数值解记作 $y_h(x)$，$x\in I_h$，并定义
+
+$$D_h y_h(x)=h^{-1}\bigl[y_h(x+h)-y_h(x)\bigr].$$
+
+### 定理 8.3（误差估计）
+
+设数值格式在初值问题的区域内相容，且关于第二个变量满足 Lipschitz 条件，则存在 $h_0>0$，使得 $0<h<h_0$、$x\in I_h$ 时，
+
+$$\color{red}{|y_h(x)-y(x)|\leq e^{2L(x-x_0)}\left[|y_{h,0}-y(x_0)|+(x-x_0)\max_{t\in I_h}|h^{-1}R_h(t)|\right].}$$
+
+从而，对满足相容性和稳定性的单步法有收敛性。
+
+考虑带有扰动项的差分方程
+
+$$
+\begin{cases}
+\widehat y_{n+1}=\widehat y_n+h\bigl[f_h(x_n,\widehat y_n)+\delta_h(x_n)\bigr],\\
+\widehat y_0=y_{h,0}+\theta_h.
+\end{cases}
+$$
+
+稳定性是指：对任意 $\varepsilon>0$，存在 $\delta>0$ 和 $h_0>0$；当 $0<h<h_0$ 且扰动满足
+
+$$\color{red}{|\theta_h|+\max_{x\in I_h}|\delta_h(x)|<\delta}$$
+
+时，原方程与扰动方程的解满足
+
+$$\color{red}{\max_{x\in I_h}|\widehat y_h(x)-y_h(x)|<\varepsilon.}$$
+
+### 定义 8.4（绝对稳定域）
+
+考虑测试方程
+
+$$y'=\mu y,\quad y(0)=y_0,\qquad\mu\in\mathbb C,\quad\operatorname{Re}\mu<0.$$
+
+若单步格式应用于该方程后成为
+
+$$\color{red}{y_{n+1}=C(\bar h)y_n,\qquad \bar h=h\mu\in\mathbb C,}$$
+
+则绝对稳定域为
+
+$$\color{red}{\{\bar h\in\mathbb C:|C(\bar h)|<1\}.}$$
+
+对线性多步法，令
+
+$$
+\color{red}{\begin{aligned}
+\rho(\lambda)&=\sum_{j=0}^{k}a_j\lambda^j, &\sigma(\lambda)&=\sum_{j=0}^{k}b_j\lambda^j,\\
+\phi(\lambda,\bar h)&=\rho(\lambda)-\bar h\sigma(\lambda)=0, &\bar h&=h\mu.
+\end{aligned}}
+$$
+
+其绝对稳定域由特征方程的根决定：其中每个根均满足 $|\lambda|<1$。

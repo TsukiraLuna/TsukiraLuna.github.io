@@ -1,0 +1,306 @@
+---
+title: "数值分析初步 第 6 章 函数插值"
+pubDate: 2024-09-06
+description: "介绍函数插值的基本方法：Lagrange 基函数与插值余项，Newton 差商及其递推公式，Hermite 插值，分段三次 Hermite 插值的四种边值条件，以及截断幂与 B 样条的定义。"
+tags: ["数值分析初步", "插值", "Lagrange插值", "Newton差商", "Hermite插值", "三次样条", "B样条"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 60
+tocDepth: 2
+---
+
+## Lagrange 插值
+
+Lagrange 基函数满足
+
+$$
+\ell_k(x_i)=\delta_{ik}=
+\begin{cases}
+  1,&i=k,\\
+  0,&i\neq k.
+\end{cases}
+$$
+
+插值多项式为
+
+$$L_n(x)=\sum_{k=0}^{n}\ell_k(x)y_k,$$
+
+其中
+
+$$
+\color{red}
+\ell_k(x)
+=\frac{(x-x_0)\cdots(x-x_{k-1})(x-x_{k+1})\cdots(x-x_n)}
+{(x_k-x_0)\cdots(x_k-x_{k-1})(x_k-x_{k+1})\cdots(x_k-x_n)}.
+$$
+
+### 定理 6.1（插值余项）
+
+若 $x,x_0,\ldots,x_n\in[a,b]$，则存在 $\xi_x\in(a,b)$，使
+
+$$
+\color{red}
+R_n(x)=f(x)-L_n(x)
+=\frac{f^{(n+1)}(\xi_x)}{(n+1)!}
+(x-x_0)\cdots(x-x_n).
+$$
+
+## Newton 插值
+
+### 定义 6.2（差商）
+
+差商递归定义为
+
+$$
+\color{red}
+\begin{aligned}
+f[x_i]&=f(x_i),\\
+f[x_i,x_j]&=\frac{f(x_i)-f(x_j)}{x_i-x_j},\\
+f[x_i,x_j,x_k]&=\frac{f[x_j,x_k]-f[x_i,x_j]}{x_k-x_i},
+\end{aligned}
+$$
+
+一般地，
+
+$$
+\color{red}
+f[x_{i_0},\ldots,x_{i_m}]
+=\frac{f[x_{i_1},\ldots,x_{i_m}]
+-f[x_{i_0},\ldots,x_{i_{m-1}}]}
+{x_{i_m}-x_{i_0}}.
+$$
+
+Newton 插值多项式为
+
+$$
+\color{red}
+\begin{aligned}
+N_n(x)={}&f(x_0)+f[x_0,x_1](x-x_0)\\
+&+f[x_0,x_1,x_2](x-x_0)(x-x_1)+\cdots\\
+&+f[x_0,x_1,\ldots,x_n]
+(x-x_0)\cdots(x-x_{n-1}).
+\end{aligned}
+$$
+
+其递推式为
+
+$$
+\color{red}
+N_{n+1}(x)=N_n(x)
++f[x_0,\ldots,x_{n+1}](x-x_0)\cdots(x-x_n).
+$$
+
+## Hermite 插值
+
+Hermite 插值不仅要求函数值相同，还要求相应阶导数相同，由此确定满足条件的插值多项式。
+
+## 分段低次插值
+
+### 定义 6.3
+
+设 $a=x_0<x_1<\cdots<x_n=b$。若
+
+1. $S(x)$ 在每个 $[x_i,x_{i+1}]$ 上均为三次多项式；
+2. $S\in C^1[a,b]$，并满足
+
+   $$
+   S(x_i)=y_i,\qquad S'(x_i)=m_i,
+   $$
+
+则称 $S(x)$ 为分段三次 Hermite 插值函数。
+
+记
+
+$$h_i=x_{i+1}-x_i,\qquad m_i=f'(x_i).$$
+
+在区间 $[x_i,x_{i+1}]$ 上利用 Hermite 插值，可得
+
+$$
+\color{red}
+\begin{aligned}
+S_i(x)={}&
+\frac{(x-x_{i+1})^2\bigl[h_i+2(x-x_i)\bigr]}{h_i^3}y_i
++\frac{(x-x_i)^2\bigl[h_i+2(x_{i+1}-x)\bigr]}{h_i^3}y_{i+1}\\
+&+\frac{(x-x_{i+1})^2(x-x_i)}{h_i^2}m_i
++\frac{(x-x_i)^2(x-x_{i+1})}{h_i^2}m_{i+1}.
+\end{aligned}
+$$
+
+要求二阶导数在各节点处连续，可得
+
+$$
+\color{red}
+\lambda_i m_{i-1}+2m_i+\mu_i m_{i+1}=g_i,
+\qquad i=1,2,\ldots,n-1,
+$$
+
+其中
+
+$$
+\color{red}
+\begin{aligned}
+\lambda_i&=\frac{h_i}{h_{i-1}+h_i},
+&\mu_i&=1-\lambda_i=\frac{h_{i-1}}{h_{i-1}+h_i},\\
+g_i&=3\bigl(\lambda_i f[x_{i-1},x_i]
++\mu_i f[x_i,x_{i+1}]\bigr).
+\end{aligned}
+$$
+
+### 第一边值条件
+
+$$m_0=S'(x_0)=\alpha_1,\qquad m_n=S'(x_n)=\alpha_2.$$
+
+于是
+
+$$
+\color{red}
+\begin{pmatrix}
+  2&\mu_1&&\\
+  \lambda_2&2&\mu_2&\\
+  &\ddots&\ddots&\ddots\\
+  &&\lambda_{n-2}&2&\mu_{n-2}\\
+  &&&\lambda_{n-1}&2
+\end{pmatrix}
+\begin{pmatrix}
+  m_1\\m_2\\\vdots\\m_{n-2}\\m_{n-1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  g_1-\lambda_1\alpha_1\\g_2\\\vdots\\g_{n-2}\\
+  g_{n-1}-\mu_{n-1}\alpha_2
+\end{pmatrix}.
+$$
+
+### 第二边值条件
+
+$$S''(x_0)=\beta_1,\qquad S''(x_n)=\beta_2.$$
+
+当 $\beta_1=\beta_2=0$ 时，称为自然边值条件。记
+
+$$
+\color{red}
+g_0=3f[x_0,x_1]-\frac{h_0}{2}\beta_1,
+\qquad
+g_n=3f[x_{n-1},x_n]+\frac{h_{n-1}}{2}\beta_2,
+$$
+
+则
+
+$$
+\color{red}
+\begin{pmatrix}
+  2&1&&&&\\
+  \lambda_1&2&\mu_1&&&\\
+  &\ddots&\ddots&\ddots&&\\
+  &&\lambda_{n-1}&2&\mu_{n-1}\\
+  &&&&1&2
+\end{pmatrix}
+\begin{pmatrix}
+  m_0\\m_1\\\vdots\\m_{n-1}\\m_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+  g_0\\g_1\\\vdots\\g_{n-1}\\g_n
+\end{pmatrix}.
+$$
+
+### 第三边值条件（混合边值条件）
+
+$$
+\begin{aligned}
+\alpha_1S'(x_0)+\beta_1S''(x_0)&=\gamma_1,\\
+\alpha_2S'(x_n)+\beta_2S''(x_n)&=\gamma_2.
+\end{aligned}
+$$
+
+### 周期边值条件
+
+$$
+\begin{aligned}
+S(x_0+0)&=S(x_n-0),\\
+S'(x_0+0)&=S'(x_n-0),\\
+S''(x_0+0)&=S''(x_n-0).
+\end{aligned}
+$$
+
+令
+
+$$
+\color{red}
+g_n=3\bigl(\lambda_n f[x_{n-1},x_n]
++\mu_n f[x_0,x_1]\bigr),
+\qquad
+\lambda_n=\frac{h_0}{h_0+h_{n-1}},
+\quad \mu_n=1-\lambda_n,
+$$
+
+则周期边值条件对应的方程组为
+
+$$
+\color{red}
+\begin{pmatrix}
+  2&\mu_1&&&\lambda_1\\
+  \lambda_2&2&\mu_2&&\\
+  &\ddots&\ddots&\ddots&\\
+  &&\lambda_{n-1}&2&\mu_{n-1}\\
+  \mu_n&&&\lambda_n&2
+\end{pmatrix}
+\begin{pmatrix}
+  m_1\\m_2\\\vdots\\m_{n-1}\\m_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+  g_1\\g_2\\\vdots\\g_{n-1}\\g_n
+\end{pmatrix}.
+$$
+
+## B 样条
+
+### 定义 6.4
+
+给定节点 $\{x_i\}_{i=0}^{N}$，若函数 $S(x)$ 满足
+
+1. 在每个区间 $[x_i,x_{i+1}]$ 上，$S(x)$ 是次数不超过 $n$ 的多项式；
+2. $S(x)$ 在 $(-\infty,+\infty)$ 上具有 $n-1$ 阶连续导数，
+
+则称 $S(x)$ 为 $n$ 次样条函数。
+
+定义 $n$ 次截断幂
+
+$$
+x_+^n=
+\begin{cases}
+  0,&x<0,\\
+  x^n,&x\geq0.
+\end{cases}
+$$
+
+以 $x_0,x_1,\ldots,x_N$ 为节点的 $n$ 次样条函数空间可表示为
+
+$$
+\mathcal{B}_n[x_0,x_1,\ldots,x_N]
+=\operatorname{span}\bigl\{
+1,x,x^2,\ldots,x^n,
+(x-x_0)_+^n,(x-x_1)_+^n,\ldots,(x-x_N)_+^n
+\bigr\}.
+$$
+
+定义一阶中心差分
+
+$$\delta f(x)=f\left(x+\frac12\right)-f\left(x-\frac12\right).$$
+
+于是
+
+$$
+\delta x_+^0,
+\quad \frac{1}{1!}\delta^2x_+^1,
+\quad \frac{1}{2!}\delta^3x_+^2,
+\quad \frac{1}{3!}\delta^4x_+^3,
+\quad\ldots
+$$
+
+均为具有紧支集的样条函数。一般地，
+
+$$M_n(x)=\frac{1}{n!}\delta^{n+1}x_+^n$$
+
+称为 $n$ 次均匀 $B$ 样条。

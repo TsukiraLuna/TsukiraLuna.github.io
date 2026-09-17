@@ -1,0 +1,1031 @@
+---
+title: "数值分析初步 第 9 章 例题"
+pubDate: 2024-09-09
+description: "本章汇集数值分析各主要方法的例题：Doolittle 与 Crout 分解、列主元 PLU 分解、Cholesky 分解、追赶法、Jacobi 与 Gauss-Seidel 迭代、SOR、最小二乘、特征值与插值。"
+tags: ["数值分析初步", "例题", "LU分解", "列主元消去", "追赶法", "Jacobi迭代", "SOR"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 90
+tocDepth: 2
+---
+
+## 解线性方程组的直接法例题
+
+### Doolittle 分解与 Crout 分解
+
+> **例题**
+>
+> 求矩阵
+>
+> $$
+> A=\begin{pmatrix}
+>   2&1&-2\\
+>   1&-1&2\\
+>   4&1&-1
+> \end{pmatrix}
+> $$
+>
+> 的 Doolittle 分解和 Crout 分解。
+
+#### Doolittle 分解
+
+设
+
+$$
+A=LU=
+\begin{pmatrix}
+  1&0&0\\ l_{21}&1&0\\ l_{31}&l_{32}&1
+\end{pmatrix}
+\begin{pmatrix}
+  u_{11}&u_{12}&u_{13}\\0&u_{22}&u_{23}\\0&0&u_{33}
+\end{pmatrix}.
+$$
+
+依次按行、列计算：
+
+$$
+\begin{aligned}
+u_{11}&=2,&u_{12}&=1,&u_{13}&=-2,\\
+l_{21}u_{11}&=a_{21},&l_{31}u_{11}&=a_{31},
+&l_{21}&=\frac12,\quad l_{31}=2,\\
+l_{21}u_{12}+u_{22}&=a_{22},&
+l_{21}u_{13}+u_{23}&=a_{23},
+&u_{22}&=-\frac32,\quad u_{23}=3,\\
+l_{31}u_{12}+l_{32}u_{22}&=a_{32},&&
+&l_{32}&=\frac{a_{32}-l_{31}u_{12}}{u_{22}}=\frac23,\\
+l_{31}u_{13}+l_{32}u_{23}+u_{33}&=a_{33},&&
+&u_{33}&=1.
+\end{aligned}
+$$
+
+因此
+
+$$
+\color{red}
+A=
+\begin{pmatrix}
+  1&0&0\\[2pt]\frac12&1&0\\[2pt]2&\frac23&1
+\end{pmatrix}
+\begin{pmatrix}
+  2&1&-2\\[2pt]0&-\frac32&3\\[2pt]0&0&1
+\end{pmatrix}.
+$$
+
+#### Crout 分解
+
+设
+
+$$
+A=LU=
+\begin{pmatrix}
+  l_{11}&0&0\\l_{21}&l_{22}&0\\l_{31}&l_{32}&l_{33}
+\end{pmatrix}
+\begin{pmatrix}
+  1&u_{12}&u_{13}\\0&1&u_{23}\\0&0&1
+\end{pmatrix}.
+$$
+
+由第一列得 $l_{11}=2,l_{21}=1,l_{31}=4$；由第一行得 $u_{12}=\frac12,u_{13}=-1$。再由第二列及第二行得
+
+$$l_{22}=-\frac32,\qquad l_{32}=-1,\qquad u_{23}=-2,$$
+
+最后由第三列得 $l_{33}=1$。故
+
+$$
+\color{red}
+A=
+\begin{pmatrix}
+  2&0&0\\[2pt]1&-\frac32&0\\[2pt]4&-1&1
+\end{pmatrix}
+\begin{pmatrix}
+  1&\frac12&-1\\[2pt]0&1&-2\\[2pt]0&0&1
+\end{pmatrix}.
+$$
+
+### 列主元消元与 PLU 分解
+
+列主元消元的每一步均包含一次换行 $P_i$ 和一次消元 $G_i$。若
+
+$$G_nP_n\cdots G_2P_2G_1P_1A=U,$$
+
+则可将置换矩阵移到左侧，得到 $PA=LU$。
+
+> **例题**
+>
+> 用列主元消元法求
+>
+> $$
+> A=\begin{pmatrix}
+>   2&3&5\\
+>   3&4&7\\
+>   1&3&3
+> \end{pmatrix}
+> $$
+>
+> 的 PLU 分解。
+
+第一步交换前两行：
+
+$$
+P_1=\begin{pmatrix}0&1&0\\1&0&0\\0&0&1\end{pmatrix},
+\qquad
+P_1A=\begin{pmatrix}3&4&7\\2&3&5\\1&3&3\end{pmatrix}.
+$$
+
+再作消元
+
+$$
+G_1=\begin{pmatrix}
+  1&0&0\\[2pt]-\frac23&1&0\\[2pt]-\frac13&0&1
+\end{pmatrix},
+\qquad
+G_1P_1A=\begin{pmatrix}
+  3&4&7\\[2pt]0&\frac13&\frac13\\[2pt]0&\frac53&\frac23
+\end{pmatrix}.
+$$
+
+第二步交换后两行并消元：
+
+$$
+\begin{aligned}
+P_2&=\begin{pmatrix}1&0&0\\0&0&1\\0&1&0\end{pmatrix},&
+G_2&=\begin{pmatrix}1&0&0\\0&1&0\\[2pt]0&-\frac15&1\end{pmatrix},\\
+G_2P_2G_1P_1A
+&=\begin{pmatrix}
+  3&4&7\\[2pt]0&\frac53&\frac23\\[2pt]0&0&\frac15
+\end{pmatrix}=U.
+\end{aligned}
+$$
+
+令 $P=P_2P_1$，并把消元矩阵按置换后的次序整理，得到
+
+$$
+\color{red}
+PA=LU,\qquad
+P=\begin{pmatrix}0&1&0\\0&0&1\\1&0&0\end{pmatrix},
+$$
+
+其中
+
+$$
+\color{red}
+L=\begin{pmatrix}
+  1&0&0\\[2pt]\frac13&1&0\\[2pt]\frac23&\frac15&1
+\end{pmatrix},\qquad
+U=\begin{pmatrix}
+  3&4&7\\[2pt]0&\frac53&\frac23\\[2pt]0&0&\frac15
+\end{pmatrix}.
+$$
+
+### Cholesky 分解
+
+对于对称正定矩阵，有 $A=LL^{\mathsf T}$。
+
+> **例题**
+>
+> 对
+>
+> $$
+> A=\begin{pmatrix}
+>   4&2&2\\
+>   2&10&1\\
+>   2&1&2
+> \end{pmatrix}
+> $$
+>
+> 作 Cholesky 分解。
+
+设 $L=\begin{pmatrix}l_{11}&0&0\\l_{21}&l_{22}&0\\l_{31}&l_{32}&l_{33}\end{pmatrix}$。逐列计算得
+
+$$
+\begin{aligned}
+l_{11}^2&=a_{11},&l_{11}&=2,\\
+l_{21}l_{11}&=a_{21},&l_{31}l_{11}&=a_{31},
+&l_{21}&=l_{31}=1,\\
+l_{21}^2+l_{22}^2&=a_{22},&l_{22}&=3,\\
+l_{31}l_{21}+l_{32}l_{22}&=a_{32},&l_{32}&=0,\\
+l_{31}^2+l_{32}^2+l_{33}^2&=a_{33},&l_{33}&=1.
+\end{aligned}
+$$
+
+所以
+
+$$
+\color{red}
+A=LL^{\mathsf T}=
+\begin{pmatrix}2&0&0\\1&3&0\\1&0&1\end{pmatrix}
+\begin{pmatrix}2&1&1\\0&3&0\\0&0&1\end{pmatrix}.
+$$
+
+### 三对角方程组
+
+> **例题**
+>
+> 用 Doolittle（追赶法）解
+>
+> $$
+> \begin{pmatrix}
+>   2&-1&0&0\\
+>   -1&2&-1&0\\
+>   0&-1&2&-1\\
+>   0&0&-1&2
+> \end{pmatrix}
+> \begin{pmatrix}x_1\\x_2\\x_3\\x_4\end{pmatrix}
+> =\begin{pmatrix}0\\0\\0\\5\end{pmatrix}.
+> $$
+
+其分解为
+
+$$
+\color{red}
+A=
+\begin{pmatrix}
+  1&0&0&0\\[2pt]-\frac12&1&0&0\\[2pt]
+  0&-\frac23&1&0\\[2pt]0&0&-\frac34&1
+\end{pmatrix}
+\begin{pmatrix}
+  2&-1&0&0\\[2pt]0&\frac32&-1&0\\[2pt]
+  0&0&\frac43&-1\\[2pt]0&0&0&\frac54
+\end{pmatrix}.
+$$
+
+先解 $Ly=b$，得 $y=(0,0,0,5)^{\mathsf T}$；再解 $Ux=y$，得
+
+$$\color{red}x=(1,2,3,4)^{\mathsf T}.$$
+
+## 解线性方程组的迭代法例题
+
+### 矩阵范数
+
+> **例题**
+>
+> 设
+>
+> $$A=\begin{pmatrix}2&1\\-1&4\end{pmatrix},$$
+>
+> 求 $\|A\|_1$、$\|A\|_\infty$、$\|A\|_2$ 及 $\rho(A)$。
+
+由列和与行和分别得到
+
+$$
+\begin{aligned}
+\color{red}
+\|A\|_1
+&=\max_{1\leq j\leq n}\sum_{i=1}^n|a_{ij}|
+  =\max\{3,5\}=5,\\
+\color{red}
+\|A\|_\infty
+&=\max_{1\leq i\leq n}\sum_{j=1}^n|a_{ij}|
+  =\max\{3,5\}=5.
+\end{aligned}
+$$
+
+笔记续算特征值为 $\lambda_1=7,\lambda_2=-1$，因而记为
+
+$$\color{red}\rho(A)=7,\qquad \|A\|_2=\rho(A)=7.$$
+
+### Jacobi 迭代法
+
+将 $A$ 分裂为
+
+$$\color{red}A=D-L-U,\qquad H=D^{-1}(L+U),\qquad g=D^{-1}b,$$
+
+则 $x^{(k+1)}=Hx^{(k)}+g$。
+
+> **例题**
+>
+> 对方程组
+>
+> $$
+> \begin{pmatrix}20&2&3\\1&8&1\\2&-3&15\end{pmatrix}
+> \begin{pmatrix}x_1\\x_2\\x_3\end{pmatrix}
+> =\begin{pmatrix}25\\10\\14\end{pmatrix},
+> \qquad x^{(0)}=(0,0,1)^{\mathsf T},
+> $$
+>
+> 写出 Jacobi 迭代格式。
+
+取
+
+$$
+D=\operatorname{diag}(20,8,15),\quad
+L=\begin{pmatrix}0&0&0\\-1&0&0\\-2&3&0\end{pmatrix},\quad
+U=\begin{pmatrix}0&-2&-3\\0&0&-1\\0&0&0\end{pmatrix}.
+$$
+
+于是
+
+$$
+\color{red}
+H=\begin{pmatrix}
+  0&-\frac1{10}&-\frac3{20}\\[2pt]
+  -\frac18&0&-\frac18\\[2pt]
+  -\frac2{15}&\frac15&0
+\end{pmatrix},\qquad
+g=\begin{pmatrix}\frac54\\[2pt]\frac54\\[2pt]\frac{14}{15}\end{pmatrix}.
+$$
+
+> **例题**
+>
+> 判断下列矩阵对应的 Jacobi 迭代是否收敛：
+>
+> $$
+> A_1=\begin{pmatrix}1&0.9&0.9\\0.9&1&0.9\\0.9&0.9&1\end{pmatrix},\qquad
+> A_2=\begin{pmatrix}1&0&1\\-1&1&0\\1&2&3\end{pmatrix}.
+> $$
+
+$A_1$ 为对称正定矩阵，故相应迭代收敛。对 $A_2$，它既不严格对角占优，也不对称正定，需考察迭代矩阵
+
+$$
+H=D^{-1}(L+U)=
+\begin{pmatrix}0&0&-1\\1&0&0\\[2pt]-\frac13&-\frac23&0\end{pmatrix}.
+$$
+
+其谱半径不小于 $1$，故 Jacobi 迭代不收敛。
+
+### Gauss–Seidel 迭代法
+
+Gauss–Seidel 迭代矩阵及常向量为
+
+$$\color{red}H=(D-L)^{-1}U,\qquad g=(D-L)^{-1}b.$$
+
+对前述三元方程组，
+
+$$
+H=\begin{pmatrix}
+  0&-\frac1{10}&-\frac3{20}\\[2pt]
+  0&\frac1{80}&-\frac{17}{160}\\[2pt]
+  0&\frac{19}{1200}&-\frac1{800}
+\end{pmatrix},\qquad
+g=\begin{pmatrix}\frac54\\[2pt]\frac{35}{32}\\[2pt]\frac{473}{480}\end{pmatrix}.
+$$
+
+对于矩阵 $A_2$，其 Gauss–Seidel 迭代矩阵的谱半径为 $1$，故迭代不收敛。
+
+### SOR 方法与一个收敛判据
+
+SOR 方法的迭代矩阵和常向量为
+
+$$
+\color{red}
+H=(D-\omega L)^{-1}\bigl[(1-\omega)D+\omega U\bigr],
+\qquad
+g=\omega(D-\omega L)^{-1}b.
+$$
+
+考虑一般定常迭代
+
+$$x^{(k+1)}=(I-B^{-1}A)x^{(k)}+B^{-1}b.$$
+
+若
+
+$$
+\rho\bigl((A-B)^{\mathsf T}(A-B)\bigr)
+<\min_{\lambda\in\sigma(BB^{\mathsf T})}|\lambda|,
+$$
+
+则该迭代收敛。事实上，只需验证 $\rho(H)<1$，而
+
+$$
+\begin{aligned}
+\color{red}
+\rho(I-B^{-1}A)
+&\leq\|I-B^{-1}A\|_2
+ \leq\|B^{-1}\|_2\,\|B-A\|_2\\
+&=\sqrt{\rho\bigl((BB^{\mathsf T})^{-1}\bigr)}
+  \sqrt{\rho\bigl((B-A)^{\mathsf T}(B-A)\bigr)}\\
+&=\sqrt{
+  \frac{\rho\bigl((A-B)^{\mathsf T}(A-B)\bigr)}
+  {\min_{\lambda\in\sigma(BB^{\mathsf T})}|\lambda|}}
+<1.
+\end{aligned}
+$$
+
+## 线性最小二乘问题例题
+
+### 正规方程法
+
+线性最小二乘问题 $Ax\approx b$ 的正规方程法为
+
+$$
+\color{red}
+C=A^{\mathsf T}A,\qquad d=A^{\mathsf T}b,\qquad
+C=LL^{\mathsf T},\qquad Ly=d,\quad L^{\mathsf T}x=y.
+$$
+
+> **例题**
+>
+> 用正规方程法求
+>
+> $$
+> A=\begin{pmatrix}2&3\\1&-1\\-2&4\end{pmatrix},\qquad
+> b=\begin{pmatrix}5\\-10\\-15\end{pmatrix}
+> $$
+>
+> 所确定的最小二乘解。
+
+计算得
+
+$$
+C=A^{\mathsf T}A=
+\begin{pmatrix}9&-3\\-3&26\end{pmatrix},\qquad
+d=A^{\mathsf T}b=\begin{pmatrix}30\\-35\end{pmatrix}.
+$$
+
+对 $C$ 作 Cholesky 分解：
+
+$$
+C=LL^{\mathsf T}=
+\begin{pmatrix}3&0\\-1&5\end{pmatrix}
+\begin{pmatrix}3&-1\\0&5\end{pmatrix}.
+$$
+
+由 $Ly=d$ 得 $y=(10,-5)^{\mathsf T}$，再由 $L^{\mathsf T}x=y$ 得
+
+$$\color{red}x=(3,-1)^{\mathsf T}.$$
+
+### Householder 与 Givens 变换
+
+Householder 变换写为
+
+$$
+\color{red}H=I-2ww^{\mathsf T},\qquad
+w=\frac{y-z}{\|y-z\|_2}.
+$$
+
+> **例题**
+>
+> 设 $y=(2,1,-2)^{\mathsf T}$，$z=(\|y\|_2,0,0)^{\mathsf T}=(3,0,0)^{\mathsf T}$，求满足 $Hy=z$ 的 Householder 矩阵。
+
+此时
+
+$$
+w=\frac1{\sqrt6}(-1,1,-2)^{\mathsf T},\qquad
+\color{red}
+H=\frac13\begin{pmatrix}2&1&-2\\1&2&2\\-2&2&-1\end{pmatrix}.
+$$
+
+Givens 变换满足
+
+$$
+\begin{pmatrix}c&s\\-s&c\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=\begin{pmatrix}\sqrt{a^2+b^2}\\0\end{pmatrix},\qquad
+c=\frac{a}{\sqrt{a^2+b^2}},\quad
+s=\frac{b}{\sqrt{a^2+b^2}}.
+$$
+
+> **例题**
+>
+> 用 Givens 变换将 $y=(1,\sqrt3,-2)^{\mathsf T}$ 化为 $z=(\|y\|_2,0,0)^{\mathsf T}$。
+
+先消去第二个分量，取 $c=\frac12,s=\frac{\sqrt3}{2}$：
+
+$$
+\begin{pmatrix}
+\frac12&\frac{\sqrt3}{2}&0\\
+-\frac{\sqrt3}{2}&\frac12&0\\0&0&1
+\end{pmatrix}
+\begin{pmatrix}1\\\sqrt3\\-2\end{pmatrix}
+=\begin{pmatrix}2\\0\\-2\end{pmatrix}.
+$$
+
+再在第一、第三分量间旋转，取 $c=\frac{\sqrt2}{2}$、$s=-\frac{\sqrt2}{2}$，得到 $(2\sqrt2,0,0)^{\mathsf T}$。
+
+### Householder QR 分解
+
+> **例题**
+>
+> 求
+>
+> $$
+> A=\begin{pmatrix}
+>   2&3\\
+>   1&-1\\
+>   -2&4
+> \end{pmatrix}
+> $$
+>
+> 的 QR 分解。
+
+对第一列 $a_1=(2,1,-2)^{\mathsf T}$，令
+
+$$
+w_1=\frac{a_1-(3,0,0)^{\mathsf T}}
+{\|a_1-(3,0,0)^{\mathsf T}\|_2}
+=\frac1{\sqrt6}(-1,1,-2)^{\mathsf T},
+$$
+
+则
+
+$$
+H_1=I-2w_1w_1^{\mathsf T}
+=\begin{pmatrix}
+\frac23&\frac13&-\frac23\\[2pt]
+\frac13&\frac23&\frac23\\[2pt]
+-\frac23&\frac23&-\frac13
+\end{pmatrix},\qquad
+H_1A=\begin{pmatrix}3&-1\\0&3\\0&-4\end{pmatrix}.
+$$
+
+再令
+
+$$
+w_2=-\frac1{\sqrt5}\begin{pmatrix}2\\4\end{pmatrix},\qquad
+\bar H_2=I-2w_2w_2^{\mathsf T}
+=\begin{pmatrix}-\frac35&-\frac45\\[2pt]-\frac45&\frac35\end{pmatrix}.
+$$
+
+于是
+
+$$
+\begin{pmatrix}1&0\\0&\bar H_2\end{pmatrix}H_1A
+=\begin{pmatrix}3&-1\\0&5\\0&0\end{pmatrix}=R.
+$$
+
+令 $Q=H_1\operatorname{diag}(1,\bar H_2)$，则 $A=QR$。
+
+由此也可直接解本节最小二乘例题：
+
+$$
+Q_1^{\mathsf T}b=\begin{pmatrix}10\\-5\end{pmatrix},\qquad
+\begin{pmatrix}3&-1\\0&5\end{pmatrix}x
+=\begin{pmatrix}10\\-5\end{pmatrix},\qquad
+x=(3,-1)^{\mathsf T}.
+$$
+
+## 矩阵特征值问题例题
+
+### 乘幂法、位移法与反幂法
+
+乘幂法迭代为
+
+$$
+y^{(k)}=Ax^{(k-1)},\qquad
+m_k=\max_i|y_i^{(k)}|,\qquad
+x^{(k)}=\frac{y^{(k)}}{m_k}.
+$$
+
+> **例题**
+>
+> 用乘幂法估计
+>
+> $$
+> A=\begin{pmatrix}-4&14&0\\-5&13&0\\-1&0&2\end{pmatrix},\qquad
+> x^{(0)}=(1,1,1)^{\mathsf T}
+> $$
+>
+> 的最大模特征值及特征向量。
+
+第一步
+
+$$
+y^{(1)}=Ax^{(0)}=(10,8,1)^{\mathsf T},\qquad
+m_1=10,\qquad x^{(1)}=\left(1,\frac45,\frac1{10}\right)^{\mathsf T}.
+$$
+
+迭代后主特征值趋于 $10$，相应特征向量趋于 $\left(1,\frac{11}{15},-\frac15\right)^{\mathsf T}$。
+
+采用原点位移 $B=A-pI$ 时，$A$ 的特征值满足 $\lambda=p+\widetilde\lambda$。笔记取 $p=2.5$，则
+
+$$
+B=\begin{pmatrix}-6.5&14&0\\-5&10.5&0\\-1&0&-0.5\end{pmatrix},\qquad
+Bx^{(0)}=(7.5,5.5,-1.5)^{\mathsf T}.
+$$
+
+由位移后的主特征值 $7.5$，还原得 $\lambda_{\max}=10$。
+
+反幂法对 $A^{-1}$ 使用乘幂法，用于求最小模特征值。笔记计算
+
+$$
+A^{-1}=\begin{pmatrix}
+\frac{13}{18}&-\frac79&0\\[2pt]
+\frac5{18}&-\frac29&0\\[2pt]
+\frac{13}{36}&-\frac7{18}&\frac12
+\end{pmatrix},\qquad
+y^{(1)}=A^{-1}x^{(0)}
+=\begin{pmatrix}-\frac1{18}\\[2pt]\frac1{18}\\[2pt]\frac{17}{36}\end{pmatrix}.
+$$
+
+### 对称矩阵 Jacobi 方法
+
+对于对称矩阵，取正交旋转矩阵 $P_k$，作
+
+$$A_{k+1}=P_k^{\mathsf T}A_kP_k,$$
+
+逐步消去最大的非对角元。
+
+> **例题**
+>
+> 对
+>
+> $$
+> A=\begin{pmatrix}
+>   2&-1&0\\
+>   -1&2&-1\\
+>   0&-1&2
+> \end{pmatrix}
+> $$
+>
+> 作一次 Jacobi 旋转。
+
+先取 $a_{12}=a_{21}$，有
+
+$$
+\tan2\theta=\frac{-2a_{12}}{a_{11}-a_{22}}=\infty,\qquad
+\theta=\frac\pi4,\quad c=s=\frac{\sqrt2}{2},
+$$
+
+故
+
+$$
+P_1=\begin{pmatrix}
+\frac{\sqrt2}{2}&\frac{\sqrt2}{2}&0\\
+-\frac{\sqrt2}{2}&\frac{\sqrt2}{2}&0\\0&0&1
+\end{pmatrix}.
+$$
+
+继续选择新的最大非对角元作旋转，直至非对角元足够小；最终对角元给出特征值，旋转矩阵之积的列向量给出相应特征向量。
+
+### Householder 三对角化与 Sturm 序列
+
+> **例题**
+>
+> 用 Householder 方法将对称矩阵
+>
+> $$
+> A=\begin{pmatrix}
+>  1&2&1&2\\2&3&-1&1\\1&-1&1&1\\2&1&1&1
+> \end{pmatrix}
+> $$
+>
+> 化为对称三对角矩阵。
+
+第一步使第一列主对角线以下仅保留一个非零元。令 $y=(2,1,2)^{\mathsf T}$、$z=(3,0,0)^{\mathsf T}$，则
+
+$$
+w_1=\frac1{\sqrt6}(-1,1,2)^{\mathsf T},\qquad
+H_1=I-2w_1w_1^{\mathsf T}
+=\begin{pmatrix}
+\frac23&\frac13&\frac23\\[2pt]
+\frac13&\frac23&-\frac23\\[2pt]
+\frac23&-\frac23&-\frac13
+\end{pmatrix}.
+$$
+
+嵌入为 $\operatorname{diag}(1,H_1)$，作正交相似变换后得
+
+$$
+\operatorname{diag}(1,H_1)A\operatorname{diag}(1,H_1)^{\mathsf T}
+=\begin{pmatrix}
+1&3&0&0\\3&a_{22}&a_{23}&a_{24}\\
+0&a_{32}&a_{33}&a_{34}\\0&a_{42}&a_{43}&a_{44}
+\end{pmatrix}.
+$$
+
+再构造 $H_2$，使 $H_2(a_{32},a_{42})^{\mathsf T}=(\sqrt{a_{32}^2+a_{42}^2},0)^{\mathsf T}$，即可得到三对角矩阵。
+
+> **例题**
+>
+> 用 Sturm 序列判断三对角矩阵
+>
+> $$
+> T=\begin{pmatrix}
+> -2&1&&&\\1&-2&1&&\\&1&-2&1&\\&&1&-2&1\\&&&1&-2
+> \end{pmatrix}
+> $$
+>
+> 在给定区间内的特征值个数。
+
+其主子式序列满足
+
+$$
+p_0(\lambda)=1,\quad p_1(\lambda)=-2-\lambda,\quad
+p_j(\lambda)=(-2-\lambda)p_{j-1}(\lambda)-p_{j-2}(\lambda).
+$$
+
+例如在 $\lambda=-2$ 与 $\lambda=0$ 处列符号表，用两端符号变化次数之差，可知区间 $[-2,0]$ 中有三个特征值；继续二分即可逐个定位。
+
+## 插值与样条例题
+
+### Lagrange 与 Newton 插值
+
+> **例题**
+>
+> 已知
+>
+> $$
+> \begin{array}{c|ccc}
+> x&0.32&0.34&0.36\\\hline
+> \sin x&0.314567&0.333487&0.352274
+> \end{array}
+> $$
+>
+> 用线性插值和抛物插值估计 $\sin0.3367$。
+
+线性插值取最接近的节点 $0.32,0.34$，其基函数为
+
+$$
+l_0(x)=\frac{x-0.34}{0.32-0.34},\qquad
+l_1(x)=\frac{x-0.32}{0.34-0.32},
+$$
+
+故 $L_1(0.3367)=l_0(0.3367)y_0+l_1(0.3367)y_1$。抛物插值使用三个节点并代入
+
+$$
+L_2(x)=\sum_{k=0}^{2}y_k
+\prod_{j\ne k}\frac{x-x_j}{x_k-x_j}.
+$$
+
+Newton 插值的计算式为
+
+$$
+\begin{aligned}
+N_n(x)={}&f[x_0]+f[x_0,x_1](x-x_0)
++f[x_0,x_1,x_2](x-x_0)(x-x_1)+\cdots\\
+&+f[x_0,\ldots,x_n](x-x_0)\cdots(x-x_{n-1}).
+\end{aligned}
+$$
+
+### 三次 Hermite 插值及余项
+
+设节点 $x_0,x_1,x_2$ 上同时给定 $f(x_i)$ 和 $f'(x_i)$。构造基函数 $\alpha_i(x),\beta_i(x)$，使
+
+$$
+\alpha_i(x_j)=\delta_{ij},\quad \alpha_i'(x_j)=0,\qquad
+\beta_i(x_j)=0,\quad \beta_i'(x_j)=\delta_{ij}.
+$$
+
+记 Lagrange 基函数为 $l_i(x)$，则
+
+$$
+\begin{aligned}
+\alpha_i(x)&=l_i(x)^2
+\left[1-2(x-x_i)\sum_{j\ne i}\frac1{x_i-x_j}\right],\\
+\beta_i(x)&=(x-x_i)l_i(x)^2,
+\end{aligned}
+$$
+
+并有
+
+$$
+H_5(x)=\sum_{i=0}^{2}
+\bigl[f(x_i)\alpha_i(x)+f'(x_i)\beta_i(x)\bigr].
+$$
+
+为求余项，令
+
+$$F(t)=f(t)-H_5(t)-\lambda(x)(t-x_0)^2(t-x_1)^2(t-x_2)^2,$$
+
+并令 $F(x)=0$。由于 $x_0,x_1,x_2$ 均为二重零点，反复使用 Rolle 定理得
+
+$$
+\color{red}
+R_5(x)=f(x)-H_5(x)
+=\frac{f^{(6)}(\xi)}{6!}
+(x-x_0)^2(x-x_1)^2(x-x_2)^2.
+$$
+
+### 三次样条例题
+
+> **例题**
+>
+> 给定节点
+>
+> $$
+> \begin{array}{c|cccc}
+> x&1&2&4&5\\\hline
+> y&1&3&4&2
+> \end{array}
+> $$
+>
+> 并给定第二边值条件 $S''(1)=S''(5)=6$，求三次样条插值函数。
+
+步长为 $h_0=1,h_1=2,h_2=1$，故
+
+$$
+\lambda_1=\frac23,\quad\mu_1=\frac13,\qquad
+\lambda_2=\frac13,\quad\mu_2=\frac23.
+$$
+
+右端为
+
+$$
+\begin{aligned}
+g_0&=3f[x_0,x_1]-\frac{h_0}{2}S''(x_0)=3,\\
+g_1&=3\left(\lambda_1f[x_0,x_1]+\mu_1f[x_1,x_2]\right)=\frac92,\\
+g_2&=3\left(\lambda_2f[x_1,x_2]+\mu_2f[x_2,x_3]\right)=-\frac72,\\
+g_3&=3f[x_2,x_3]+\frac{h_2}{2}S''(x_3)=-3.
+\end{aligned}
+$$
+
+于是
+
+$$
+\begin{pmatrix}
+2&1&0&0\\[2pt]\frac23&2&\frac13&0\\[2pt]
+0&\frac13&2&\frac23\\[2pt]0&0&1&2
+\end{pmatrix}
+\begin{pmatrix}m_0\\m_1\\m_2\\m_3\end{pmatrix}
+=\begin{pmatrix}3\\[2pt]\frac92\\[2pt]-\frac72\\-3\end{pmatrix}.
+$$
+
+解得
+
+$$
+m_0=\frac{17}{8},\quad m_1=\frac74,\quad
+m_2=-\frac54,\quad m_3=-\frac{19}{8}.
+$$
+
+代入分段 Hermite 公式，得到
+
+$$
+\color{red}
+S(x)=\begin{cases}
+-\frac18x^3+\frac38x^2+\frac74x-1,&x\in[1,2],\\[2pt]
+-\frac18x^3+\frac38x^2+\frac74x-1,&x\in[2,4],\\[2pt]
+\frac38x^3-\frac{45}{8}x^2+\frac{103}{4}x-33,&x\in[4,5].
+\end{cases}
+$$
+
+## 数值积分与常微分方程例题
+
+### 两点 Gauss 求积公式
+
+在 $[-1,1]$ 上取两个 Gauss 点 $x_0,x_1$。节点多项式 $(x-x_0)(x-x_1)$ 应与 $1,x$ 正交：
+
+$$
+\int_{-1}^{1}(x-x_0)(x-x_1)\,\mathrm dx=0,\qquad
+\int_{-1}^{1}x(x-x_0)(x-x_1)\,\mathrm dx=0.
+$$
+
+由此
+
+$$
+x_0x_1=-\frac13,\qquad x_0+x_1=0,\qquad
+x_0=-\frac1{\sqrt3},\quad x_1=\frac1{\sqrt3}.
+$$
+
+权重为
+
+$$
+w_0=\int_{-1}^{1}\frac{x-x_1}{x_0-x_1}\,\mathrm dx=1,\qquad
+w_1=\int_{-1}^{1}\frac{x-x_0}{x_1-x_0}\,\mathrm dx=1.
+$$
+
+故
+
+$$
+\color{red}
+\int_{-1}^{1}f(x)\,\mathrm dx
+\approx f\!\left(-\frac1{\sqrt3}\right)
++f\!\left(\frac1{\sqrt3}\right).
+$$
+
+### Euler 格式例题
+
+> **例题**
+>
+> 对初值问题
+>
+> $$y'=y-\frac{2x}{y},\qquad y(0)=1,\qquad h=0.1,$$
+>
+> 写出向前 Euler 和改进 Euler 格式。
+
+向前 Euler 格式为
+
+$$y_{n+1}=y_n+h\left(y_n-\frac{2x_n}{y_n}\right).$$
+
+改进 Euler 格式先预测
+
+$$\bar y_{n+1}=y_n+h\left(y_n-\frac{2x_n}{y_n}\right),$$
+
+再校正
+
+$$
+y_{n+1}=y_n+\frac h2\left[
+y_n-\frac{2x_n}{y_n}
++\bar y_{n+1}-\frac{2x_{n+1}}{\bar y_{n+1}}
+\right].
+$$
+
+向前与向后 Euler 为一阶，梯形与改进 Euler 为二阶，经典四级 Runge–Kutta 为四阶。
+
+### 绝对稳定域例题
+
+考虑二级 Runge–Kutta 中点格式
+
+$$
+y_{n+1}=y_n+h f\!\left(x_n+\frac h2,
+y_n+\frac h2f(x_n,y_n)\right).
+$$
+
+将测试方程 $y'=\mu y$ 代入，得
+
+$$y_{n+1}=\left(1+h\mu+\frac{(h\mu)^2}{2}\right)y_n.$$
+
+故其绝对稳定域为
+
+$$
+\color{red}
+\left\{z\in\mathbb C:\bigl|1+z+\frac{z^2}{2}\bigr|<1\right\},
+\qquad z=h\mu.
+$$
+
+## 补充矩阵例题
+
+### 顺序主子式与 Cholesky 分解
+
+> **例题**
+>
+> 设
+>
+> $$A=\begin{pmatrix}1&0&\alpha\\0&1&\alpha\\\alpha&\alpha&1\end{pmatrix}.$$
+>
+> 讨论 $A=LU$、$A=LL^{\mathsf T}$ 的存在条件及正定性。
+
+不选主元的 $LU$ 分解存在要求各阶顺序主子式非零，即
+
+$$1\ne0,\qquad1\ne0,\qquad\det A=1-2\alpha^2\ne0,$$
+
+故 $\alpha\ne\pm\frac{\sqrt2}{2}$。因为 $A$ 对称，Cholesky 分解存在等价于正定，条件为
+
+$$1>0,\qquad1>0,\qquad1-2\alpha^2>0,$$
+
+即
+
+$$\color{red}-\frac{\sqrt2}{2}<\alpha<\frac{\sqrt2}{2}.$$
+
+### 带参数的定常迭代
+
+> **例题**
+>
+> 对
+>
+> $$
+> A=\begin{pmatrix}2&1\\1&2\end{pmatrix},\qquad
+> b=\begin{pmatrix}1\\2\end{pmatrix},\qquad
+> x^{(k+1)}=x^{(k)}+\omega(Ax^{(k)}-b),
+> $$
+>
+> 讨论收敛区间并求最优参数。
+
+迭代矩阵为
+
+$$
+H_\omega=I+\omega A=
+\begin{pmatrix}2\omega+1&\omega\\\omega&2\omega+1\end{pmatrix}.
+$$
+
+其特征值为 $\omega+1$ 与 $3\omega+1$，故
+
+$$\rho(H_\omega)=\max\{|\omega+1|,|3\omega+1|\}.$$
+
+收敛条件 $\rho(H_\omega)<1$ 给出
+
+$$\color{red}-\frac23<\omega<0.$$
+
+两条绝对值函数相等时谱半径最小，得
+
+$$\color{red}\omega_{\mathrm{opt}}=-\frac12.$$
+
+### SOR 收敛的必要条件
+
+SOR 迭代矩阵为
+
+$$H_\omega=(D-\omega L)^{-1}\bigl[(1-\omega)D+\omega U\bigr].$$
+
+由特征方程
+
+$$\det\!\left(\lambda(D-\omega L)-[(1-\omega)D+\omega U]\right)=0$$
+
+可知，当 $0<\omega\leq1$ 且 $|\lambda|\geq1$ 时会与严格对角占优矛盾，因而在相应条件下 SOR 收敛；更一般的必要条件为 $0<\omega<2$。
+
+### 线性方程组的扰动误差
+
+若 $Ax=b$，而扰动系统为
+
+$$(A+\delta A)(x+\delta x)=b,$$
+
+则
+
+$$\delta x=-A^{-1}\delta A(x+\delta x).$$
+
+从而
+
+$$
+\color{red}
+\frac{\|\delta x\|_2}{\|x+\delta x\|_2}
+\leq\|A^{-1}\|_2\,\|\delta A\|_2
+=\kappa_2(A)\frac{\|\delta A\|_2}{\|A\|_2}.
+$$
+
+对对称矩阵，$\|A\|_2=\max_i|\lambda_i|$、$\|A^{-1}\|_2=1/\min_i|\lambda_i|$。
+
+### 正定矩阵诱导的范数
+
+若 $A$ 对称正定，则存在 Cholesky 分解 $A=Q^{\mathsf T}Q$，定义
+
+$$\|x\|_A=(x^{\mathsf T}Ax)^{1/2}=\|Qx\|_2.$$
+
+由 $Q$ 可逆以及 Euclid 范数的性质，立即得到正定性、齐次性和三角不等式，故 $\|\cdot\|_A$ 确为向量范数。

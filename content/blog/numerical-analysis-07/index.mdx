@@ -1,0 +1,152 @@
+---
+title: "数值分析初步 第 7 章 数值积分"
+pubDate: 2024-09-07
+description: "本章介绍数值积分：Newton–Cotes 求积公式与代数精度的刻画、梯形与 Simpson 公式及其余项、求积公式的收敛性与稳定性，复化梯形与复化 Simpson 公式、Romberg 逐级外推算法，以及正交多项式与 Gauss 型求积公式。"
+tags: ["数值分析初步", "数值积分", "Newton-Cotes", "Simpson公式", "Romberg", "Gauss求积"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 70
+tocDepth: 2
+---
+
+## Newton–Cotes 求积公式
+
+对积分采用求积公式
+
+$$\int_a^b f(x)\,\mathrm{d}x\approx\sum_{j=0}^{n}A_{j,n}f(x_{j,n}),\qquad Q_n[f]=\sum_{k=0}^{n}w_k^{(n)}f_k.$$
+
+记
+
+$$I(f)=Q_n[f]+R_n[f],$$
+
+其中 $R_n[f]$ 为求积余项。若
+
+$$R_n[x^k]=0\quad(0\leq k\leq m),\qquad R_n[x^{m+1}]\ne0,$$
+
+则称求积公式具有 $m$ 次代数精度。
+
+### 定理 7.1
+
+形如 $Q_n[f]$ 的 $(n+1)$ 点求积公式具有至少 $n$ 次代数精度，当且仅当它是插值型求积公式。用插值多项式近似 $f(x)$，取 Lagrange 插值基函数 $l_k(x)$，则
+
+$$\color{red}{w_k^{(n)}=\int_a^b l_k(x)\,\mathrm{d}x,\qquad R_n[f]=\frac{1}{(n+1)!}\int_a^b f^{(n+1)}(\xi_x)\prod_{k=0}^{n}(x-x_k)\,\mathrm{d}x.}$$
+
+由此得到 Newton–Cotes 求积公式。梯形公式及其余项为
+
+$$
+\color{red}
+\begin{aligned}
+Q_1[f]&=\frac{b-a}{2}\bigl(f(a)+f(b)\bigr),\\
+R_1[f]&=-\frac{(b-a)^3}{12}f''(\eta),\qquad \eta\in(a,b).
+\end{aligned}
+$$
+
+Simpson 公式（抛物线求积公式）及其余项为
+
+$$
+\color{red}
+\begin{aligned}
+Q_2[f]&=\frac{b-a}{6}\left[f(a)+4f\left(\frac{a+b}{2}\right)+f(b)\right],\\
+R_2[f]&=-\frac{b-a}{180}h^4 f^{(4)}(\eta),\qquad h=\frac{b-a}{2},\quad \eta\in(a,b).
+\end{aligned}
+$$
+
+### 定义 7.1（收敛性）
+
+记 $h=\max_{0\leq j<n}(x_{j+1}-x_j)$。若
+
+$$\color{red}{\lim_{h\to0}R_n[f]=0,}$$
+
+则称求积公式收敛。
+
+### 定义 7.2（稳定性）
+
+若对任意 $\varepsilon>0$，存在 $\delta>0$，使得当 $|f_j-\widetilde f_j|\leq\delta$ 时，有
+
+$$\color{red}{|Q_n[f]-Q_n[\widetilde f]|\leq\varepsilon,}$$
+
+则称求积公式稳定。
+
+### 定理 7.3
+
+若 $A_{j,n}>0$，则求积公式稳定。
+
+## 复化求积公式与 Romberg 方法
+
+设 $h=(b-a)/m$，$x_k=a+kh$。若在每个小区间 $[x_k,x_{k+1}]$ 上采用梯形公式，则有复化梯形公式
+
+$$
+\color{red}
+\begin{aligned}
+Q_1^{(m)}[f]&=\frac h2\left(f_0+f_m+2\sum_{k=1}^{m-1}f_k\right),\\
+R_1^{(m)}[f]&=-\frac{b-a}{12}h^2f''(\eta).
+\end{aligned}
+$$
+
+若将区间 $2m$ 等分，在 $[x_{2j},x_{2j+2}]$ 上用 Simpson 公式，则有复化 Simpson 公式
+
+$$
+\color{red}
+\begin{aligned}
+Q_2^{(2m)}[f]&=\frac h6\left(f_0+4\sum_{j=0}^{m-1}f_{2j+1}+2\sum_{j=1}^{m-1}f_{2j}+f_{2m}\right),\\
+R_2^{(2m)}[f]&=-\frac{b-a}{180}h^4f^{(4)}(\eta).
+\end{aligned}
+$$
+
+Romberg 求积公式由不同步长的复化求积公式外推得到。以步长 $h=(b-a)/m$ 的复化梯形公式 $Q_1^{(m)}[f]$ 与步长 $h/2=(b-a)/(2m)$ 的 $Q_1^{(2m)}[f]$ 为例，有
+
+$$\color{red}{Q_2^{(2m)}[f]=\frac{2^2Q_1^{(2m)}[f]-Q_1^{(m)}[f]}{2^2-1}.}$$
+
+进一步的复化 Cotes 公式与 Romberg 公式为
+
+$$
+\color{red}
+\begin{aligned}
+Q_4^{(4m)}[f]&=\frac{2^4Q_2^{(4m)}[f]-Q_2^{(2m)}[f]}{2^4-1},\\
+Q_8^{(8m)}[f]&=\frac{2^6Q_4^{(8m)}[f]-Q_4^{(4m)}[f]}{2^6-1}.
+\end{aligned}
+$$
+
+相应的 Romberg 算法按步长逐级外推：
+
+| 步长 | 梯形 | Simpson | Cotes | Romberg |
+| --- | --- | --- | --- | --- |
+| $h$ | $Q_1^{(m)}$ | | | |
+| $h/2$ | $Q_1^{(2m)}$ | $Q_2^{(2m)}$ | | |
+| $h/2^2$ | $Q_1^{(4m)}$ | $Q_2^{(4m)}$ | $Q_4^{(4m)}$ | |
+| $h/2^3$ | $Q_1^{(8m)}$ | $Q_2^{(8m)}$ | $Q_4^{(8m)}$ | $Q_8^{(8m)}$ |
+| $h/2^4$ | $Q_1^{(16m)}$ | $Q_2^{(16m)}$ | $Q_4^{(16m)}$ | $Q_8^{(16m)}$ |
+
+## Gauss 型求积公式
+
+### 定理 7.3（Gauss 型求积）
+
+在 $[a,b]$ 上选择节点 $x_0,\ldots,x_n$，使 $\sum_{j=0}^{n}w_jf(x_j)$ 具有 $2n+1$ 阶代数精度，其节点称为 Gauss 点，相应公式称为 Gauss 型求积公式。
+
+### 定义 7.4
+
+设 $\rho(x)>0$，$x\in[a,b]$，并令
+
+$$g_i(x)=a_0+a_1x+\cdots+a_ix^i.$$
+
+若 $\{g_i(x)\}$ 满足
+
+$$
+(g_j,g_k)=\int_a^b\rho(x)g_j(x)g_k(x)\,\mathrm{d}x=\begin{cases}0,&j\ne k,\\ c_k\ne0,&j=k,\end{cases}
+$$
+
+则称 $g_0(x),\ldots,g_n(x)$ 为 $[a,b]$ 上带权函数 $\rho(x)$ 的正交多项式。
+
+### 定理 7.4
+
+$(n+1)$ 个节点 $x_0,\ldots,x_n$ 为 Gauss 点时，求积公式
+
+$$\color{red}{\int_a^b\rho(x)f(x)\,\mathrm{d}x\approx\sum_{k=0}^{n}w_k^{(n)}f(x_k)}$$
+
+具有 $2n+1$ 阶代数精度。Gauss 点的等价条件是节点多项式
+
+$$\color{red}{\pi_{n+1}(x)=\prod_{j=0}^{n}(x-x_j)}$$
+
+与一切次数不超过 $n$ 的多项式正交，即
+
+$$\color{red}{\int_a^b\rho(x)x^k\pi_{n+1}(x)\,\mathrm{d}x=0,\qquad k=0,1,\ldots,n.}$$

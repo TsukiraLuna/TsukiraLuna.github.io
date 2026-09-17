@@ -1,0 +1,273 @@
+---
+title: "数值分析初步 第 4 章 解线性最小二乘问题的直接方法"
+pubDate: 2024-09-04
+description: "本章讨论线性最小二乘问题的直接解法：先给出最小二乘解、像空间与核空间、正交补的定义，导出法方程与解的判别条件，再介绍 Householder 与 Givens 初等正交变换，最后用正交变换构造 QR 分解并据此求解最小二乘问题。"
+tags: ["数值分析初步", "最小二乘", "广义逆", "QR分解", "正交变换"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 40
+tocDepth: 2
+---
+
+## 线性最小二乘问题
+
+### 定义 4.1
+
+设 $b\in\mathbb{R}^m$，$A\in\mathbb{R}^{m\times n}$，$x\in\mathbb{R}^n$。若
+
+$$
+\|r(x)\|_2
+=\min_{z\in\mathbb{R}^n}\|r(z)\|_2
+=\min_{z\in\mathbb{R}^n}\|b-Az\|_2,
+$$
+
+则称 $x$ 为线性最小二乘问题的解。
+
+### 定义 4.2
+
+$$
+\begin{aligned}
+\operatorname{Im}(A)&=\{y\in\mathbb{R}^m:y=Ax,\ x\in\mathbb{R}^n\},\\
+\operatorname{Ker}(A)&=\{x\in\mathbb{R}^n:Ax=0\}.
+\end{aligned}
+$$
+
+### 定义 4.3
+
+设 $S\subset\mathbb{R}^n$，定义
+
+$$
+S^\perp=\{z\in\mathbb{R}^n:z^{\mathsf T}x=0,\ \forall x\in S\}.
+$$
+
+> **定理**
+>
+> $$
+> Ax=b\ \text{有解}
+> \quad\Longleftrightarrow\quad
+> r(A)=r(A\mid b).
+> $$
+
+> **定理**
+>
+> 若 $Ax=b$ 有解 $x_0$，则其解集为
+>
+> $$
+> x_0+\operatorname{Ker}(A).
+> $$
+
+### 推论 4.1
+
+$$
+Ax=b\ \text{唯一解}
+\quad\Longleftrightarrow\quad
+\operatorname{Ker}(A)=\{0\}.
+$$
+
+> **定理**
+>
+> 线性最小二乘解唯一，当且仅当
+>
+> $$
+> \operatorname{Ker}(A)=\{0\}.
+> $$
+
+记
+
+$$
+X_{\mathrm{LS}}=\{x\in\mathbb{R}^n:x\ \text{为最小二乘解}\}.
+$$
+
+> **定理**
+>
+> $$
+> x\in X_{\mathrm{LS}}
+> \quad\Longleftrightarrow\quad
+> \color{red}A^{\mathsf T}Ax=A^{\mathsf T}b.
+> $$
+>
+> 若 $A$ 列满秩，则上述法方程有唯一解。
+
+### 法方程方法
+
+1. 计算 $C=A^{\mathsf T}A$，$d=A^{\mathsf T}b$；
+2. 计算 $C$ 的 Cholesky 分解 $C=LL^{\mathsf T}$；
+3. 解三角方程组 $Ly=d$，$L^{\mathsf T}x=y$。
+
+### 定义 4.4（M–P 广义逆）
+
+若矩阵 $B$ 满足
+
+$$
+ABA=A,\qquad BAB=B,\qquad (AB)^{\mathsf T}=AB,\qquad (BA)^{\mathsf T}=BA,
+$$
+
+则称 $B$ 为 $A$ 的 M–P 广义逆，记为 $A^+$。
+
+> **定理**
+>
+> 设 $b_1,b_2$ 为 $b$ 在 $\operatorname{Im}(A)$ 上的正交投影，若 $b_1\neq0$，则
+>
+> $$
+> \frac{\|\delta x\|_2}{\|x\|_2}
+> \leq\kappa_2(A)\frac{\|b_1-b_2\|_2}{\|b_1\|_2}.
+> $$
+>
+> 其中
+>
+> $$
+> \color{red}\kappa_2(A)=\|A\|_2\|A^+\|_2
+> $$
+>
+> 称为最小二乘问题的条件数；列满秩时
+>
+> $$
+> \color{red}A^+=(A^{\mathsf T}A)^{-1}A^{\mathsf T}
+> $$
+>
+> 为 $A$ 的 M–P 广义逆。
+
+## 初等正交变换
+
+### 定义 4.5（Householder 变换）
+
+设 $w\in\mathbb{R}^m$ 为单位向量，定义
+
+$$
+\color{red}H=I-2ww^{\mathsf T}.
+$$
+
+> **定理**
+>
+> $H$ 为 Householder 矩阵，且
+>
+> 1. $H^{\mathsf T}=H$；
+> 2. $H^{\mathsf T}H=I$；
+> 3. 对任意 $y\in\mathbb{R}^m$，$Hy$ 是 $y$ 关于 $\operatorname{span}\{w\}$ 的镜像反射。
+
+> **定理**
+>
+> 对任意 $y,z\in\mathbb{R}^m$，若 $\|y\|_2=\|z\|_2\neq0$，则存在 Householder 矩阵 $H$，使
+>
+> $$
+> Hy=z.
+> $$
+>
+> 可取
+>
+> $$
+> w=\frac{y-z}{\|y-z\|_2}.
+> $$
+
+### 推论 4.2
+
+对 $y\in\mathbb{R}^m$、$y\neq0$，存在单位向量 $w$，使
+
+$$
+\begin{aligned}
+Hy&=\alpha e_1,\\
+\alpha&=\pm\|y\|_2.
+\end{aligned}
+$$
+
+可取
+
+$$
+\begin{aligned}
+v&=y\pm\|y\|_2e_1,\\
+w&=\frac{v}{\|v\|_2},
+\end{aligned}
+$$
+
+其中 $\pm$ 的符号取 $\operatorname{sign}(y_1)$。于是
+
+$$
+\begin{aligned}
+H=I-2ww^{\mathsf T}&=I-\beta vv^{\mathsf T},\\
+\beta&=\frac{2}{v^{\mathsf T}v}.
+\end{aligned}
+$$
+
+矩阵乘法可写为
+
+$$
+\begin{aligned}
+HA&=A-vu^{\mathsf T},\\
+u&=\beta A^{\mathsf T}v.
+\end{aligned}
+$$
+
+### 定义 4.6（Givens 变换）
+
+令 $c=\cos\theta$，$s=\sin\theta$。Givens 矩阵 $G_{ij}(\theta)$ 为单位矩阵中第 $i,j$ 行和第 $i,j$ 列对应的 $2\times2$ 子块替换为
+
+$$
+\begin{pmatrix}
+c&s\\
+-s&c
+\end{pmatrix}
+$$
+
+所得到的正交矩阵。
+
+> **定理**
+>
+> 设 $y=(y_1,\ldots,y_m)^{\mathsf T}$，若 $y_i^2+y_j^2\neq0$，则存在 Givens 矩阵 $G_{ij}(\theta)$，使
+>
+> $$
+> \begin{aligned}
+> z&=G_{ij}(\theta)y,\\
+> z_i&=\sqrt{y_i^2+y_j^2},\qquad z_j=0.
+> \end{aligned}
+> $$
+>
+> 当 $k\neq i,j$ 时，$z_k=y_k$。可取
+>
+> $$
+> \begin{aligned}
+> c&=\frac{y_i}{\sqrt{y_i^2+y_j^2}},\\
+> s&=\frac{y_j}{\sqrt{y_i^2+y_j^2}}.
+> \end{aligned}
+> $$
+
+## QR 分解
+
+若 $Q\in\mathbb{R}^{m\times m}$ 为正交矩阵，则
+
+$$
+\|b-Az\|_2=\|Q^{\mathsf T}b-Q^{\mathsf T}Az\|_2.
+$$
+
+> **定理（QR 分解）**
+>
+> 设 $A\in\mathbb{R}^{m\times n}$，$m\geq n$。则存在正交矩阵 $Q\in\mathbb{R}^{m\times m}$ 与上三角矩阵 $R\in\mathbb{R}^{n\times n}$，使
+>
+> $$
+> Q^{\mathsf T}A=\begin{pmatrix}R\\0\end{pmatrix}.
+> $$
+
+若 $A$ 有 $QR$ 分解，令
+
+$$
+Q=(Q_1\ Q_2),
+\qquad
+Q^{\mathsf T}b=
+\begin{pmatrix}Q_1^{\mathsf T}b\\Q_2^{\mathsf T}b\end{pmatrix}
+=\begin{pmatrix}c_1\\c_2\end{pmatrix},
+$$
+
+则
+
+$$
+\|b-Ax\|_2^2
+=\|Q^{\mathsf T}b-Q^{\mathsf T}Ax\|_2^2
+=\|c_1-Rx\|_2^2+\|c_2\|_2^2.
+$$
+
+故最小二乘解可由以下步骤求得：
+
+1. 计算 $Q^{\mathsf T}A=\begin{pmatrix}R\\0\end{pmatrix}$；
+2. 计算 $c=Q^{\mathsf T}b$；
+3. 解 $Rx=c_1$。
+
+QR 分解可用 Householder 变换或 Givens 变换得到。

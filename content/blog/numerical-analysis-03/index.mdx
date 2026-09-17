@@ -1,0 +1,416 @@
+---
+title: "数值分析初步 第 3 章 解线性方程组的迭代法"
+pubDate: 2024-09-03
+description: "本章从向量范数、矩阵范数与谱半径出发，给出迭代法 x^(k+1)=Hx^(k)+g 的收敛判据，并讨论 Jacobi、Gauss-Seidel、SOR 迭代的构造、收敛条件与误差估计。"
+tags: ["数值分析初步", "迭代法", "Jacobi迭代", "Gauss-Seidel", "SOR", "范数"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 30
+tocDepth: 2
+---
+
+## 范数与相容
+
+### 定义 3.1（向量范数）
+
+设 $x\in\mathbb{R}^n$，$\|x\|$ 为 $x$ 的实值函数。若满足
+
+1. **非负性：** $\|x\|\geq 0$，且 $\|x\|=0\Longleftrightarrow x=0$；
+2. **齐次性：** $\|\alpha x\|=|\alpha|\,\|x\|$，$\forall\alpha\in\mathbb{R}$；
+3. **三角不等式：** $\|x+y\|\leq\|x\|+\|y\|$，$\forall x,y\in\mathbb{R}^n$，
+
+则称 $\|x\|$ 为 $x$ 的范数或模。
+
+常用的向量范数为
+
+$$
+\begin{aligned}
+  \|x\|_1&=\sum_{i=1}^n|x_i|, &
+  \|x\|_2&=\left(\sum_{i=1}^n|x_i|^2\right)^{1/2}, &
+  \|x\|_\infty&=\max_{1\leq i\leq n}|x_i|.
+\end{aligned}
+$$
+
+对于 $1\leq p<\infty$，定义 $p$ 范数
+
+$$
+\|x\|_p=\left(\sum_{i=1}^n|x_i|^p\right)^{1/p}.
+$$
+
+### 命题 3.1
+
+若 $A\in\mathbb{R}^{n\times n}$ 非奇异，$\|\cdot\|$ 为 $\mathbb{R}^n$ 中的向量范数，则
+
+$$
+\|x\|_A=\|Ax\|
+$$
+
+为 $\mathbb{R}^n$ 中的一个新范数。
+
+### 定义 3.2（向量极限）
+
+设
+
+$$
+\bigl\{x^{(k)}\bigr\}
+=\left\{\bigl(x_1^{(k)},\ldots,x_n^{(k)}\bigr)^{\mathsf T}\right\}
+$$
+
+为 $\mathbb{R}^n$ 上的向量序列，
+
+$$
+x^*=\bigl(x_1^*,\ldots,x_n^*\bigr)^{\mathsf T}\in\mathbb{R}^n.
+$$
+
+若 $i=1,2,\ldots,n$ 时均有
+
+$$
+\lim_{k\to\infty}x_i^{(k)}=x_i^*,
+$$
+
+则称向量序列 $\{x^{(k)}\}$ 收敛于向量 $x^*$。
+
+> **定理（范数的连续性）**
+>
+> 在 $\mathbb{R}^n$ 中，若 $x^{(k)}\to x^*$，则
+>
+> $$
+> \|x^{(k)}\|\to\|x^*\|.
+> $$
+
+> **定理（范数的等价性）**
+>
+> 设 $\|\cdot\|_{\mathrm I}$、$\|\cdot\|_{\mathrm{II}}$ 为 $\mathbb{R}^n$ 中的两种范数，则存在 $0<\alpha_1<\alpha_2$，使对任意 $x\in\mathbb{R}^n$ 有
+>
+> $$
+> \begin{aligned}
+>   \alpha_1\|x\|_{\mathrm{II}}
+>   \leq\|x\|_{\mathrm I}
+>   \leq\alpha_2\|x\|_{\mathrm{II}}.
+> \end{aligned}
+> $$
+>
+> 即 $\|\cdot\|_{\mathrm I}$ 与 $\|\cdot\|_{\mathrm{II}}$ 等价。
+
+对于 $\mathbb{R}^n$ 中的 $\|x\|_1$、$\|x\|_2$、$\|x\|_\infty$，有
+
+$$
+\begin{aligned}
+  \frac{1}{\sqrt n}\|x\|_1&\leq\|x\|_2\leq\|x\|_1,\\
+  \|x\|_\infty&\leq\|x\|_1\leq n\|x\|_\infty,\\
+  \|x\|_\infty&\leq\|x\|_2\leq\sqrt n\|x\|_\infty.
+\end{aligned}
+$$
+
+> **定理**
+>
+> $$
+> x^{(k)}\to x^*
+> \quad\Longleftrightarrow\quad
+> \forall\|\cdot\|,\ \|x^{(k)}-x^*\|\to0.
+> $$
+
+> **定理**
+>
+> $$
+> x^{(k)}\ \text{有极限}
+> \quad\Longleftrightarrow\quad
+> x^{(k)}\ \text{为 Cauchy 列}.
+> $$
+
+### 定义 3.3（矩阵范数）
+
+设 $A\in\mathbb{R}^{m\times n}$，$\|A\|$ 为 $A$ 的实值函数。若满足
+
+1. **非负性：** $\|A\|\geq 0$，且 $\|A\|=0\Longleftrightarrow A=0$；
+2. **齐次性：** $\|\alpha A\|=|\alpha|\,\|A\|$，$\forall\alpha\in\mathbb{R}$；
+3. **三角不等式：** $\|A+B\|\leq\|A\|+\|B\|$，$\forall A,B\in\mathbb{R}^{m\times n}$，
+
+则称 $\|A\|$ 为 $A$ 的范数。
+
+若 $\|\cdot\|_u$、$\|\cdot\|_v$、$\|\cdot\|_w$ 分别为 $\mathbb{R}^{m\times n}$、$\mathbb{R}^{m\times q}$、$\mathbb{R}^{q\times n}$ 中的范数，且对任意 $A\in\mathbb{R}^{m\times q}$、$B\in\mathbb{R}^{q\times n}$ 有
+
+$$
+\|AB\|_u\leq\|A\|_v\|B\|_w,
+$$
+
+则称这些范数相容。若 $\mathbb{R}^{n\times n}$ 中的范数 $\|\cdot\|$ 自身相容，则称 $\|\cdot\|$ 为相容范数。
+
+> **定理（$p$ 范数的诱导矩阵范数）**
+>
+> 设 $\|\cdot\|_p$ 为向量范数。对任意 $A\in\mathbb{R}^{m\times n}$，定义
+>
+> $$
+> \|A\|_p=\max_{\|x\|_p=1}\|Ax\|_p.
+> $$
+>
+> 由 $A$ 的范数 $\|\cdot\|_p$ 和向量范数 $\|\cdot\|_p$ 的诱导性，有
+>
+> $$
+> \|Ax\|_p\leq\|A\|_p\|x\|_p.
+> $$
+
+> **定理**
+>
+> 设 $A=(a_{ij})_{m\times n}\in\mathbb{R}^{m\times n}$，则
+>
+> $$
+> \begin{aligned}
+>   \|A\|_1&=\max_{1\leq j\leq n}\sum_{i=1}^m|a_{ij}|,\\
+>   \|A\|_2&=\rho(A^{\mathsf T}A)^{1/2},\\
+>   \|A\|_\infty&=\max_{1\leq i\leq m}\sum_{j=1}^n|a_{ij}|.
+> \end{aligned}
+> $$
+
+对于 $B\in\mathbb{R}^{n\times n}$，特征值绝对值的最大值称为谱半径：
+
+$$
+\rho(B)=\max_i|\lambda_i|.
+$$
+
+矩阵范数 $\|A\|_2$ 称为谱范数，且
+
+$$
+\|A\|_2=\rho(A^{\mathsf T}A)^{1/2}.
+$$
+
+### 定义 3.7
+
+对任意 $A$，所有与向量范数相容的矩阵范数的下确界为
+
+$$
+\inf\|A\|=\rho(A).
+$$
+
+### 推论 3.1
+
+若 $\rho(A)<1$，则存在一个与向量范数相容的矩阵范数 $\|\cdot\|$，使 $\|A\|<1$。
+
+对 $A\in\mathbb{R}^{m\times n}$，有
+
+$$
+\begin{aligned}
+  \|A\|_2&\leq\|A\|_F\leq\sqrt n\|A\|_2,\\
+  \frac{1}{\sqrt n}\|A\|_\infty&\leq\|A\|_2\leq\sqrt n\|A\|_\infty,\\
+  \frac{1}{\sqrt n}\|A\|_1&\leq\|A\|_2\leq\sqrt n\|A\|_1,\\
+  \|A\|_F&=\left(\sum_{i=1}^m\sum_{j=1}^n a_{ij}^2\right)^{1/2}.
+\end{aligned}
+$$
+
+### 定义 3.8（矩阵极限）
+
+> **定理**
+>
+> 对任意 $A\in\mathbb{R}^{n\times n}$，
+>
+> $$
+> A^k\to0\ (k\to\infty)
+> \quad\Longleftrightarrow\quad
+> \rho(A)<1.
+> $$
+
+> **定理**
+>
+> $$
+> \sum_{k=0}^{\infty}A^k\ \text{收敛}
+> \quad\Longleftrightarrow\quad
+> \rho(A)<1,
+> \qquad
+> \sum_{k=0}^{\infty}A^k=(I-A)^{-1}.
+> $$
+
+## 迭代法一般格式与收敛性
+
+$$
+x^{(k+1)}=Hx^{(k)}+g,
+$$
+
+其中 $H$ 称为迭代矩阵。
+
+> **定理**
+>
+> $$
+> \forall x^{(0)},\ x^{(k)}\ \text{收敛}
+> \quad\Longleftrightarrow\quad
+> \rho(H)<1.
+> $$
+
+### 推论 3.2
+
+若 $\|H\|<1$，且 $\|\cdot\|$ 与向量范数相容，则迭代收敛。
+
+> **定理**
+>
+> 若 $\|H\|<1$，则
+>
+> $$
+> \begin{aligned}
+>   \|x^{(k)}-x^*\|
+>   &\leq\frac{\|H\|}{1-\|H\|}\|x^{(k)}-x^{(k-1)}\|,\\
+>   \|x^{(k)}-x^*\|
+>   &\leq\frac{\|H\|^k}{1-\|H\|}\|x^{(1)}-x^{(0)}\|.
+> \end{aligned}
+> $$
+
+可用 $\|x^{(k)}-x^{(k-1)}\|$ 判断收敛。$x^{(k)}-x^*$ 由 $(\rho(H))^k\to0$ 的速度决定，
+
+$$
+R(H)=-\ln\bigl(\rho(H)\bigr)
+$$
+
+称为渐近收敛速度。
+
+## Jacobi 迭代与 G–S 迭代
+
+设 $Ax=b$，并写为
+
+$$
+A=D-L-U,
+$$
+
+其中 $L$ 为下三角矩阵，$U$ 为上三角矩阵。
+
+### Jacobi 迭代
+
+$$
+\begin{aligned}
+  x^{(k+1)}&=D^{-1}(L+U)x^{(k)}+D^{-1}b,\\
+  H_J&=I-D^{-1}A.
+\end{aligned}
+$$
+
+其分量形式为
+
+$$
+x_i^{(k+1)}=-\frac{1}{a_{ii}}
+\left(\sum_{j=1}^{i-1}a_{ij}x_j^{(k)}
++\sum_{j=i+1}^{n}a_{ij}x_j^{(k)}-b_i\right).
+$$
+
+### G–S 迭代
+
+$$
+\begin{aligned}
+  x_i^{(k+1)}&=-\frac{1}{a_{ii}}
+  \left(\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}
+  +\sum_{j=i+1}^{n}a_{ij}x_j^{(k)}-b_i\right),\\
+  x^{(k+1)}&=(D-L)^{-1}Ux^{(k)}+(D-L)^{-1}b,\\
+  H_{\mathrm{GS}}&=I-(D-L)^{-1}A.
+\end{aligned}
+$$
+
+### 定义 3.6
+
+设 $A=(a_{ij})\in\mathbb{R}^{n\times n}$。若
+
+$$
+\sum_{\substack{j=1\\j\neq i}}^n|a_{ij}|<|a_{ii}|,
+\qquad i=1,\ldots,n,
+$$
+
+则称 $A$ 为严格对角占优矩阵。
+
+### 定义 3.7
+
+设 $A\in\mathbb{R}^{n\times n}$。若存在置换矩阵 $P$ 和 $1\leq r<n$，使
+
+$$
+P^{\mathsf T}AP=
+\begin{pmatrix}
+  B&C\\
+  0&D
+\end{pmatrix},
+$$
+
+则称 $A$ 可约；否则称 $A$ 不可约。
+
+若 $A=(a_{ij})$ 且 $a_{ij}\neq0$，从 $i$ 到 $j$ 作有向线。对任意 $i,j$，若 $j\to i$ 有有向通路，则 $A$ 不可约。
+
+### 命题 3.2
+
+$$
+A\ \text{不可约}
+\quad\Longleftrightarrow\quad
+\text{有向图连通}.
+$$
+
+> **定理**
+>
+> 若 $A$ 严格对角占优或不可约对角占优，则 $A$ 非奇异。
+
+> **定理**
+>
+> 若 $A$ 严格对角占优或不可约对角占优，则 Jacobi 迭代与 G–S 迭代收敛。
+
+> **定理**
+>
+> 设 $A$ 对称正定，则
+>
+> $$
+> J\ \text{收敛}
+> \quad\Longleftrightarrow\quad
+> 2D-A\ \text{正定}.
+> $$
+
+> **定理**
+>
+> 设 $A$ 对称正定，则 G–S 迭代收敛。
+
+### SOR 方法
+
+$$
+x_i^{(k+1)}=x_i^{(k)}-\frac{\omega}{a_{ii}}
+\left(\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}
++\sum_{j=i}^{n}a_{ij}x_j^{(k)}-b_i\right),
+$$
+
+$$
+\begin{aligned}
+  x^{(k+1)}&=H_\omega x^{(k)}+\omega(D-\omega L)^{-1}b,\\
+  H_\omega&=(D-\omega L)^{-1}\bigl[(1-\omega)D+\omega U\bigr].
+\end{aligned}
+$$
+
+> **定理**
+>
+> 设 $A=D-L-U$ 对称正定。当 $0<\omega<2$ 时，$\rho(H_\omega)<1$，$Ax=b$ 的 SOR 方法收敛。
+
+SOR 第 $k+1$ 次迭代解与 G–S 第 $k+1$ 次迭代解的线性组合为
+
+$$
+x_{\mathrm{SOR}}^{(k+1)}
+=(1-\omega)x_{\mathrm{SOR}}^{(k)}+\omega x_{\mathrm{GS}}^{(k+1)}.
+$$
+
+## 每种数值方法的误差
+
+> **定理**
+>
+> 若
+>
+> $$
+> A(x+\delta x)=b+\delta b,
+> $$
+>
+> 则对任意向量范数及其诱导矩阵范数，有
+>
+> $$
+> \frac{\|\delta x\|}{\|x\|}
+> \leq\|A\|\,\|A^{-1}\|
+> \frac{\|\delta b\|}{\|b\|}.
+> $$
+
+### 定义 3.8（条件数）
+
+若 $A\neq0$，定义
+
+$$
+\operatorname{cond}(A)=\|A\|\,\|A^{-1}\|.
+$$
+
+又可记条件数指标为
+
+$$
+\chi(A)=\sup_{\delta b\neq0}
+\frac{\|\delta x\|/\|x\|}{\|\delta b\|/\|b\|}.
+$$

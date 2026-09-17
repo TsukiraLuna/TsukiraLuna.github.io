@@ -1,0 +1,191 @@
+---
+title: "数值分析初步 第 2 章 解线性方程组的直接法"
+pubDate: 2024-09-02
+description: "三角形方程组回代、Gauss 消元法及其计算量与可行性、列主元消元、LU 与 LDU 分解、Doolittle 分解示例、带置换的 LU 分解，以及对称正定方程组的 Cholesky 分解与三对角方程组的追赶法。"
+tags: ["数值分析初步", "线性方程组", "Gauss消元", "LU分解", "Cholesky分解"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 20
+tocDepth: 2
+---
+
+## Gauss 消元法
+
+### 三角形方程组的解法
+
+设
+
+$$Ux=b,$$
+其中 $U=(u_{ij})$ 为上三角矩阵。由回代过程可得
+
+$$
+\begin{aligned}
+x_n &= \frac{b_n}{u_{nn}},\\
+x_i &= \frac{b_i-\displaystyle\sum_{j=i+1}^{n}u_{ij}x_j}{u_{ii}},\qquad i=n-1,\ldots,1.
+\end{aligned}
+$$
+
+该回代过程的计算量为
+
+$$\sum_{k=1}^{n}k=\frac{n(n+1)}{2}.$$
+
+### Gauss 消元法及其计算量
+
+考虑线性方程组
+
+$$Ax=b,\qquad A=(a_{ij}),\qquad b=(b_1,\ldots,b_n)^{\mathsf T}\in\mathbb{R}^n.$$
+
+若 $a_{11}^{(1)}\neq0$，令
+
+$$\widetilde a_1^{(1)}=\bigl(0,a_{21}^{(1)},\ldots,a_{n1}^{(1)}\bigr)^{\mathsf T},\qquad e_1=(1,0,\ldots,0)^{\mathsf T},$$
+
+构造 Gauss 矩阵
+
+$$G_1=I-\frac{1}{a_{11}^{(1)}}\widetilde a_1^{(1)}e_1^{\mathsf T}.$$
+
+于是
+
+$$
+\left(A^{(2)}\ \middle|\ b^{(2)}\right)=G_1\left(A^{(1)}\ \middle|\ b^{(1)}\right)=\left(\begin{array}{cccc|c}
+a_{11}^{(1)} & a_{12}^{(1)} & \cdots & a_{1n}^{(1)} & b_1^{(1)}\\
+0 & a_{22}^{(2)} & \cdots & a_{2n}^{(2)} & b_2^{(2)}\\
+\vdots & \vdots & & \vdots & \vdots\\
+0 & a_{n2}^{(2)} & \cdots & a_{nn}^{(2)} & b_n^{(2)}
+\end{array}\right),
+$$
+
+其中
+
+$$
+\begin{aligned}
+a_{ij}^{(2)}&=a_{ij}^{(1)}-l_{i1}a_{1j}^{(1)},\\
+b_i^{(2)}&=b_i^{(1)}-l_{i1}b_1^{(1)},\\
+l_{i1}&=\frac{a_{i1}^{(1)}}{a_{11}^{(1)}},\qquad i,j=2,\ldots,n.
+\end{aligned}
+$$
+
+重复上述消元过程，直到
+
+$$\left(A^{(n)}\ \middle|\ b^{(n)}\right)=(U\mid b),$$
+其中 $U=A^{(n)}$ 为上三角矩阵，再由回代法求解。
+
+Gauss 消元和回代的总计算量为
+
+$$
+\begin{aligned}
+Q_G&=\sum_{k=1}^{n-1}(n-k)(n-k+2)+\frac{n(n+1)}{2}\\
+&=\frac{n^3}{3}+n^2-\frac{n}{3}.
+\end{aligned}
+$$
+
+### Gauss 消元法的可行性
+
+> **定理（不选主元的 Gauss 消元）**
+>
+> 设 $A\in\mathbb{R}^{n\times n}$。不进行行交换的 Gauss 消元法可实施，当且仅当
+> $\color{red}{A\ \text{的各阶顺序主子矩阵均非奇异}}$。
+
+### 列主元消元法
+
+在第 $k$ 步消元时，从第 $k$ 列的第 $k$ 至第 $n$ 个元素中，选取绝对值最大的元素作为主元，并通过行交换将其置于第 $k$ 行。
+
+## 三角分解法
+
+### LU 分解
+
+> **定理（LU 分解）**
+>
+> 若 $A$ 的前 $n-1$ 个顺序主子矩阵均非奇异，则存在唯一的单位下三角矩阵 $L$ 与上三角矩阵 $U$，使
+> $$A=LU.$$
+
+该分解可用于求解线性方程组：
+
+$$Ax=b\quad\Longleftrightarrow\quad LUx=b\quad\Longleftrightarrow\quad \begin{cases} Ly=b,\\ Ux=y. \end{cases}$$
+
+它也可用于计算行列式：
+
+$$\det(A)=\det(L)\det(U)=\prod_{k=1}^{n}u_{kk}.$$
+
+### Doolittle 分解与 LDU 分解
+
+在 Doolittle 分解中，$L$ 的对角元规定为 $1$。也可写成
+
+$$A=LDU,\qquad D=\operatorname{diag}(d_1,\ldots,d_n),$$
+其中 $L,U$ 为单位下、上三角矩阵。Crout 分解则规定 $U$ 的对角元为 $1$。
+
+### Doolittle 分解示例
+
+设
+
+$$A=\begin{pmatrix} 2 & 1 & -2\\ 1 & -1 & 2\\ 4 & 1 & 1 \end{pmatrix}=\begin{pmatrix} 1 & 0 & 0\\ l_{21} & 1 & 0\\ l_{31} & l_{32} & 1 \end{pmatrix}\begin{pmatrix} u_{11} & u_{12} & u_{13}\\ 0 & u_{22} & u_{23}\\ 0 & 0 & u_{33} \end{pmatrix}.$$
+
+逐项比较可得
+
+$$
+\begin{aligned}
+&u_{11}=2,\qquad u_{12}=1,\qquad u_{13}=-2,\\
+&l_{21}=\frac{1}{2},\qquad l_{31}=2,\\
+&u_{22}=-\frac{3}{2},\qquad u_{23}=3,\\
+&l_{32}=\frac{2}{3},\qquad u_{33}=3.
+\end{aligned}
+$$
+
+### 带置换的 LU 分解
+
+> **定理（带置换的 LU 分解）**
+>
+> 设 $A$ 非奇异，则存在置换矩阵 $P$、单位下三角矩阵 $L$ 及上三角矩阵 $U$，使
+> $$\color{red}{PA=LU}.$$
+> 该分解可由列主元消元法得到。
+
+利用该分解求解方程组时，
+
+$$\color{red}{Ax=b\quad\Longleftrightarrow\quad LUx=Pb\quad\Longleftrightarrow\quad \begin{cases} Ly=Pb,\\ Ux=y. \end{cases}}$$
+
+若 $s$ 为行交换次数，则
+
+$$\det(P)\det(A)=\det(L)\det(U)\quad\Longrightarrow\quad \det(A)=(-1)^s\prod_{k=1}^{n}u_{kk}.$$
+
+## 对称正定方程组
+
+对于对称正定矩阵 $A$，有
+
+$$\color{red}{A=LDL^{\mathsf T}},\qquad D=\operatorname{diag}(d_1,\ldots,d_n),\qquad d_i>0.$$
+
+令 $\widetilde L=LD^{1/2}$，则得到 Cholesky 分解
+
+$$\color{red}{A=\widetilde L\widetilde L^{\mathsf T}}.$$
+
+此时 $\widetilde L$ 为下三角矩阵，且其元素满足
+
+$$
+\begin{aligned}
+a_{kk}&=\widetilde l_{k1}^2+\cdots+\widetilde l_{kk}^2,\\
+a_{ik}&=\widetilde l_{i1}\widetilde l_{k1}+\cdots+\widetilde l_{ik}\widetilde l_{kk},\qquad k<i.
+\end{aligned}
+$$
+
+按列依次确定 $\widetilde l_{11},\widetilde l_{21},\ldots,\widetilde l_{n1};\widetilde l_{22},\ldots,\widetilde l_{n2};\ldots$，即可得到该下三角因子；计算量约为 $n^3/6$。
+
+对于三对角方程组 $Ax=b$，若
+
+$$
+A=\begin{pmatrix}
+e_1 & f_1 & & & 0\\
+d_2 & e_2 & f_2 & &\\
+& \ddots & \ddots & \ddots &\\
+& & d_{n-1} & e_{n-1} & f_{n-1}\\
+0 & & & d_n & e_n
+\end{pmatrix}=LU,
+$$
+
+则可按 Doolittle 方法计算：
+
+$$
+\begin{aligned}
+r_1&=e_1,\\
+l_i&=\frac{d_i}{r_{i-1}},\qquad r_i=e_i-l_if_{i-1},\qquad i=2,\ldots,n.
+\end{aligned}
+$$
+
+之后依次解 $Ly=b$（前代）与 $Ux=y$（回代）。

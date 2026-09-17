@@ -105,6 +105,57 @@ tocDepth: 2
 | `\boxed{...}` | 原样 | ✅ 渲染成真方框（MathML `menclose`） |
 | `\text{中文}` | 原样 | ✅ 支持中文下标 |
 | `\dfrac` | 原样 | ✅ 支持 |
+| `\middle\|` 增广矩阵 | 原样 | ✅ 支持（但 `$$` 必须独占一行） |
+| `\operatorname{diag}` | 原样 | ✅ 支持 |
+
+### ⚠️ 多行公式必须让 `$$` 独占一行（本流程最容易踩的坑）
+
+**症状有两种，根因是同一个**，别被错误信息带偏：
+
+- 构建报 `[next-mdx-remote] error compiling MDX: Could not parse expression with acorn`
+- 或页面里公式变成红色 `katex-error`，提示 `ParseError: Expected 'EOF', got '&'`
+
+**根因**：MDX 把 `{` 当 JSX 表达式起始。若 `\end{aligned}` 与闭合的 `$$` 写在同一行
+（`\end{aligned}$$`），解析器会尝试用 acorn 解析 `{...}` 的内容而失败。
+
+**正确写法** —— `$$` 独占一行：
+
+```markdown
+$$
+\begin{aligned}
+x_n &= \frac{b_n}{u_{nn}},\\
+x_i &= \frac{b_i}{u_{ii}}.
+\end{aligned}
+$$
+```
+
+**错误写法**：
+
+```markdown
+$$\begin{aligned}
+x_n &= \frac{b_n}{u_{nn}},\\
+\end{aligned}$$      ← 开头与结尾的 $$ 都没独占一行
+```
+
+**实测边界**（逐项验证过）：
+
+| 写法 | 结果 |
+|---|---|
+| 单行 `$$Ux=b,$$` | ✅ 正常 |
+| `$$` 独占行 → 内容 → `$$` 独占行 | ✅ 正常 |
+| `$$\begin{aligned}` … `\end{aligned}$$` | ❌ 失败 |
+| 多行块但闭合 `$$` 跟在 `\end{aligned}` 后 | ❌ 失败 |
+
+**为什么容易漏**：单行公式（`$$x=1$$`）不需要这个处理，**只在多行公式上出问题**。
+一份文档若前面几章恰好只有单行公式，会给人"格式没问题"的错觉。
+
+**自检命令**，转完后应为 0 处：
+
+```powershell
+Select-String -Path 'content/blog/<slug>/index.mdx' -Pattern '\\end\{[a-z]+\}\$\$|\$\$\\begin\{'
+```
+
+> 另注：`$$` 前建议留空行（紧跟段落文字虽多数情况可渲染，但补齐更稳妥）。
 
 ### 颜色（原稿红笔重点）
 

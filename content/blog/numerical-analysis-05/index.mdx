@@ -1,0 +1,264 @@
+---
+title: "数值分析初步 第 5 章 矩阵特征值问题计算"
+pubDate: 2024-09-05
+description: "介绍矩阵特征值问题的常用数值方法：乘幂法与反幂法、原点位移与 Rayleigh 商迭代、降阶方法，对称矩阵的 Jacobi 旋转法与 Givens–Householder 三对角化，以及用 Sturm 序列计数特征值的二分法。"
+tags: ["数值分析初步", "特征值", "幂法", "反幂法", "Jacobi方法", "三对角化"]
+category: 数学
+series: 数值分析初步
+seriesOrder: 50
+tocDepth: 2
+---
+
+## 乘幂法与反幂法
+
+### 定义 5.1
+
+设 $A\in\mathbb{R}^{n\times n}$，若
+
+$$Ax=\lambda x,$$
+
+则称 $\lambda$ 为 $A$ 的特征值，$x$ 为相应的特征向量。
+
+### 乘幂法
+
+给定初始向量 $x^{(0)}$，作迭代
+
+$$
+\color{red}
+\left\{
+\begin{aligned}
+y^{(k)}&=Ax^{(k-1)},\\
+m_k&=\max_i\left|y_i^{(k)}\right|,\\
+x^{(k)}&=\frac{y^{(k)}}{m_k}.
+\end{aligned}
+\right.
+$$
+
+若
+
+$$|\lambda_1|>|\lambda_2|\geq|\lambda_3|\geq\cdots\geq|\lambda_n|,$$
+
+则
+
+$$\lim_{k\to\infty}m_k=\lambda_1,\qquad\lim_{k\to\infty}x^{(k)}=\frac{x_1}{\max_i |(x_1)_i|}.$$
+
+### 定义 5.2（原点位移法）
+
+设 $A\in\mathbb{R}^{n\times n}$，特征值 $\lambda_j$ 按模降序排列。选取 $\rho$，使
+
+$$
+\color{red}
+\max_{\lambda_j\neq\lambda_1}\left|\frac{\lambda_j-\rho}{\lambda_1-\rho}\right|<\max_{\lambda_j\neq\lambda_1}\left|\frac{\lambda_j}{\lambda_1}\right|,
+$$
+
+以提高收敛速度。矩阵 $A-\rho I$ 与 $A$ 具有相同的特征向量，其特征值为 $\lambda_j-\rho$。
+
+### 定义 5.3（Rayleigh 商）
+
+若 $A\in\mathbb{R}^{n\times n}$ 为对称矩阵，则定义
+
+$$R(x)=\frac{(Ax,x)}{(x,x)}.$$
+
+### 降阶方法
+
+设已知 $A$ 的特征值 $\lambda_1$ 及其单位特征向量 $x_1$，即 $\|x_1\|_2=1$。取 Householder 矩阵 $H$，使 $Hx_1=e_1$，则
+
+$$
+HAH^{\mathsf T}=\begin{pmatrix}
+\lambda_1&b^{\mathsf T}\\
+0&B
+\end{pmatrix},\qquad B\in\mathbb{R}^{(n-1)\times(n-1)}.
+$$
+
+其中 $\lambda_2,\ldots,\lambda_n$ 为 $B$ 的特征值。若 $Bz_2=\lambda_2z_2$，则 $A$ 的相应特征向量可写成
+
+$$
+x_2=H^{\mathsf T}\begin{pmatrix}a\\z_2\end{pmatrix},\qquad a=\frac{b^{\mathsf T}z_2}{\lambda_2-\lambda_1}.
+$$
+
+### 反幂法
+
+给定初始向量 $x^{(0)}$，作迭代
+
+$$
+\color{red}
+\left\{
+\begin{aligned}
+Ay^{(k)}&=x^{(k-1)},\\
+m_k&=\max_i\left|y_i^{(k)}\right|,\\
+x^{(k)}&=\frac{y^{(k)}}{m_k}.
+\end{aligned}
+\right.
+$$
+
+若 $|\lambda_n|$ 最小，则
+
+$$\color{red}m_k\longrightarrow\lambda_n^{-1},\qquad x^{(k)}\longrightarrow\frac{x_n}{\max_i|(x_n)_i|}.$$
+
+为了计算 $A$ 在 $\rho$ 附近的特征值及特征向量，可对 $A-\rho I$ 作原点位移反幂法。若 $\widetilde\lambda_i$ 是 $\lambda_i$ 的近似值，则可作
+
+$$
+\color{red}
+\left\{
+\begin{aligned}
+(A-\widetilde\lambda_i I)y^{(k)}&=x^{(k-1)},\\
+m_k&=\max_j\left|y_j^{(k)}\right|,\\
+x^{(k)}&=\frac{y^{(k)}}{m_k},
+\end{aligned}
+\right.
+$$
+
+此时
+
+$$\color{red}m_k\longrightarrow\frac{1}{\lambda_i-\widetilde\lambda_i},\qquad x^{(k)}\longrightarrow\frac{x_i}{\max_j|(x_i)_j|}.$$
+
+### Rayleigh 商迭代法
+
+$$
+\left\{
+\begin{aligned}
+m_k&=\max_i\left|x_i^{(k)}\right|,\\
+(A-\lambda_i^{(k)}I)x^{(k+1)}&=\frac{x^{(k)}}{m_k},\\
+\lambda_i^{(k+1)}&=\frac{\bigl(x^{(k+1)},Ax^{(k+1)}\bigr)}{\bigl(x^{(k+1)},x^{(k+1)}\bigr)}.
+\end{aligned}
+\right.
+$$
+
+## 对称矩阵的 Jacobi 方法
+
+给定 $\varepsilon>0$，对 $k=1,2,3,\ldots$，Jacobi 方法按以下步骤进行：
+
+1. 选取 $a_{pq}^{(k)}$，使其为 $A_k$ 中绝对值最大的非对角元素；
+2. 构造旋转矩阵 $P_k=G_{pq}(\theta)$，使 $a_{pq}^{(k+1)}=0$；
+3. 计算
+
+$$A_{k+1}=P_k^{\mathsf T}A_kP_k;$$
+
+4. 判断是否满足 $N(A_{k+1})<\varepsilon$。
+
+其中
+
+$$c=\cos\theta,\qquad s=\sin\theta,\qquad\color{red}\tan 2\theta=\frac{2a_{pq}}{a_{pp}-a_{qq}}.$$
+
+### 定理 5.4
+
+设 $A$ 为实对称矩阵，则由古典 Jacobi 方法生成的 $A_k$ 趋于对角阵。
+
+### 定理 5.5
+
+对古典 Jacobi 方法，$A_k$ 的对角元素逐个趋于 $A$ 的特征值。
+
+### 实对称 Jacobi 方法
+
+取一个单调下降且趋于零的实数序列 $\{\alpha_k\}$。对任意 $k\geq1$，以 $\alpha_k$ 为阈值，依次将绝对值不小于 $\alpha_k$ 的非对角元素消去，直至所有非对角元素的绝对值均小于 $\alpha_k$。
+
+## 对称矩阵的 Givens–Householder 方法
+
+将对称矩阵 $A$ 分块为
+
+$$
+A=\begin{pmatrix}
+\alpha_1&(b^{(1)})^{\mathsf T}\\
+b^{(1)}&A^{(1)}
+\end{pmatrix},
+$$
+
+其中
+
+$$\alpha_1\in\mathbb{R},\qquad b^{(1)}\in\mathbb{R}^{n-1},\qquad A^{(1)}\in\mathbb{R}^{(n-1)\times(n-1)}.$$
+
+存在 Householder 矩阵 $\overline H_1\in\mathbb{R}^{(n-1)\times(n-1)}$，使
+
+$$\overline H_1b^{(1)}=\beta_1e_1,\qquad{\color{red}\beta_1=-\operatorname{sign}(b_1^{(1)})\|b^{(1)}\|_2}.$$
+
+令
+
+$$
+H_1=\begin{pmatrix}1&0^{\mathsf T}\\0&\overline H_1\end{pmatrix},
+$$
+
+则
+
+$$
+H_1AH_1^{\mathsf T}=\begin{pmatrix}
+\alpha_1&\beta_1&0^{\mathsf T}\\
+\beta_1&\alpha_2&(b^{(2)})^{\mathsf T}\\
+0&b^{(2)}&A^{(2)}
+\end{pmatrix}.
+$$
+
+对右下角子块重复上述过程。设已有 $A^{(k)}$，则每步作：
+
+1. 取 $\overline H_k\in\mathbb{R}^{(n-k)\times(n-k)}$，使
+
+$$\overline H_kb^{(k)}=\beta_ke_1,\qquad\beta_k=-\operatorname{sign}(b_1^{(k)})\|b^{(k)}\|_2;$$
+
+2. 计算
+
+$$
+\overline H_kA^{(k)}\overline H_k^{\mathsf T}=\begin{pmatrix}
+\alpha_{k+1}&(b^{(k+1)})^{\mathsf T}\\
+b^{(k+1)}&A^{(k+1)}
+\end{pmatrix}.
+$$
+
+定义
+
+$${\color{red}H_k=\operatorname{diag}(I_k,\overline H_k)},\qquad{\color{red}P=H_1H_2\cdots H_{n-2}},$$
+
+并令
+
+$$
+C=\begin{pmatrix}
+\alpha_1&\beta_1&&&\\
+\beta_1&\alpha_2&\beta_2&&\\
+&\ddots&\ddots&\ddots&\\
+&&\beta_{n-2}&\alpha_{n-1}&\beta_{n-1}\\
+&&&\beta_{n-1}&\alpha_n
+\end{pmatrix}.
+$$
+
+则
+
+$$P^{\mathsf T}AP=C.$$
+
+对于对称三对角矩阵 $C$，令 $P_k(\lambda)$ 为 $C-\lambda I$ 的前 $k$ 阶主子式，则
+
+$$
+\begin{aligned}
+{\color{red}P_0(\lambda)}&{\color{red}=1},&{\color{red}P_1(\lambda)}&{\color{red}=\alpha_1-\lambda},\\
+{\color{red}P_k(\lambda)}&{\color{red}=(\alpha_k-\lambda)P_{k-1}(\lambda)-\beta_{k-1}^2P_{k-2}(\lambda)}.
+\end{aligned}
+$$
+
+### 引理 5.1
+
+存在 $M>0$，使当 $\lambda>M$ 时，对 $k=1,2,\ldots,n$ 有
+
+$$P_k(-\lambda)>0,\qquad\operatorname{sign}P_k(\lambda)=(-1)^k.$$
+
+### 引理 5.2
+
+$P_0(\lambda)$ 无零点，且 $P_{k-1}(\lambda)$ 与 $P_k(\lambda)$ 无公共零点。
+
+### 引理 5.3
+
+若 $\lambda_0$ 是 $P_k(\lambda)$ 的零点，则
+
+$$P_{k-1}(\lambda_0)P_{k+1}(\lambda_0)<0.$$
+
+### 引理 5.4
+
+$P_k(\lambda)$ 的零点将实轴分成 $k+1$ 个开区间，每个区间内恰有 $P_{k+1}(\lambda)$ 的一个零点。
+
+对任意 $\alpha$，考察数列
+
+$$P_0(\alpha),P_1(\alpha),\ldots,P_k(\alpha).$$
+
+用 $S_k(\alpha)$ 表示相邻两数符号相同的次数，称为同号数。若 $P_j(\alpha)=0$，则规定其符号与 $P_{j-1}(\alpha)$ 相同。
+
+### 定理 5.6
+
+$$\color{red}S_k(\alpha)=\#\bigl\{\lambda\in[\alpha,+\infty):P_k(\lambda)=0\bigr\}.$$
+
+因此 $S_n(\alpha)$ 等于 $C$ 在 $[\alpha,+\infty)$ 上的特征值个数，从而可用二分法求得 $\lambda_m$。
