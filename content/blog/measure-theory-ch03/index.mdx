@@ -1,0 +1,725 @@
+---
+title: "测度论 第 3 章 积分和空间 $L^p$"
+pubDate: 2025-05-04
+description: "测度论积分理论：非负函数与可积函数的积分、单调收敛定理、Fatou 引理、控制收敛定理、不定积分与符号测度、Radon–Nikodym 定理、$L^p$ 空间及其对偶。"
+tags: ["测度论", "积分", "收敛定理", "Lp 空间"]
+category: 数学
+series: 测度论
+seriesOrder: 30
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 3.1 基本概念
+
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间。以 $S^+$ 表示 $\Omega$ 上的非负
+可测函数全体；在几乎处处相等的意义下，可测函数可以视作等价类。
+两个可测函数 $f,g$ 若满足 $f=g$ a.e.，则视为同一个等价类中的函数。
+
+**定义 3.1.1**
+
+设 $f$ 为非负简单可测函数，即
+
+$$
+f=\sum_{i=1}^{n}a_iI_{A_i}\in S^+,\qquad
+a_i\in\mathbb R^+,\quad A_i\in\mathcal F.
+$$
+
+定义 $f$ 关于 $\mu$ 的积分为
+
+$$
+\color{red}{\int_{\Omega}f\,d\mu=\sum_{i=1}^{n}a_i\mu(A_i).}
+$$
+
+简称为 $f$ 的 $\mu$ 积分。
+
+**命题 3.1.2**
+
+设 $f,g,f_n\in S^+$，则非负可测函数的积分满足：
+
+1. 对 $A\in\mathcal F$，
+
+    $$
+    \int_A f\,d\mu=\int_{\Omega}fI_A\,d\mu;
+    $$
+
+2. 对 $\alpha\in\mathbb R^+$，
+
+    $$
+    \int \alpha f\,d\mu=\alpha\int f\,d\mu;
+    $$
+
+3.
+    $$
+    \int(f+g)\,d\mu=\int f\,d\mu+\int g\,d\mu;
+    $$
+
+4. $f\leqslant g$ 蕴含
+
+    $$
+    \int f\,d\mu\leqslant\int g\,d\mu;
+    $$
+
+5. 若 $f_n\downarrow f$ 且 $\int f_1\,d\mu<\infty$，则
+
+    $$
+    \int f_n\,d\mu\downarrow\int f\,d\mu;
+    $$
+
+6. 若 $f_n\uparrow f$，则
+
+    $$
+    \int f_n\,d\mu\uparrow\int f\,d\mu;
+    $$
+
+7. 若 $f_n\leqslant g_n$，则
+
+    $$
+    \liminf_{n\to\infty}\int f_n\,d\mu
+    \leqslant
+    \liminf_{n\to\infty}\int g_n\,d\mu.
+    $$
+
+**定义 3.1.3**
+
+对 $f\in S^+$，当 $\int f\,d\mu<\infty$ 时，称 $f$ 为可积的非负函数。
+
+**定理 3.1.4（单调收敛定理）**
+
+若 $f_n\in S^+$ 且 $f_n\uparrow f$，则
+
+$$
+\mu(f)=\int_{\Omega}f\,d\mu=\lim_{n\to\infty}\mu(f_n).
+$$
+
+其中非负可测函数 $f$ 的积分也可写成
+
+$$
+\mu(f)=\sup\bigl\{\mu(g):g\text{ 为非负简单可测函数，}\ 0\leqslant g\leqslant f\bigr\}.
+$$
+
+对实值可测函数 $f$，记 $f^+=\max\{f,0\}$、$f^-=\max\{-f,0\}$。
+若 $\mu(f^+)<\infty$ 或 $\mu(f^-)<\infty$，定义
+
+$$
+\mu(f)=\mu(f^+)-\mu(f^-),
+$$
+
+称之为 $f$ 关于 $\mu$ 的积分。若 $\mu(|f|)<\infty$，则称 $f$ （绝对）可积。
+复值函数 $f+ig$ 在 $f,g$ 均为实值可积函数时也称为可积函数，且
+
+$$
+\mu(f+ig)=\mu(f)+i\mu(g).
+$$
+
+**定义 3.1.5**
+
+设 $f$ 为绝对可积函数，$A\in\mathcal F$。则 $fI_A$ 仍绝对可积，定义
+
+$$
+\int_A f\,d\mu=\int_{\Omega}fI_A\,d\mu.
+$$
+
+**定理 3.1.6**
+
+设 $f,g$ 为可积函数，则
+
+1. 对 $\alpha\in\mathbb R$，$\mu(\alpha f)=\alpha\mu(f)$；
+2. $\mu(f+g)=\mu(f)+\mu(g)$；
+3. $|\mu(f)|\leqslant\mu(|f|)$；
+4. 若 $N\in\mathcal F$ 且 $\mu(N)=0$，则 $\mu(fI_N)=0$；
+5. $f\leqslant g$ a.e. 蕴含 $\mu(f)\leqslant\mu(g)$；
+6. 若 $f\in S^+$，则 $f=0$ a.e. 当且仅当 $\mu(f)=0$；
+7. 若 $f\in S^+$ 且 $\mu(f)<\infty$，则 $f<\infty$ a.e.，且
+ $\{f>0\}$ 上的限制测度为 $\sigma$ 有限测度。
+
+**推论 3.1.7**
+
+1. 若 $f,g$ 绝对可积且 $f=g$ a.e.，则 $\mu(f)=\mu(g)$；
+2. 若 $f$ 绝对可积，则 $|f|<\infty$ a.e.；
+3. 若 $f,g$ 绝对可积，则 $f+g$ a.e. 有定义且绝对可积；
+4. 若 $f,g$ 绝对可积且 $f\leqslant g$ a.e.，则对任意 $A\in\mathcal F$ 有
+ $\mu(fI_A)\leqslant\mu(gI_A)$。
+
+**命题 3.1.8**
+
+设 $f,g$ 为绝对可积函数。若对任意 $A\in\mathcal F$，
+
+$$
+\mu(fI_A)\leqslant\mu(gI_A),
+$$
+
+则 $f\leqslant g$ a.e.
+
+**命题 3.1.9**
+
+设 $f,g$ 为绝对可积函数。若对任意 $A\in\mathcal F$，
+
+$$
+\mu(fI_A)=\mu(gI_A),
+$$
+
+则 $f=g$ a.e.
+
+**定理（绝对可积函数的绝对连续性）**
+
+若 $f$ 可积，则对任意 $\varepsilon>0$，存在 $\delta>0$，使得对任意
+$A\in\mathcal F$，
+
+$$
+\mu(A)<\delta\quad\Longrightarrow\quad
+\left|\int_A f\,d\mu\right|<\varepsilon.
+$$
+
+**定理（像测度）**
+
+设 $(\Omega,\mathcal F)$、$(E,\mathcal E)$ 为可测空间，
+$f:(\Omega,\mathcal F)\to(E,\mathcal E)$ 可测，$\mu$ 为 $(\Omega,\mathcal F)$ 上的测度。
+定义
+
+$$
+f_*\mu(A)=\mu\bigl(f^{-1}(A)\bigr),\qquad A\in\mathcal E.
+$$
+
+则 $f_*\mu$ 是 $(E,\mathcal E)$ 上的测度，称为 $\mu$ 在 $f$ 下的像测度。
+若 $g:(E,\mathcal E)\to(\mathbb R,\mathcal B(\mathbb R))$ 可测，则
+$g$ 关于 $f_*\mu$ 绝对可积当且仅当 $g\circ f$ 关于 $\mu$ 绝对可积，且
+
+$$
+\int_E g\,d(f_*\mu)=\int_{\Omega}g\circ f\,d\mu.
+$$
+
+**随机变量与期望**
+
+在概率空间 $(\Omega,\mathcal F,P)$ 上，实值可测函数 $f$ 称为随机变量，其期望定义为
+
+$$
+Ef=\int_{\Omega}f\,dP.
+$$
+
+若 $F_f(x)=P\{f\leqslant x\}$ 为 $f$ 的分布函数，且
+$g:(\mathbb R,\mathcal B(\mathbb R))\to\mathbb R$ 可测，则 $g\circ f$ 仍为随机变量，
+并且
+
+$$
+E\bigl(g(f)\bigr)=\int_{\mathbb R}g\,dP_f,
+$$
+
+其中 $P_f$ 为 $f$ 的分布测度。
+
+## 3.2 积分号下取极限
+
+**定理 3.2.1**
+
+设 $f_n\in S^+$，$n\geqslant1$。
+
+1. 若 $f_n\leqslant f_{n+1}$ a.e.（$n\geqslant1$），且
+ $f_n\xrightarrow{\mathrm{a.e.}}f$，则
+
+    $$
+    \lim_{n\to\infty}\mu(f_n)=\mu(f).
+    $$
+
+2. 若 $f_n\geqslant f_{n+1}$ a.e.（$n\geqslant1$），且
+ $f_n\xrightarrow{\mathrm{a.e.}}f$、$\mu(f_1)<\infty$，则
+
+    $$
+    \lim_{n\to\infty}\mu(f_n)=\mu(f).
+    $$
+
+**推论 3.2.2**
+
+设 $f_n\in S^+$，$n\geqslant1$，则
+
+$$
+\mu\!\left(\sum_{n=1}^{\infty}f_n\right)=\sum_{n=1}^{\infty}\mu(f_n).
+$$
+
+**定理 3.2.3（单调收敛定理）**
+
+设 $f_n$ 为可测函数列，且 $f_n\xrightarrow{\mathrm{a.e.}}f$。
+
+1. 若 $f_n\uparrow$ a.e.，且 $\mu(f)>-\infty$，则
+ $\mu(f_n)\uparrow\mu(f)$；
+2. 若 $f_n\downarrow$ a.e.，且 $\mu(f)<\infty$，则
+ $\mu(f_n)\downarrow\mu(f)$。
+
+**定理 3.2.4（Fatou 引理）**
+
+设 $f_n$ 为可测函数列。
+
+1. 若存在可测函数 $g$，满足 $\mu(g)>-\infty$，且对所有 $n\geqslant1$ 有
+ $f_n\geqslant g$ a.e.，则
+
+    $$
+    \mu\!\left(\liminf_{n\to\infty}f_n\right)
+    \leqslant\liminf_{n\to\infty}\mu(f_n).
+    $$
+
+2. 若存在可测函数 $g$，满足 $\mu(g)<\infty$，且对所有 $n\geqslant1$ 有
+ $f_n\leqslant g$ a.e.，则
+
+    $$
+    \mu\!\left(\limsup_{n\to\infty}f_n\right)
+    \geqslant\limsup_{n\to\infty}\mu(f_n).
+    $$
+
+**推论**
+
+若 $f_n\in S^+$，则取 $g=0$，有
+
+$$
+\mu\!\left(\liminf_{n\to\infty}f_n\right)
+\leqslant\liminf_{n\to\infty}\mu(f_n).
+$$
+
+**定理 3.2.5（控制收敛定理）**
+
+设 $f_n,f$ 为可测函数，且 $f_n\xrightarrow{\mathrm{a.e.}}f$（或 $f_n\xrightarrow{\mu}f$）。若存在绝对可积函数
+$g$，使得对所有 $n\geqslant1$，
+
+$$
+|f_n|\leqslant g\quad\text{a.e.},
+$$
+
+则 $f$ 绝对可积，且
+
+$$
+\lim_{n\to\infty}\mu(f_n)=\mu(f).
+$$
+
+**推论**
+
+若 $(\Omega,\mathcal F,\mu)$ 为有限测度空间，$f_n,f$ 为可测函数，且
+$f_n\xrightarrow{\mathrm{a.e.}}f$。若存在常数 $M>0$，使得
+$|f_n|\leqslant M$ a.e.，则 $f$ 可积，且
+
+$$
+\lim_{n\to\infty}\mu(f_n)=\mu(f).
+$$
+
+**定理 3.2.6**
+
+设 $f_n,f$ 为可测函数，且 $f_n\xrightarrow{\mathrm{a.e.}}f$（或
+$f_n\xrightarrow{\mu}f$）。
+
+1. 若存在可测函数 $g$，满足 $\mu(g)>-\infty$，且
+ $f_n\geqslant g$ a.e.，则 $f$ 可积（广义意义下），且
+
+    $$
+    \mu(f)\leqslant\liminf_{n\to\infty}\mu(f_n).
+    $$
+
+2. 若存在可测函数 $g$，满足 $\mu(g)<\infty$，且
+ $f_n\leqslant g$ a.e.，则 $f$ 可积（广义意义下），且
+
+    $$
+    \mu(f)\geqslant\limsup_{n\to\infty}\mu(f_n).
+    $$
+
+**定理 3.2.7**
+
+设 $f_n,f$ 为可测函数，$f_n\xrightarrow{\mathrm{a.e.}}f$（或
+$f_n\xrightarrow{\mu}f$）。又设 $g_n,g\in S^+$，
+$g_n\xrightarrow{\mathrm{a.e.}}g$，并且 $g_n$ 可积、$\mu(g_n)\to\mu(g)$。
+若 $|f_n|\leqslant g_n$ a.e.，则
+
+$$
+\lim_{n\to\infty}\mu\bigl(|f_n-f|\bigr)=0.
+$$
+
+特别地，$\lim_{n\to\infty}\mu(f_n)=\mu(f)$。
+
+**推论 3.2.8（Scheffé 定理）**
+
+设 $f_n,f$ 为非负可积函数，且 $f_n\xrightarrow{\mathrm{a.e.}}f$，则
+
+$$
+\mu\bigl(|f_n-f|\bigr)\longrightarrow0
+\quad\Longleftrightarrow\quad
+\mu(f_n)\longrightarrow\mu(f).
+$$
+
+## 3.3 不定积分与符号测度
+
+**命题 3.3.1**
+
+设 $f\in L^1(\Omega,\mathcal F,\mu)$，并对任意 $A\in\mathcal F$ 定义
+
+$$
+\nu(A)=\mu(fI_A)=\int_A f\,d\mu.
+$$
+
+则 $\nu$ 是 $\mathcal F$ 上的符号测度；即若 $A_n\in\mathcal F$ 两两不交，则
+
+$$
+\nu\!\left(\bigcup_{n=1}^{\infty}A_n\right)
+=\sum_{n=1}^{\infty}\nu(A_n).
+$$
+
+此外，令
+
+$$
+\nu^+(A)=\mu(f^+I_A),\qquad
+\nu^-(A)=\mu(f^-I_A),\qquad A\in\mathcal F,
+$$
+
+则 $\nu^+$、$\nu^-$ 均为测度，且 $\nu=\nu^+-\nu^-$。
+
+**定义 3.3.2**
+
+设 $(\Omega,\mathcal F)$ 为可测空间。若集合函数
+$\nu:\mathcal F\to[-\infty,\infty]$ 满足 $\nu(\varnothing)=0$，并且对任意两两不交的
+$\{A_n\}\subseteq\mathcal F$，
+
+$$
+\nu\!\left(\bigcup_{n=1}^{\infty}A_n\right)
+=\sum_{n=1}^{\infty}\nu(A_n),
+$$
+
+则称 $\nu$ 为 $(\Omega,\mathcal F)$ 上的**符号测度**。这里约定符号测度不同时取值
+$+\infty$ 与 $-\infty$。
+
+**定义 3.3.3**
+
+设 $\nu$ 为 $(\Omega,\mathcal F)$ 上的符号测度。称 $D\cup D^c$ 为 $\nu$ 的一个
+**Hahn 分解**，若 $D,D^c\in\mathcal F$，并且
+
+$$
+\nu(A)\geqslant0\quad(A\in\mathcal F,\ A\subseteq D),\qquad
+\nu(A)\leqslant0\quad(A\in\mathcal F,\ A\subseteq D^c).
+$$
+
+**定理 3.3.4（Jordan–Hahn 分解定理）**
+
+设 $\nu$ 为 $(\Omega,\mathcal F)$ 上的符号测度。对 $A\in\mathcal F$，令
+
+$$
+\nu^+(A)=\sup\{\nu(B):B\subseteq A,\ B\in\mathcal F\},\qquad
+\nu^-(A)=\sup\{-\nu(B):B\subseteq A,\ B\in\mathcal F\}.
+$$
+
+则 $\nu^+$、$\nu^-$ 是测度，称为 $\nu$ 的正、负变差，且
+
+$$
+\nu=\nu^+-\nu^-.
+$$
+
+另外，若 $D\cup D^c$ 为 $\nu$ 的 Hahn 分解，则对一切 $A\in\mathcal F$，
+
+$$
+\nu^+(A)=\nu(A\cap D),\qquad
+\nu^-(A)=-\nu(A\cap D^c).
+$$
+
+**注 3.3.5**
+
+1. $\nu^+$、$\nu^-$ 称为 $\nu$ 的变差；
+2. Hahn 分解未必唯一。若 $D_1\cup D_1^c$、$D_2\cup D_2^c$ 都是 Hahn 分解，
+ 则 $\nu(A)=0$ 对所有 $A\in\mathcal F$ 且 $A\subseteq D_1\triangle D_2$ 成立；
+3. 令 $|\nu|=\nu^++\nu^-$，称为 $\nu$ 的**全变差**，并称
+ $|\nu|(\Omega)$ 为 $\nu$ 的全变差；
+4. 若 $f$ 关于 $|\nu|$ 绝对可积，则称 $f$ 关于 $\nu$ 可积，并定义
+
+    $$
+    \int f\,d\nu=\int f\,d\nu^+-\int f\,d\nu^-;
+    $$
+
+5. 若 $D\cup D^c$ 为 Hahn 分解，令 $h=I_D-I_{D^c}$，则
+ $h$ 关于 $|\nu|$ 与 $\nu$ 均绝对可积，且
+
+    $$
+    \nu=h\cdot|\nu|,\qquad |\nu|=h\cdot\nu.
+    $$
+
+**定理 3.3.6**
+
+设 $\nu$ 为 $(\Omega,\mathcal F)$ 上的符号测度，且 $D\cup D^c$ 为一个 Hahn 分解。则对
+$A\in\mathcal F$，
+
+$$
+\nu^+(A)=\sup\{\nu(B):B\subseteq A,\ B\in\mathcal F\},\qquad
+\nu^-(A)=\inf\{\nu(B):B\subseteq A,\ B\in\mathcal F\}.
+$$
+
+**定义 3.3.7（绝对连续与奇异）**
+
+设 $\nu_1,\nu_2$ 为 $(\Omega,\mathcal F)$ 上的符号测度。若对任意 $A\in\mathcal F$，
+
+$$
+|\nu_2|(A)=0\ \Longrightarrow\ |\nu_1|(A)=0,
+$$
+
+则称 $\nu_1$ 对 $\nu_2$ **绝对连续**，记为 $\nu_1\ll\nu_2$。若
+$\nu_1\ll\nu_2$ 且 $\nu_2\ll\nu_1$，则称二者**等价**，记为 $\nu_1\sim\nu_2$。
+若存在 $N\in\mathcal F$，使 $|\nu_1|(N^c)=0$、$|\nu_2|(N)=0$，则称
+$\nu_1$ 与 $\nu_2$ **相互奇异**，记为 $\nu_1\perp\nu_2$。
+
+**定理 3.3.8**
+
+设 $\nu_1,\nu_2$ 为符号测度，则：
+
+1. $\nu_1\ll\nu_2$ 当且仅当 $|\nu_1|\ll|\nu_2|$；
+2. $\nu_1\ll\nu_2$ 当且仅当对任意 $A\in\mathcal F$，
+ $|\nu_2|(A)=0$ 蕴含 $\nu_1(A)=0$；
+3. 若 $\nu_1\ll\nu_2$ 且 $\nu_1\perp\nu_2$，则 $\nu_1=0$；
+4. 若 $\nu$ 为符号测度，$f\in L^1(|\nu|)$，则 $f\cdot\nu\ll\nu$。
+
+**定理 3.3.9**
+
+设 $\mu$ 为 $(\Omega,\mathcal F)$ 上的测度，$h$ 为可测函数。对任意 $g\in L^1(|h|\cdot\mu)$，
+
+$$
+g\text{ 关于 }h\cdot\mu\text{ 可积}
+\quad\Longleftrightarrow\quad
+gh\text{ 关于 }\mu\text{ 可积},
+$$
+
+且对任意 $A\in\mathcal F$，
+
+$$
+\int_Ag\,d(h\cdot\mu)=\int_Agh\,d\mu.
+$$
+
+**定理 3.3.10（Lebesgue 分解）**
+
+设 $\nu$ 为 $(\Omega,\mathcal F)$ 上的 $\sigma$ 有限符号测度，$\mu$ 为 $\sigma$ 有限测度。
+则 $\nu$ 唯一地分解为
+
+$$
+\nu=\nu_s+\nu_c,
+$$
+
+其中 $\nu_s\perp\mu$，$\nu_c\ll\mu$，且 $\nu_s,\nu_c$ 均为 $\sigma$ 有限符号测度。
+
+**定理 3.3.11（Radon–Nikodym 定理）**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，$\mu$ 为 $\sigma$ 有限测度，$\nu$ 为 $\sigma$ 有限符号测度。
+若 $\nu\ll\mu$，则存在 $\mu$-可测函数 $g$，使
+
+$$
+\nu(A)=\int_Ag\,d\mu,\qquad A\in\mathcal F.
+$$
+
+该函数在 $\mu$-几乎处处意义下唯一。
+
+**定义 3.3.12**
+
+在定理 3.3.11 的条件下，称
+
+$$
+\frac{d\nu}{d\mu}=g
+$$
+
+为 $\nu$ 关于 $\mu$ 的**Radon–Nikodym 导数**（或密度）。
+
+**定理 3.3.13**
+
+设 $(\Omega,\mathcal F,\mu)$ 为 $\sigma$ 有限测度空间，$\nu$ 为 $\mathcal F$ 上的符号测度且
+$\nu\ll\mu$。若 $h=d\nu/d\mu$，则对可测函数 $g$，
+
+$$
+g\text{ 关于 }\nu\text{ 可积}
+\quad\Longleftrightarrow\quad
+gh\text{ 关于 }\mu\text{ 绝对可积},
+$$
+
+且
+
+$$
+\int_Ag\,d\nu=\int_Agh\,d\mu,\qquad A\in\mathcal F.
+$$
+
+**定理 3.3.14**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，$\mu,\nu$ 为 $\mathcal F$ 上的 $\sigma$ 有限测度，
+$\varphi$ 为符号测度。若 $\varphi\ll\nu$ 且 $\nu\ll\mu$，则 $\varphi\ll\mu$，且
+
+$$
+\frac{d\varphi}{d\mu}
+=\frac{d\varphi}{d\nu}\frac{d\nu}{d\mu}\qquad \mu\text{-a.e.}
+$$
+
+## 3.4 空间 $L^p$ 及其对偶
+
+**定义**
+
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间，$0<p<\infty$。令
+
+$$
+L^p(\Omega,\mathcal F,\mu)
+=\left\{f\in S(\Omega,\mathcal F):\mu(|f|^p)<\infty\right\}.
+$$
+
+称其为 $L^p$ 空间。将相差一个 $\mu$-零集的函数等同，故 $L^p$ 实指上述可测函数按
+$\mu$-几乎处处相等关系所得的商空间。对 $f\in L^p$，令
+
+$$
+\|f\|_p=\mu(|f|^p)^{1/p}.
+$$
+
+当 $1\leqslant p<\infty$ 时，$\|\cdot\|_p$ 是 $L^p$ 上的范数，$L^p$ 为 Banach 空间。
+
+**定理 3.4.1**
+
+1. 对 $r>0$ 与可测函数 $f,g$，
+
+    $$
+    \mu(|f+g|^r)\leqslant C_r\bigl[\mu(|f|^r)+\mu(|g|^r)\bigr],
+    \qquad C_r=\max\{1,2^{r-1}\};
+    $$
+
+2. 若 $1<p,q<\infty$ 且 $p^{-1}+q^{-1}=1$，$f\in L^p$、$g\in L^q$，则
+
+    $$
+    |\mu(fg)|\leqslant\mu(|f|^p)^{1/p}\mu(|g|^q)^{1/q}
+    \qquad\text{（H\"older 不等式）};
+    $$
+
+3. 若 $1\leqslant p<\infty$ 且 $f,g\in L^p$，则
+
+    $$
+    \|f+g\|_p\leqslant\|f\|_p+\|g\|_p
+    \qquad\text{（Minkowski 不等式）}.
+    $$
+
+**定理 3.4.2（Jensen 不等式）**
+
+设 $(\Omega,\mathcal F,\mu)$ 为概率空间，$\varphi$ 为凸函数，$f\in L^1(\mu)$，且
+$\varphi\circ f$ 可积，则
+
+$$
+\varphi\bigl(\mu(f)\bigr)\leqslant\mu(\varphi\circ f).
+$$
+
+**定理 3.4.3**
+
+设 $r>0$，$f,f_n\in L^r$。若 $\mu(|f_n-f|^r)\to0$，则 $f_n$ 在 $L^r$ 中收敛于 $f$。并且：
+
+1. $L^r$ 收敛蕴含依测度收敛；
+2. $L^r$ 收敛的函数列必有一个子列几乎处处收敛。
+
+**定理 3.4.4**
+
+设 $r>0$，$f_n\in L^r$（$n\geqslant1$）。则 $\{f_n\}$ 在 $L^r$ 中收敛，当且仅当它是 $L^r$ 中的 Cauchy 列。特别地，当 $p\geqslant1$ 时，$L^p$ 是 Banach 空间。
+
+**定理 3.4.6**
+
+设 $p>1$，$f,f_n\in L^p$。若 $f_n\rightharpoonup f$，且 $\|f_n\|_p\to\|f\|_p$，则 $\|f_n-f\|_p\to0$。反之，$L^p$ 收敛必蕴含弱收敛及范数收敛。
+
+**定理 3.4.7**
+
+设 $\mathcal{S}$ 为 $L^p$ 中的子集，$1\leqslant p<\infty$。则 $\mathcal{S}$ 在 $L^p$ 中相对紧，当且仅当 $\mathcal{S}$ 完全有界。
+
+**定义 3.4.8**
+
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间。若存在可数子 $\sigma$-代数 $\mathcal F_0\subseteq\mathcal F$，使得对每个 $A\in\mathcal F$ 均存在 $B\in\mathcal F_0$ 满足 $\mu(A\triangle B)=0$，则称 $\mathcal F$ 在 $\mu$ 下**可分**。
+
+**定理 3.4.9**
+
+若 $(\Omega,\mathcal F,\mu)$ 为有限测度空间，且 $\mathcal F$ 在 $\mu$ 下可分，则对 $1\leqslant p<\infty$，空间 $L^p(\Omega,\mathcal F,\mu)$ 可分。
+
+**定义 3.4.12**
+
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间。定义
+
+$$
+L^\infty(\Omega,\mathcal F,\mu)=\bigl\{f\in S(\Omega,\mathcal F):\exists c\geqslant0,\ \mu(\{|f|>c\})=0\bigr\}.
+$$
+
+对 $f\in L^\infty$，令
+
+$$
+\|f\|_\infty=\inf\{c\geqslant0:\mu(\{|f|>c\})=0\}.
+$$
+
+**定理 3.4.13**
+
+$\bigl(L^\infty(\Omega,\mathcal F,\mu),\|\cdot\|_\infty\bigr)$ 为 Banach 空间。
+
+**定理 3.4.14**
+
+设 $1<p,q<\infty$，$p^{-1}+q^{-1}=1$。则 $L^p(\Omega,\mathcal F,\mu)^*$ 与 $L^q(\Omega,\mathcal F,\mu)$ 等距线性同构：对 $g\in L^q$，
+
+$$
+T_g(f)=\mu(fg),\qquad f\in L^p,
+$$
+
+定义 $L^p$ 上的连续线性泛函，且 $\|T_g\|=\|g\|_q$。因此 $(L^p)^*\cong L^q$（$1<p<\infty$）。
+
+**定理 3.4.15**
+
+若 $(\Omega,\mathcal F,\mu)$ 为 $\sigma$-有限测度空间，则 $L^1(\Omega,\mathcal F,\mu)^*$ 与 $L^\infty(\Omega,\mathcal F,\mu)$ 等距线性同构。具体地，$g\in L^\infty$ 对应于
+
+$$
+T_g(f)=\mu(fg),\qquad f\in L^1,
+$$
+
+并且 $\|fg\|_1\leqslant\|g\|_\infty\|f\|_1$，$\|T_g\|=\|g\|_\infty$。
+
+**例 3.4.16（$\sigma$-有限性的必要性）**
+
+令 $\Omega=\mathbb R$，$\mathcal F=\{A\subseteq\mathbb R:A\text{ 或 }A^c\text{ 为可数集}\}$，并令 $\mu$ 为 $\mathcal F$ 上的计数测度。此时 $L^1(\Omega,\mathcal F,\mu)$ 中的函数在某个可数集外为零，而其连续线性泛函可由任意有界函数在该可数支撑上逐点配对给出。取一个有界但不属于 $\mathcal F$ 的函数，所得泛函不能由 $L^\infty(\Omega,\mathcal F,\mu)$ 中的函数表示；故上一定理中的 $\sigma$-有限性不能略去。
+
+**定义 3.4.17（弱收敛）**
+
+设 $1\leqslant p<\infty$，$q$ 为共轭指标（当 $p=1$ 时 $q=\infty$），且 $f,f_n\in L^p$。若对每个 $g\in L^q$ 都有
+
+$$
+\mu(f_ng)\longrightarrow\mu(fg),
+$$
+
+则称 $\{f_n\}$ 在 $L^p$ 中**弱收敛**于 $f$，记为 $f_n\rightharpoonup f$。
+
+**定理 3.4.18**
+
+设 $1<p<\infty$，$f,f_n\in L^p$。若 $f_n\rightharpoonup f$ 且 $\|f_n\|_p\to\|f\|_p$，则 $f_n\to f$ 于 $L^p$。这个结论对 $p=1$ 一般不成立；在 $L^1$ 中，弱收敛列还必须具有一致可积性。
+
+## 3.5 空间 $L^\infty$ 的对偶
+
+设 $\nu$ 为 $(\Omega,\mathcal F)$ 上的有限可加符号集合函数。定义其全变差范数为
+
+$$
+\|\nu\|_{\mathrm{var}}=\sup\left\{\sum_{i=1}^{n}|\nu(A_i)|:\{A_1,\ldots,A_n\}\text{ 是 }\Omega\text{ 的有限 }\mathcal F\text{-分割}\right\}.
+$$
+
+若 $\|\nu\|_{\mathrm{var}}<\infty$，则称 $\nu$ 为**有界变差有限可加测度**。记
+
+$$
+\operatorname{ba}(\Omega,\mathcal F)=\{\nu:\nu\text{ 为 }\mathcal F\text{ 上有限可加的符号测度，且 }\|\nu\|_{\mathrm{var}}<\infty\}.
+$$
+
+对 $f\in L^\infty(\Omega,\mathcal F)$，有限可加积分满足
+
+$$
+\left|\int_\Omega f\,d\nu\right|\leqslant\|f\|_\infty\|\nu\|_{\mathrm{var}}.
+$$
+
+**定理 3.5.1**
+
+对 $\nu\in\operatorname{ba}(\Omega,\mathcal F)$，令
+
+$$
+T_\nu(f)=\int_\Omega f\,d\nu,\qquad f\in L^\infty(\Omega,\mathcal F).
+$$
+
+则映射 $\nu\mapsto T_\nu$ 是从 $\operatorname{ba}(\Omega,\mathcal F)$ 到 $L^\infty(\Omega,\mathcal F)^*$ 的等距线性同构。
+
+**定义 3.5.2**
+
+若 $(\Omega,\mathcal F,\mu)$ 为测度空间，记
+
+$$
+\operatorname{ba}(\Omega,\mathcal F,\mu)=\{\nu\in\operatorname{ba}(\Omega,\mathcal F):\nu\ll\mu\}.
+$$
+
+**定理 3.5.3**
+
+对 $\nu\in\operatorname{ba}(\Omega,\mathcal F,\mu)$，令
+
+$$
+T_\nu(f)=\int_\Omega f\,d\nu,\qquad f\in L^\infty(\Omega,\mathcal F,\mu).
+$$
+
+则 $\nu\mapsto T_\nu$ 是从 $\operatorname{ba}(\Omega,\mathcal F,\mu)$ 到 $L^\infty(\Omega,\mathcal F,\mu)^*$ 的等距线性同构。

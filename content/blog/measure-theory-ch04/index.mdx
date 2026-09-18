@@ -1,0 +1,182 @@
+---
+title: "测度论 第 4 章 乘积可测空间上的测度与积分"
+pubDate: 2025-05-05
+description: "乘积可测空间：乘积 $\\sigma$ 代数、投影与截面、乘积测度的存在唯一性、Tonelli 定理与 Fubini 定理。"
+tags: ["测度论", "乘积空间", "Tonelli 定理", "Fubini 定理"]
+category: 数学
+series: 测度论
+seriesOrder: 40
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 4.1 乘积可测空间
+
+**定义 4.1.1**
+
+设 $\Omega_1,\Omega_2$ 为两个集合，令
+
+$$
+ \Omega_1\times\Omega_2
+ =\{(\omega_1,\omega_2):\omega_i\in\Omega_i,\ i=1,2\}.
+$$
+
+称 $\Omega_1\times\Omega_2$ 为 $\Omega_1$ 与 $\Omega_2$ 的**乘积**。
+若 $(\Omega_1,\mathcal F_1)$ 与 $(\Omega_2,\mathcal F_2)$ 为可测空间，在
+$\Omega_1\times\Omega_2$ 上定义
+
+$$
+ \mathcal F_1\otimes\mathcal F_2
+ =\sigma\bigl(\{A_1\times A_2:A_i\in\mathcal F_i,\ i=1,2\}\bigr).
+$$
+
+称 $\mathcal F_1\otimes\mathcal F_2$ 为**乘积 $\sigma$ 代数**，
+$(\Omega_1\times\Omega_2,\mathcal F_1\otimes\mathcal F_2)$ 为**乘积可测空间**。
+
+**定义 4.1.2**
+
+设 $(\Omega_1,\mathcal F_1)$ 及 $(\Omega_2,\mathcal F_2)$ 为可测空间。对 $i=1,2$，令
+
+$$
+ \pi_i(\omega_1,\omega_2)=\omega_i.
+$$
+
+称之为 $\Omega_1\times\Omega_2$ 到 $\Omega_i$ 的**投影**。
+
+**命题 4.1.3**
+
+对 $i=1,2$，$\pi_i:(\Omega_1\times\Omega_2,\mathcal F_1\otimes\mathcal F_2)
+\to(\Omega_i,\mathcal F_i)$ 为可测映射，且
+
+$$
+ \mathcal F_1\otimes\mathcal F_2
+ =\sigma\bigl(\pi_1^{-1}(\mathcal F_1)\cup\pi_2^{-1}(\mathcal F_2)\bigr).
+$$
+
+因此，$\mathcal F_1\otimes\mathcal F_2$ 是使 $\pi_1$ 和 $\pi_2$ 成为可测映射的最小 $\sigma$ 代数。
+
+**定理 4.1.4**
+
+设 $(\Omega,\mathcal F)$、$(\Omega_1,\mathcal F_1)$ 及 $(\Omega_2,\mathcal F_2)$ 为可测空间，
+$f=(f_1,f_2)$ 为从 $\Omega$ 到 $\Omega_1\times\Omega_2$ 的映射。则
+
+$$
+ f\text{ 可测}\quad\Longleftrightarrow\quad f_1,f_2\text{ 可测}.
+$$
+
+## 4.2 乘积测度与 Fubini 定理
+
+设 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间。
+将在 $(X\times Y,\mathcal A\otimes\mathcal B)$ 上定义的乘积测度
+$\mu\times\nu$ 称为 $\mu$ 与 $\nu$ 的**乘积**。
+
+对 $E\subseteq X\times Y$，定义
+
+$$
+ E^x=\{y\in Y:(x,y)\in E\},\qquad
+ E_y=\{x\in X:(x,y)\in E\}.
+$$
+
+称 $E^x$ 与 $E_y$ 为 $E$ 在 $x$ 与 $y$ 的**截面**。
+对定义在 $X\times Y$ 上的实函数 $f$，其截面函数记为
+
+$$
+ f_x(y)=f(x,y),\qquad f^y(x)=f(x,y).
+$$
+
+**引理 4.2.2**
+
+设 $(X,\mathcal A)$、$(Y,\mathcal B)$ 为可测空间。
+
+1. 若 $E\in\mathcal A\otimes\mathcal B$，则对任意 $x\in X$、$y\in Y$，有
+ $E^x\in\mathcal B$ 及 $E_y\in\mathcal A$；
+2. 若 $f$ 在 $X\times Y$ 上 $\mathcal A\otimes\mathcal B$ 可测，则对任意
+ $x\in X$、$y\in Y$，$f_x$ 在 $Y$ 上 $\mathcal B$ 可测，$f^y$ 在 $X$ 上
+ $\mathcal A$ 可测。
+
+**引理 4.2.3**
+
+设 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间，
+$E\in\mathcal A\otimes\mathcal B$。则
+
+1. $x\mapsto\nu(E^x)$ 为 $\mathcal A$ 可测；
+2. $y\mapsto\mu(E_y)$ 为 $\mathcal B$ 可测。
+
+**定理 4.2.4**
+
+设 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间。
+则存在 $\mathcal A\otimes\mathcal B$ 上的 $\sigma$-有限测度 $\mu\times\nu$，使得
+
+$$
+ (\mu\times\nu)(A\times B)=\mu(A)\nu(B),
+ \qquad \forall A\in\mathcal A,\ B\in\mathcal B.
+$$
+
+此外，对任意 $E\in\mathcal A\otimes\mathcal B$，有
+
+$$
+ (\mu\times\nu)(E)
+ =\int_X\nu(E^x)\,d\mu(x)
+ =\int_Y\mu(E_y)\,d\nu(y).
+$$
+
+**定理 4.2.5（Tonelli 定理）**
+
+设 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间，
+$f$ 为 $X\times Y$ 上非负的 $\mathcal A\otimes\mathcal B$ 可测函数。则
+
+1. $x\mapsto\int_Y f_x\,d\nu$ 为 $\mathcal A$ 可测；
+2. $y\mapsto\int_X f^y\,d\mu$ 为 $\mathcal B$ 可测；
+
+且
+
+$$
+ \int_{X\times Y}f\,d(\mu\times\nu)
+ =\int_X\left(\int_Y f_x\,d\nu\right)d\mu(x)
+ =\int_Y\left(\int_X f^y\,d\mu\right)d\nu(y).
+$$
+
+**推论 4.2.6**
+
+在定理 4.2.5 的条件下，若 $f$ 非负可测，则
+
+$$
+ \mu\times\nu(f)=\infty
+ \quad\Longleftrightarrow\quad
+ \int_X\nu(f_x)\,d\mu(x)=\infty
+ \quad\Longleftrightarrow\quad
+ \int_Y\mu(f^y)\,d\nu(y)=\infty.
+$$
+
+**定理 4.2.7（Fubini 定理）**
+
+设 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间，
+$f$ 为 $X\times Y$ 上 $\mathcal A\otimes\mathcal B$ 可测函数。若 $f$ 关于
+$\mu\times\nu$ 可积，则
+
+1. 对 $\mu$-几乎处处的 $x$，$f_x$ 关于 $\nu$ 可积；对 $\nu$-几乎处处的 $y$，
+ $f^y$ 关于 $\mu$ 可积；
+2. 令
+
+    $$
+    F(x)=
+    \begin{cases}
+     \displaystyle\int_Yf_x\,d\nu, & f_x\text{ 关于 }\nu\text{ 可积},\\
+     0, & \text{其他情形},
+    \end{cases}
+    \qquad
+    G(y)=
+    \begin{cases}
+     \displaystyle\int_Xf^y\,d\mu, & f^y\text{ 关于 }\mu\text{ 可积},\\
+     0, & \text{其他情形}.
+    \end{cases}
+    $$
+
+    则 $F$ 关于 $\mu$ 可积，$G$ 关于 $\nu$ 可积，且
+
+    $$
+    \int_{X\times Y}f\,d(\mu\times\nu)
+    =\int_XF(x)\,d\mu(x)
+    =\int_YG(y)\,d\nu(y).
+    $$

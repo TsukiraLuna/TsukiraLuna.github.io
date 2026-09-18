@@ -1,0 +1,910 @@
+---
+title: "测度论 第 6 章 复习题"
+pubDate: 2025-05-07
+description: "测度论复习题：测度与 $\\sigma$ 有限性、$\\pi$ 类与 $\\lambda$ 类、单调类定理与测度唯一性、Carathéodory 测度扩张、各种收敛方式、收敛定理与反例、乘积空间积分、符号测度分解、$L^p$ 对偶与完备化。"
+tags: ["测度论", "复习题", "收敛定理", "测度分解"]
+category: 数学
+series: 测度论
+seriesOrder: 60
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+>
+> 本章是原笔记第 25–35 页的复习要点与习题解答，按原稿的编号（1–35）排列。
+
+## 6.1 测度的基本定义
+
+**1. 测度与 $\sigma$-有限性**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，函数
+
+$$
+\mu:\mathcal F\longrightarrow[0,+\infty]
+$$
+
+若满足
+
+1. $\mu(\varnothing)=0$；
+2. 对任意两两不交的集合列 $\{A_n\}_{n\geqslant1}\subseteq\mathcal F$，
+
+    $$
+    \mu\left(\bigcup_{n=1}^{\infty}A_n\right)
+    =\sum_{n=1}^{\infty}\mu(A_n),
+    $$
+
+则称 $\mu$ 为 $(\Omega,\mathcal F)$ 上的**测度**。若存在可测集列 $\{A_n\}_{n\geqslant1}$，使得
+
+$$
+\bigcup_{n=1}^{\infty}A_n=\Omega,
+\qquad \mu(A_n)<\infty\quad(n\geqslant1),
+$$
+
+则称 $\mu$ 为**$\sigma$-有限测度**。
+
+**例**
+
+Lebesgue 测度 $m$ 是 $\sigma$-有限的，因为
+
+$$
+\mathbb R=\bigcup_{n=1}^{\infty}[-n,n],
+\qquad m([-n,n])=2n<\infty.
+$$
+
+相反，若 $\Omega$ 为不可数集，令
+
+$$
+\mu(A)=
+\begin{cases}
+ 0,&A=\varnothing,\\
+ \infty,&A\ne\varnothing,
+\end{cases}
+$$
+
+则 $\mu$ 是测度但不是 $\sigma$-有限测度；事实上，任一有限测度集只能是空集。
+
+## 6.2 集族生成的 $\sigma$-代数
+
+**2. $\pi$ 类、代数与 $\sigma$-代数**
+
+设 $\mathcal C\subseteq\mathcal P(\Omega)$。$\mathcal C$ 称为**$\pi$ 类**，若
+
+$$
+A,B\in\mathcal C\quad\Longrightarrow\quad A\cap B\in\mathcal C.
+$$
+
+若 $\mathcal C$ 含有 $\Omega$，对补集及有限并（等价地，对有限交和差）封闭，则称 $\mathcal C$ 为**代数**。代数再对可数并封闭时即为 $\sigma$-代数；等价地，若
+
+$$
+\Omega\in\mathcal C,\qquad A\in\mathcal C\Longrightarrow A^c\in\mathcal C,
+\qquad A_n\in\mathcal C\Longrightarrow\bigcup_{n=1}^{\infty}A_n\in\mathcal C,
+$$
+
+则 $\mathcal C$ 为 $\sigma$-代数。
+
+**3. $\lambda$ 类**
+
+集类 $\mathcal C$ 称为**$\lambda$ 类**，若
+
+1. $\Omega\in\mathcal C$；
+2. $A,B\in\mathcal C$ 且 $A\subseteq B$ 时，$B\setminus A\in\mathcal C$；
+3. $A_n\in\mathcal C$ 且 $A_n\uparrow A$ 时，$A\in\mathcal C$。
+
+若 $\mathcal C$ 同时为 $\pi$ 类和 $\lambda$ 类，则 $\mathcal C$ 是 $\sigma$-代数。的确，$\varnothing=\Omega\setminus\Omega\in\mathcal C$；对任意 $A\in\mathcal C$，由 $A\subseteq\Omega$ 可知 $A^c=\Omega\setminus A\in\mathcal C$。再由有限交封闭性、De Morgan 公式及单调极限封闭性，得到 $\mathcal C$ 对可数并封闭。
+
+## 6.3 单调类定理与测度唯一性
+
+**4. 单调类定理的应用**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，$\mathcal C$ 为 $\pi$ 类，且 $\sigma(\mathcal C)=\mathcal F$。若 $\mu,\nu$ 为 $\mathcal F$ 上的有限测度，并满足
+
+$$
+\mu(A)=\nu(A),\qquad A\in\mathcal C,
+$$
+
+则 $\mu=\nu$。
+
+令
+
+$$
+\mathcal L=\{A\in\mathcal F:\mu(A)=\nu(A)\}.
+$$
+
+由假设 $\mathcal C\subseteq\mathcal L$。又因 $\mu(\Omega)=\nu(\Omega)$，有 $\Omega\in\mathcal L$。若 $A,B\in\mathcal L$ 且 $A\subseteq B$，则
+
+$$
+\mu(B\setminus A)=\mu(B)-\mu(A)
+=\nu(B)-\nu(A)=\nu(B\setminus A),
+$$
+
+故 $B\setminus A\in\mathcal L$。若 $A_n\uparrow A$ 且 $A_n\in\mathcal L$，由测度的下连续性，
+
+$$
+\mu(A)=\lim_{n\to\infty}\mu(A_n)
+=\lim_{n\to\infty}\nu(A_n)=\nu(A).
+$$
+
+所以 $\mathcal L$ 为 $\lambda$ 类。由 $\pi$–$\lambda$ 定理，
+
+$$
+\mathcal F=\sigma(\mathcal C)\subseteq\mathcal L,
+$$
+
+从而对任意 $A\in\mathcal F$ 有 $\mu(A)=\nu(A)$。
+
+**5. 关于 $\lambda$ 类的判断**
+
+判定一个集类是否为 $\lambda$ 类时，逐一检查 $\Omega$ 的归属、相对差封闭性及单调递增并封闭性。例如，$\{\varnothing,\Omega\}$ 是 $\lambda$ 类；余有限集类
+
+$$
+\mathcal C=\{A\subseteq\Omega:A\text{ 为有限集或 }A^c\text{ 为有限集}\}
+$$
+
+对补集和有限集合运算封闭。当 $\Omega$ 为可数集时，它还对可数并封闭，因而是 $\sigma$-代数。处理一般集合列时，应分别讨论其中是否出现余有限集；若全为有限集，则直接由集合列的并及补集的性质进行判断。
+
+## 6.4 测度扩张
+
+**6. 半环与 Carathéodory 测度扩张定理**
+
+集类 $\mathcal S$ 称为**半环**，若
+
+1. $\varnothing\in\mathcal S$，且 $A,B\in\mathcal S$ 时 $A\cap B\in\mathcal S$；
+2. 对 $A,B\in\mathcal S$，差集 $A\setminus B$ 可表示为有限个两两不交的 $\mathcal S$ 中集合的并。
+
+Carathéodory 测度扩张定理说明：定义在半环上的前测度可以扩张为 $\sigma(\mathcal S)$ 上的测度；若此前测度在半环上 $\sigma$-有限，则扩张唯一。
+
+**例**
+
+令
+
+$$
+\mathcal S=\{(a,b]:a,b\in\mathbb R,\ a\leqslant b\}.
+$$
+
+若 $\mu$ 是 $\mathcal S$ 上的前测度，并且
+
+$$
+\mu((a,b])=2(b-a),\qquad (a,b]\in\mathcal S,
+$$
+
+则 $\mu=2\lambda$ 于 $\mathcal B(\mathbb R)$，其中 $\lambda$ 为 Lebesgue 测度。事实上，取 $A_n=(-n,n]$，则
+
+$$
+\mathbb R=\bigcup_{n=1}^{\infty}A_n,
+\qquad \mu(A_n)=4n<\infty.
+$$
+
+因此 $\mu$ 在 $\mathcal S$ 上 $\sigma$-有限；由 Carathéodory 测度扩张定理的唯一性，$\mu$ 与 $2\lambda$ 在 $\sigma(\mathcal S)=\mathcal B(\mathbb R)$ 上一致。
+
+## 6.5 函数收敛的几种方式
+
+**7. 几乎处处收敛与依测度收敛**
+
+以下设 $\mu(\Omega)<\infty$。若 $f_n\to f$ 几乎处处，则 $f_n\to f$ **依测度收敛**，即对每个 $\varepsilon>0$，
+
+$$
+\mu\bigl(\{|f_n-f|>\varepsilon\}\bigr)\longrightarrow0.
+$$
+
+反向蕴含一般不成立；但若 $f_n\to f$ 依测度收敛，则可从中抽取子列 $\{f_{n_k}\}$，使 $f_{n_k}\to f$ 几乎处处。
+
+有限测度的条件不可略去。例如在 $\mathbb R$ 的 Lebesgue 测度下，令
+
+$$
+f_n=\mathbf 1_{[n,\infty)}.
+$$
+
+则 $f_n(x)\to0$ 对每个 $x\in\mathbb R$ 成立；但当 $0<\varepsilon<1$ 时，
+
+$$
+\mu\bigl(\{|f_n|>\varepsilon\}\bigr)=\mu([n,\infty))=\infty,
+$$
+
+故 $f_n$ 不依测度收敛到 $0$。
+
+**8. 依测度收敛的 Cauchy 判别**
+
+函数列 $\{f_n\}$ 依测度收敛到 $f$ 当且仅当它是依测度 Cauchy 列，即
+
+$$
+\forall\varepsilon>0,\qquad
+\lim_{m,n\to\infty}\mu\bigl(\{|f_m-f_n|>\varepsilon\}\bigr)=0.
+$$
+
+其要点如下。由 Cauchy 条件可取一子列 $g_k=f_{n_k}$，使得
+
+$$
+\mu\bigl(\{|g_{k+1}-g_k|>2^{-k}\}\bigr)\leqslant2^{-k}.
+$$
+
+令
+
+$$
+A_k=\{|g_{k+1}-g_k|>2^{-k}\},\qquad
+B_m=\bigcup_{k=m}^{\infty}A_k,\qquad
+B=\bigcap_{m=1}^{\infty}B_m.
+$$
+
+则
+
+$$
+\mu(B_m)\leqslant\sum_{k=m}^{\infty}2^{-k}=2^{1-m},
+\qquad\text{因而}\qquad \mu(B)=0.
+$$
+
+若 $x\notin B$，则从某项起 $x\notin A_k$，故 $\{g_k(x)\}$ 为 Cauchy 列。定义
+
+$$
+f(x)=
+\begin{cases}
+ \displaystyle\lim_{k\to\infty}g_k(x),&x\notin B,\\
+ 0,&x\in B.
+\end{cases}
+$$
+
+于是 $g_k\to f$ 几乎处处。并且给定 $\varepsilon>0$，取 $m$ 充分大，使 $2^{1-m}<\varepsilon$；当 $k\geqslant m$ 时，
+
+$$
+\{|g_k-f|>\varepsilon\}\subseteq B_m,
+\qquad
+\mu\bigl(\{|g_k-f|>\varepsilon\}\bigr)\leqslant2^{1-m}\longrightarrow0.
+$$
+
+最后由
+
+$$
+\{|f_n-f|>\varepsilon\}
+\subseteq\{|f_n-g_k|>\varepsilon/2\}
+\cup\{|g_k-f|>\varepsilon/2\}
+$$
+
+即可得到 $f_n\to f$ 依测度收敛。
+
+**9. 几乎一致收敛**
+
+称 $f_n$ **几乎一致收敛**到 $f$，记为 $f_n\to f$ a.u.，若对任意 $\varepsilon>0$，存在 $N_\varepsilon\in\mathcal F$，使
+
+$$
+\mu(N_\varepsilon)<\varepsilon,
+\qquad f_n\to f\ \text{在 }N_\varepsilon^c\text{ 上一致收敛}.
+$$
+
+相应地，$\{f_n\}$ 是 a.u.-Cauchy 列，是指对任意 $\varepsilon>0$，能除去一个测度小于 $\varepsilon$ 的集合后，$\{f_n\}$ 在其补集上一致 Cauchy。
+
+a.u.-Cauchy 列必 a.u. 收敛。事实上，对每个 $k$ 取集合 $F_k$，使
+
+$$
+\mu(F_k)<2^{-k},
+\qquad\{f_n\}\text{ 在 }F_k^c\text{ 上一致 Cauchy}.
+$$
+
+令
+
+$$
+E=\limsup_{k\to\infty}F_k
+  =\bigcap_{m=1}^{\infty}\bigcup_{k=m}^{\infty}F_k.
+$$
+
+则
+
+$$
+\mu(E)\leqslant\sum_{k=m}^{\infty}2^{-k}=2^{1-m}\longrightarrow0,
+\qquad\text{即}\quad\mu(E)=0.
+$$
+
+对 $x\notin E$，从某个 $m$ 起有 $x\in F_k^c$ 对所有 $k\geqslant m$ 成立，故 $\{f_n(x)\}$ 是 Cauchy 列；令其极限为 $f(x)$（在 $E$ 上任意定义）。由一致 Cauchy 性可知，$f_n$ 在适当的小集合补集上一致收敛到 $f$。特别地，
+
+$$
+f_n\to f\ \text{a.u.}\quad\Longrightarrow\quad f_n\to f\ \text{依测度收敛}.
+$$
+
+## 6.6 积分的绝对连续性与收敛定理
+
+**10. Lebesgue 积分的绝对连续性**
+
+若 $f\in L^1(\Omega,\mathcal F,\mu)$，则对任意 $\varepsilon>0$，存在 $\delta>0$，使得对每个 $A\in\mathcal F$，
+
+$$
+\mu(A)<\delta\quad\Longrightarrow\quad\int_A|f|\,d\mu<\varepsilon.
+$$
+
+证明时，先取非负简单函数
+
+$$
+f_n=\sum_{i=1}^{r}a_i\mathbf1_{E_i},\qquad 0\leqslant f_n\leqslant|f|,
+\qquad \int_\Omega(|f|-f_n)\,d\mu<\frac{\varepsilon}{2}.
+$$
+
+令 $M=\max_{1\leqslant i\leqslant r}a_i$。则
+
+$$
+\int_A|f|\,d\mu
+\leqslant\int_\Omega(|f|-f_n)\,d\mu+\int_Af_n\,d\mu
+<\frac{\varepsilon}{2}+M\mu(A).
+$$
+
+取 $\delta=\varepsilon/(2M)$（$M=0$ 时结论显然），即得结论。
+
+**11. Fatou 引理**
+
+对非负可测函数列 $\{f_n\}$，有
+
+$$
+\int_\Omega\liminf_{n\to\infty}f_n\,d\mu
+\leqslant\liminf_{n\to\infty}\int_\Omega f_n\,d\mu.
+$$
+
+在右侧均有意义时，亦可写为
+
+$$
+\int_\Omega\limsup_{n\to\infty}f_n\,d\mu
+\geqslant\limsup_{n\to\infty}\int_\Omega f_n\,d\mu.
+$$
+
+**12. 控制收敛定理与有界收敛定理**
+
+若 $f_n\to f$ 几乎处处，且存在 $g\in L^1(\mu)$，使
+
+$$
+|f_n|\leqslant g\quad\text{几乎处处，}\qquad n\geqslant1,
+$$
+
+则 $f\in L^1(\mu)$，并且
+
+$$
+\lim_{n\to\infty}\int_\Omega f_n\,d\mu=\int_\Omega f\,d\mu.
+$$
+
+特别地，若 $\mu(\Omega)<\infty$ 且 $|f_n|\leqslant M$ 几乎处处，其中 $M<\infty$ 为常数，则可取 $g\equiv M$；这就是**有界收敛定理**。
+
+## 6.7 乘积空间上的积分
+
+**14. 可积函数的乘积**
+
+设 $(X,\mathcal A,\mu)$、$(Y,\mathcal B,\nu)$ 为两个 $\sigma$-有限测度空间，$g:X\to\mathbb R$、$h:Y\to\mathbb R$ 为可积函数，并令
+
+$$
+f(x,y)=g(x)h(y).
+$$
+
+则 $f$ 在 $(X\times Y,\mathcal A\otimes\mathcal B,\mu\times\nu)$ 上可积，且
+
+$$
+\int_{X\times Y}f\,d(\mu\times\nu)
+=\left(\int_Xg\,d\mu\right)\left(\int_Yh\,d\nu\right).
+$$
+
+事实上，$|f(x,y)|=|g(x)|\,|h(y)|$ 为非负可测函数。由 Tonelli 定理，
+
+$$
+\begin{aligned}
+ \int_{X\times Y}|f|\,d(\mu\times\nu)
+ &=\int_X\left(\int_Y|g(x)|\,|h(y)|\,d\nu(y)\right)d\mu(x)\\
+ &=\|h\|_1\int_X|g(x)|\,d\mu(x)
+ =\|g\|_1\|h\|_1<\infty.
+\end{aligned}
+$$
+
+故 $f$ 可积。再由 Fubini 定理，
+
+$$
+\begin{aligned}
+ \int_{X\times Y}f\,d(\mu\times\nu)
+ &=\int_X\left(\int_Yg(x)h(y)\,d\nu(y)\right)d\mu(x)\\
+ &=\left(\int_Yh\,d\nu\right)\left(\int_Xg\,d\mu\right).
+\end{aligned}
+$$
+
+**15. 可数情形的层析表示**
+
+设 $\lambda$ 为 $\mathbb R$ 上的 Lebesgue 测度，$\#$ 为 $\mathbb N$ 上的计数测度，$f:\mathbb N\to[0,\infty]$。令
+
+$$
+E=\{(x,n)\in\mathbb R\times\mathbb N:0\leqslant x<f(n)\}.
+$$
+
+则
+
+$$
+E\in\mathcal B(\mathbb R)\otimes\mathcal P(\mathbb N),\qquad
+\lambda(E^n)=f(n),
+$$
+
+并有层析公式
+
+$$
+\sum_{n=1}^{\infty}f(n)
+=\int_0^\infty\#\{n\in\mathbb N:f(n)>x\}\,d\lambda(x).
+$$
+
+确实，
+
+$$
+E^n=\{x\in\mathbb R:0\leqslant x<f(n)\}=[0,f(n)),
+$$
+
+故 $\lambda(E^n)=f(n)$。对指标函数 $\mathbf1_E$ 两次应用 Tonelli 定理，得到
+
+$$
+\begin{aligned}
+ (\lambda\times\#)(E)
+ &=\int_{\mathbb N}\left(\int_{\mathbb R}\mathbf1_E(x,n)\,d\lambda(x)\right)d\#(n)
+ =\sum_{n=1}^{\infty}f(n),\\
+ (\lambda\times\#)(E)
+ &=\int_0^\infty\left(\int_{\mathbb N}\mathbf1_E(x,n)\,d\#(n)\right)d\lambda(x)\\
+ &=\int_0^\infty\#\{n\in\mathbb N:f(n)>x\}\,d\lambda(x).
+\end{aligned}
+$$
+
+**16. 一般测度空间的层析公式**
+
+设 $(X,\mathcal A,\mu)$ 为 $\sigma$-有限测度空间，$\lambda$ 为 $\mathbb R$ 上的 Lebesgue 测度，$f:X\to[0,\infty]$ 为可测函数。令
+
+$$
+E=\{(x,y)\in X\times\mathbb R:0\leqslant y<f(x)\}.
+$$
+
+则
+
+$$
+E\in\mathcal A\otimes\mathcal B(\mathbb R),\qquad
+\lambda(E^x)=f(x),
+$$
+
+以及
+
+$$
+\int_Xf\,d\mu
+=\int_0^\infty\mu\{x\in X:f(x)>y\}\,d\lambda(y).
+$$
+
+为说明 $E$ 可测，令 $F(x,y)=f(x)-y$。函数 $F$ 是 $\mathcal A\otimes\mathcal B(\mathbb R)$ 可测的，且
+
+$$
+E=\bigl(X\times[0,\infty)\bigr)\cap\{(x,y):F(x,y)>0\}.
+$$
+
+此外，对每个 $x\in X$，
+
+$$
+E^x=[0,f(x)),\qquad \lambda(E^x)=f(x).
+$$
+
+故由 Tonelli 定理，
+
+$$
+\begin{aligned}
+ (\mu\times\lambda)(E)
+ &=\int_X\left(\int_{\mathbb R}\mathbf1_E(x,y)\,d\lambda(y)\right)d\mu(x)
+ =\int_Xf(x)\,d\mu(x),\\
+ (\mu\times\lambda)(E)
+ &=\int_{\mathbb R}\left(\int_X\mathbf1_E(x,y)\,d\mu(x)\right)d\lambda(y)\\
+ &=\int_0^\infty\mu\{x\in X:f(x)>y\}\,d\lambda(y),
+\end{aligned}
+$$
+
+即得所述结论。
+
+**17. Fubini 定理与二重级数换序**
+
+设双指标实数列 $\{a_{mn}\}_{m,n\geqslant1}$ 绝对可和，即
+
+$$
+\sum_{m=1}^{\infty}\sum_{n=1}^{\infty}|a_{mn}|<\infty.
+$$
+
+在 $\mathbb N\times\mathbb N$ 上取计数测度，并令 $F(m,n)=a_{mn}$。则 $F$ 可积；Fubini 定理给出
+
+$$
+\sum_{m=1}^{\infty}\sum_{n=1}^{\infty}a_{mn}
+=\int_{\mathbb N\times\mathbb N}F\,d(\#\times\#)
+=\sum_{n=1}^{\infty}\sum_{m=1}^{\infty}a_{mn}.
+$$
+
+因此绝对收敛的二重级数可以交换求和次序。
+
+## 6.8 符号测度与分解
+
+**18. 相互奇异与 Jordan–Hahn 分解**
+
+设 $\nu_1,\nu_2$ 为有限符号测度。称 $\nu_1$ 与 $\nu_2$ **相互奇异**，记为 $\nu_1\perp\nu_2$，若存在 $N\in\mathcal F$，使
+
+$$
+|\nu_1|(N^c)=0,\qquad |\nu_2|(N)=0.
+$$
+
+任一有限符号测度 $\nu$ 都有唯一的 Jordan–Hahn 分解
+
+$$
+\nu=\nu^+-\nu^-,
+\qquad |\nu|=\nu^++\nu^-,
+$$
+
+其中 $\nu^+,\nu^-$ 是相互奇异的有限正测度。若 $D$ 为 $\nu$ 的 Hahn 正集，则对任意 $A\in\mathcal F$，
+
+$$
+\nu^+(A)=\nu(A\cap D),\qquad
+\nu^-(A)=-\nu(A\cap D^c).
+$$
+
+**19. 等价测度的密度刻画**
+
+设 $\mu,\nu$ 为 $\sigma$-有限正测度。则
+
+$$
+\mu\sim\nu
+\quad\Longleftrightarrow\quad
+\text{存在可测 }g,\ 0<g<\infty\ \mu\text{-几乎处处，使 }\nu=g\mu.
+$$
+
+这里 $\mu\sim\nu$ 表示 $\mu\ll\nu$ 且 $\nu\ll\mu$。若 $\mu\sim\nu$，由 Radon–Nikodým 定理可取 $h\geqslant0$，使
+
+$$
+\nu(A)=\int_Ah\,d\mu,\qquad A\in\mathcal F.
+$$
+
+由 $\mu\ll\nu$ 可知 $h>0$ $\mu$-几乎处处；在零测集上适当修改 $h$ 即得上述 $g$。反之，若 $\nu=g\mu$ 且 $g>0$ $\mu$-几乎处处，则
+
+$$
+\mu(A)=0\Longrightarrow\nu(A)=0,\qquad
+\nu(A)=0\Longrightarrow\int_Ag\,d\mu=0\Longrightarrow\mu(A)=0,
+$$
+
+故两测度等价。
+
+**20. Lebesgue 分解**
+
+设 $\nu$ 为有限符号测度，$\mu$ 为 $\sigma$-有限正测度。则存在唯一的分解
+
+$$
+\nu=\nu_{\mathrm s}+\nu_{\mathrm c},
+\qquad \nu_{\mathrm s}\perp\mu,\qquad \nu_{\mathrm c}\ll\mu.
+$$
+
+称其为 $\nu$ 相对于 $\mu$ 的 **Lebesgue 分解**。其中绝对连续部分可写为
+
+$$
+\nu_{\mathrm c}(A)=\int_Af\,d\mu,\qquad A\in\mathcal F,
+$$
+
+这里 $f=d\nu_{\mathrm c}/d\mu\in L^1(\mu)$。
+
+**21. 绝对连续性的 $\varepsilon$–$\delta$ 刻画**
+
+若 $\mu$ 为有限正测度、$\nu$ 为有限符号测度，则
+
+$$
+\nu\ll\mu
+\quad\Longleftrightarrow\quad
+\forall\varepsilon>0\ \exists\delta>0,\quad
+\mu(A)<\delta\Longrightarrow|\nu|(A)<\varepsilon.
+$$
+
+必要性可由 $\nu=f\mu$ 及 Lebesgue 积分的绝对连续性得到；充分性则由 $\mu(A)=0$ 时上式对任意 $\varepsilon>0$ 均成立，从而 $|\nu|(A)=0$ 得到。
+
+**22. Jordan 分解的绝对连续性**
+
+对有限符号测度 $\nu$，有
+
+$$
+\nu\ll\mu
+\quad\Longleftrightarrow\quad
+\nu^+\ll\mu\ \text{且}\ \nu^-\ll\mu.
+$$
+
+事实上，若 $\nu\ll\mu$，取 Hahn 分解 $(D,D^c)$，则当 $\mu(A)=0$ 时，
+
+$$
+\nu^+(A)=\nu(A\cap D)=0,\qquad
+\nu^-(A)=-\nu(A\cap D^c)=0.
+$$
+
+反向蕴含由 $\nu=\nu^+-\nu^-$ 立即成立。
+
+**23. 乘积测度的 Radon–Nikodým 导数**
+
+设 $(X,\mathcal A)$、$(Y,\mathcal B)$ 为可测空间，$\mu_1,\nu_1$ 为 $X$ 上的 $\sigma$-有限正测度，$\mu_2,\nu_2$ 为 $Y$ 上的 $\sigma$-有限正测度。若
+
+$$
+\nu_1\ll\mu_1,\qquad \nu_2\ll\mu_2,
+$$
+
+则
+
+$$
+\nu_1\times\nu_2\ll\mu_1\times\mu_2,
+\qquad
+\frac{d(\nu_1\times\nu_2)}{d(\mu_1\times\mu_2)}(x,y)
+=\frac{d\nu_1}{d\mu_1}(x)\frac{d\nu_2}{d\mu_2}(y)
+\quad(\mu_1\times\mu_2)\text{-几乎处处}.
+$$
+
+令 $f_1=d\nu_1/d\mu_1$、$f_2=d\nu_2/d\mu_2$。对任意 $E\in\mathcal A\otimes\mathcal B$，Fubini 定理给出
+
+$$
+\begin{aligned}
+ (\nu_1\times\nu_2)(E)
+ &=\int_X\left(\int_Y\mathbf1_E(x,y)f_2(y)\,d\mu_2(y)\right)
+ f_1(x)\,d\mu_1(x)\\
+ &=\int_Ef_1(x)f_2(y)\,d(\mu_1\times\mu_2)(x,y),
+\end{aligned}
+$$
+
+即得结论。
+
+## 6.9 $L^p$ 空间及其对偶
+
+**24. 共轭指数与 Hölder 不等式**
+
+若 $1\leqslant p\leqslant\infty$，其**共轭指数** $q$ 满足
+
+$$
+\frac1p+\frac1q=1,
+\qquad
+(q=\infty\text{ 当 }p=1,\quad q=1\text{ 当 }p=\infty).
+$$
+
+对 $f\in L^p(\mu)$、$g\in L^q(\mu)$，有
+
+$$
+\left|\int_Xfg\,d\mu\right|
+\leqslant\|f\|_p\|g\|_q.
+$$
+
+因此
+
+$$
+T_g:L^p(\mu)\longrightarrow\mathbb R,\qquad
+T_g(f)=\int_Xfg\,d\mu,
+$$
+
+是有界线性泛函，且 $\|T_g\|\leqslant\|g\|_q$。在通常的 $\sigma$-有限条件下，$1\leqslant p<\infty$ 时该对应给出
+
+$$
+(L^p(\mu))^*\cong L^q(\mu)
+$$
+
+的等距线性同构；特别地 $(L^1)^*\cong L^\infty$。
+
+**25. $L^1$ 对偶的一个注意事项**
+
+取 $\mathbb R$ 上的可数–余可数 $\sigma$-代数
+
+$$
+\mathcal F=\{A\subseteq\mathbb R:A\text{ 可数或 }A^c\text{ 可数}\},
+$$
+
+并在 $(\mathbb R,\mathcal F)$ 上取计数测度 $\mu$。对 $f\in L^1(\mathbb R,\mathcal F,\mu)$ 定义
+
+$$
+F(f)=\sum_{x>0}f(x).
+$$
+
+则
+
+$$
+|F(f)|\leqslant\sum_{x\in\mathbb R}|f(x)|=\|f\|_1,
+$$
+
+故 $F$ 是有界线性泛函，且由单点函数可见 $\|F\|=1$。然而若存在 $g\in L^\infty(\mathbb R,\mathcal F,\mu)$ 使
+
+$$
+F(f)=\int_{\mathbb R}fg\,d\mu,\qquad f\in L^1(\mathbb R,\mathcal F,\mu),
+$$
+
+则代入每个单点函数可得
+
+$$
+g(x)=
+\begin{cases}
+ 1,&x>0,\\
+ 0,&x\leqslant0.
+\end{cases}
+$$
+
+这将推出 $g^{-1}(\{1\})=(0,\infty)\in\mathcal F$，矛盾。该例说明：对偶的上述表示需要适当的测度空间条件；一般情形下，不应无条件地将 $(L^1)^*$ 与 $L^\infty$ 等同。
+
+## 6.10 补充：$L^\infty$、Radon 测度与完备化
+
+**26. $L^\infty([0,1])$ 的不可分性**
+
+对每个 $t\in[0,1]$，令
+
+$$
+f_t(x)=\mathbf 1_{[0,t]}(x),\qquad x\in[0,1].
+$$
+
+则 $f_t\in L^\infty([0,1])$ 且 $\|f_t\|_\infty\leqslant1$。若 $s\ne t$，不妨 $s<t$，则
+
+$$
+\{x:f_s(x)\ne f_t(x)\}=(s,t],\qquad \lambda((s,t])=t-s>0,
+$$
+
+从而 $\|f_s-f_t\|_\infty=1$。因此这族由不可数多个元素组成，且任意两个元素的距离均为 $1$；任意半径小于 $1/2$ 的球至多含其中一个元素。故 $L^\infty([0,1])$ 不是可分的。特别地，$L^p$（$1\leqslant p<\infty$）的可分性结论不能直接推广到 $p=\infty$。
+
+**27. Radon 测度的两个例子**
+
+1. 在 $\mathbb R$ 上，给定 $x_0\in\mathbb R$，Dirac 测度
+
+    $$
+    \delta_{x_0}(A)=
+    \begin{cases}
+     1,&x_0\in A,\\
+     0,&x_0\notin A
+    \end{cases}
+    \qquad(A\in\mathcal B(\mathbb R))
+    $$
+
+   是 Radon 测度。事实上，对含 $x_0$ 的 Borel 集可取紧集 $\{x_0\}$ 作内逼近；对不含 $x_0$ 的集合其测度为零。
+2. 在 $\mathbb R^n$ 上令
+
+    $$
+    \mu(A)=\int_Ae^{-|x|^2}\,d\lambda(x),\qquad A\in\mathcal B(\mathbb R^n).
+    $$
+
+   由于 $\mathbb R^n$ 是局部紧 Hausdorff 空间，而 $\mu$ 对 Lebesgue 测度绝对连续，且对每个紧集 $K$ 有
+
+    $$
+    \mu(K)=\int_Ke^{-|x|^2}\,d\lambda(x)\leqslant\lambda(K)<\infty,
+    $$
+
+   故 $\mu$ 是 Radon 测度。
+
+**28. 正则 Borel 测度的闭性及密度表示**
+
+设 $X$ 为 Hausdorff 空间，记 $\mathcal M(X)$ 为有限正则 Borel 符号测度所成的空间，赋以全变差范数 $\|\nu\|_{\mathrm{var}}=|\nu|(X)$。若 $\mu_n\in\mathcal M(X)$ 且 $\|\mu_n-\mu\|_{\mathrm{var}}\to0$，则 $\mu$ 仍正则。事实上，对任意 $A\in\mathcal B(X)$ 和 $\varepsilon>0$，先取 $n$ 使 $\|\mu-\mu_n\|_{\mathrm{var}}<\varepsilon/3$；再由 $\mu_n$ 的正则性取闭集 $G$ 与开集 $F$，满足 $G\subseteq A\subseteq F$ 且 $|\mu_n|(F\setminus G)<\varepsilon/3$。于是
+
+$$
+|\mu|(F\setminus G)
+\leqslant\|\mu-\mu_n\|_{\mathrm{var}}+|\mu_n|(F\setminus G)
+<\frac{2\varepsilon}{3},
+$$
+
+给出 $\mu$ 的正则性。因此正则测度构成闭线性子空间。
+
+若 $\mu$ 为 $\mathcal B(X)$ 上的 Radon 测度，则
+
+$$
+\Phi:L^1(X,\mathcal B(X),\mu)\longrightarrow\mathcal M(X),\qquad
+\Phi(f)(A)=\int_Af\,d\mu
+$$
+
+为等距线性映射，且
+
+$$
+\|\Phi(f)\|_{\mathrm{var}}=\int_X|f|\,d\mu=\|f\|_1.
+$$
+
+由 Radon–Nikodým 定理，它把 $L^1(\mu)$ 等距地映为 $\{\nu\in\mathcal M(X):\nu\ll\mu\}$；对该子空间而言这是满射。
+
+## 6.11 复习题续：完备化、收敛与 Banach 空间
+
+**29. 测度空间的完备化**
+
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间，令
+
+$$
+\mathcal N_\mu=\{N\subseteq Z:Z\in\mathcal F,\ \mu(Z)=0\},\qquad
+\overline{\mathcal F}=\sigma(\mathcal F\cup\mathcal N_\mu).
+$$
+
+则
+
+$$
+\overline{\mathcal F}=\{A\cup N:A\in\mathcal F,\ N\in\mathcal N_\mu\},
+\qquad \overline\mu(A\cup N)=\mu(A).
+$$
+
+该定义良好，且 $(\Omega,\overline{\mathcal F},\overline\mu)$ 是完备测度空间。它是包含 $(\Omega,\mathcal F,\mu)$ 的最小完备扩张；也即原来每个零测集的任意子集在完备化后均可测，且仍为零测集。
+
+**30. $\pi$ 类上的测度唯一性**
+
+设 $\mathcal C$ 为 $\pi$ 类，$\sigma(\mathcal C)=\mathcal F$，$\mu,\nu$ 为 $\mathcal F$ 上的测度。若存在 $C_n\in\mathcal C$，使
+
+$$
+C_n\uparrow\Omega,\qquad \mu(C_n)=\nu(C_n)<\infty\quad(n\geqslant1),
+$$
+
+并且 $\mu(C)=\nu(C)$ 对每个 $C\in\mathcal C$ 成立，则 $\mu=\nu$。
+
+证明中，对每个 $n$ 考虑
+
+$$
+\mathcal D_n=\{A\in\mathcal F:\mu(A\cap C_n)=\nu(A\cap C_n)\}.
+$$
+
+由有限测度情形的 $\pi$–$\lambda$ 定理，$\mathcal D_n=\mathcal F$。令 $n\to\infty$，由测度的下连续性得到 $\mu(A)=\nu(A)$，$A\in\mathcal F$。
+
+**31. 几乎处处单调收敛的修正**
+
+设 $f_n,f$ 为非负可测函数，且 $f_n\leqslant f_{n+1}$ 几乎处处、$f_n\to f$ 几乎处处。则存在零测集 $N$，使得令
+
+$$
+\widetilde f_n(x)=
+\begin{cases}f_n(x),&x\notin N,\\0,&x\in N,\end{cases}
+\qquad
+\widetilde f(x)=
+\begin{cases}f(x),&x\notin N,\\0,&x\in N,
+\end{cases}
+$$
+
+后，对所有 $x$ 都有 $\widetilde f_n(x)\uparrow\widetilde f(x)$，并且
+
+$$
+\int\widetilde f_n\,d\mu=\int f_n\,d\mu,\qquad
+\int\widetilde f\,d\mu=\int f\,d\mu.
+$$
+
+可取
+
+$$
+N=\bigcup_{n=1}^\infty\{f_n>f_{n+1}\}\cup\{f_n\not\to f\}.
+$$
+
+于是单调收敛定理可直接应用于修正后的函数列。
+
+**32. Fatou 引理中的不等号不能改为等号**
+
+在 $(0,\infty)$ 上令
+
+$$
+f_n(x)=
+\begin{cases}
+ n,&0<x<1/n,\\
+ 0,&x\geqslant1/n.
+\end{cases}
+$$
+
+则 $\liminf_nf_n(x)=0$ 对每个 $x>0$ 成立，而
+
+$$
+\int_0^\infty\liminf_{n\to\infty}f_n\,dx=0
+<1=\liminf_{n\to\infty}\int_0^\infty f_n\,dx.
+$$
+
+**33. 概率空间上的 $L^p$ 范数**
+
+若 $(X,\mathcal F,P)$ 为概率空间，$1\leqslant p_1<p_2<\infty$，则
+
+$$
+\|f\|_{p_1}\leqslant\|f\|_{p_2}.
+$$
+
+这是 Hölder 不等式应用于 $|f|^{p_1}$ 与常函数 $1$ 的结果。并且
+
+$$
+\lim_{p\to\infty}\|f\|_p=\|f\|_\infty.
+$$
+
+前者给出极限不超过 $\|f\|_\infty$；对任意 $a<\|f\|_\infty$，集合 $\{|f|>a\}$ 具有正概率，故 $\|f\|_p\geqslant aP(|f|>a)^{1/p}$，再令 $p\to\infty$、$a\uparrow\|f\|_\infty$ 即得结论。
+
+**34. 对偶空间的完备性**
+
+若 $X$ 为赋范线性空间，则其对偶空间 $X^*$ 在算子范数下为 Banach 空间。确实，若 $\{\varphi_n\}$ 是 $X^*$ 中的 Cauchy 列，则对每个 $x\in X$，数列 $\{\varphi_n(x)\}$ 为 Cauchy 列。定义
+
+$$
+\varphi(x)=\lim_{n\to\infty}\varphi_n(x).
+$$
+
+则 $\varphi$ 线性，且
+
+$$
+|\varphi(x)|\leqslant\bigl(\sup_n\|\varphi_n\|\bigr)\|x\|,
+$$
+
+所以 $\varphi\in X^*$。再由 $\|\varphi-\varphi_n\|\leqslant\limsup_{m\to\infty}\|\varphi_m-\varphi_n\|$ 可知 $\varphi_n\to\varphi$ 于算子范数，故 $X^*$ 完备。
+
+**35. Fubini 定理的计算例**
+
+令
+
+$$
+f(x,y)=\frac{x^2y^2}{x^2+y^2},\qquad (x,y)\in[0,1]^2,
+$$
+
+并在 $(0,0)$ 处取 $f(0,0)=0$。函数 $f$ 非负且可积，因此 Fubini 定理允许交换积分次序：
+
+$$
+\int_0^1\!\int_0^1f(x,y)\,dy\,dx
+=\int_0^1\!\int_0^1f(x,y)\,dx\,dy<\infty.
+$$

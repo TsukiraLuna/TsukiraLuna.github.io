@@ -1,0 +1,173 @@
+---
+title: "测度论 第 5 章 Hausdorff 空间上的测度与积分"
+pubDate: 2025-05-06
+description: "拓扑空间上的测度：拓扑与 Borel $\\sigma$ 代数、连续函数与 Riesz 表示定理、内正则与外正则、正则测度与 Radon 测度及其判别。"
+tags: ["测度论", "Hausdorff 空间", "Riesz 表示", "Radon 测度"]
+category: 数学
+series: 测度论
+seriesOrder: 50
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+本章对应原手写笔记第 20--22 页。设 $(X,\mathcal G)$ 为拓扑空间；以 $\mathcal K(X)$ 记 $X$ 的紧子集全体，以 $\mathcal B(X)$ 记其 Borel $\sigma$ 代数。
+
+## 5.1 拓扑空间的预备概念
+
+**定义 5.1.1**
+
+集合族 $\mathcal G\subseteq\mathcal P(X)$ 称为 $X$ 上的一个**拓扑**，若
+
+$$
+\varnothing,X\in\mathcal G,
+\qquad \bigcup_{\alpha\in I}G_\alpha\in\mathcal G\quad(G_\alpha\in\mathcal G),
+\qquad \bigcap_{j=1}^{n}G_j\in\mathcal G\quad(G_j\in\mathcal G).
+$$
+
+此时 $(X,\mathcal G)$ 称为拓扑空间，$\mathcal G$ 中的集合称为开集；闭集为开集的补集。
+
+**定义 5.1.10**
+
+若对任意不同的 $x,y\in X$，均存在 $U,V\in\mathcal G$，使得
+
+$$
+x\in U,\qquad y\in V,\qquad U\cap V=\varnothing,
+$$
+
+则称 $X$ 为 **Hausdorff 空间**。在 Hausdorff 空间中，每个紧集均为闭集。
+
+**定义 5.1.18**
+
+若 $X$ 的任一开覆盖均有有限子覆盖，则称 $X$ 为**紧空间**；$K\subseteq X$ 称为紧集，是指其作为 $X$ 的子空间为紧空间。若 $X$ 的每一点都有紧邻域，则称 $X$ 为**局部紧空间**。
+
+**定义 5.1.24**
+
+由 $X$ 的所有开集生成的 $\sigma$ 代数称为 $X$ 的 **Borel $\sigma$ 代数**，记为
+
+$$
+\mathcal B(X)=\sigma(\mathcal G).
+$$
+
+## 5.2 连续函数与 Riesz 表示
+
+**定义 5.2.1**
+
+记 $C_c(X)$ 为 $X$ 上所有具有紧支撑的实值连续函数构成的线性空间。
+
+**定理 5.2.2（Riesz 表示定理）**
+
+若 $X$ 为局部紧 Hausdorff 空间，则 $C_c(X)$ 上的正线性泛函与 $\mathcal B(X)$ 上的 Radon 测度一一对应。具体地，对 Radon 测度 $\mu$，
+
+$$
+L_\mu(f)=\int_X f\,d\mu,\qquad f\in C_c(X),
+$$
+
+给出 $C_c(X)$ 上的正线性泛函；反之，每一个正线性泛函均由唯一的 Radon 测度以上式表示。
+
+## 5.3 Hausdorff 空间上的正则测度
+
+**定义 5.3.1**
+
+设 $X$ 为 Hausdorff 空间，$\mathcal A\supseteq\mathcal B(X)$ 为 $X$ 上的 $\sigma$ 代数，$\mu$ 为 $\mathcal A$ 上的测度。
+
+1. 若对每个 $A\in\mathcal A$，
+
+    $$
+    \mu(A)=\sup\{\mu(K):K\subseteq A,\ K\in\mathcal K(X)\},
+    $$
+
+   则称 $\mu$ 为**内正则**（相对于紧集）。
+
+2. 若对每个 $A\in\mathcal A$，
+
+    $$
+    \mu(A)=\inf\{\mu(G):A\subseteq G,\ G\in\mathcal G\},
+    $$
+
+   则称 $\mu$ 为**外正则**。
+
+3. 既内正则又外正则的测度称为**正则测度**。
+
+设 $\mu$ 为 $X$ 上的正则测度。若对每个 $f\in C_c(X)$ 有 $\int_X|f|\,d\mu<\infty$，则称 $\mu$ 为 **Radon 测度**；等价地，$\mu(K)<\infty$ 对每个 $K\in\mathcal K(X)$ 成立。
+
+**定理 5.3.3**
+
+设 $X$ 为拓扑空间，$\mu$ 为 $\mathcal B(X)$ 上的 $\sigma$ 有限测度。正则性可通过闭集的内逼近及开集的外逼近刻画：对 $A\in\mathcal B(X)$，
+
+$$
+\mu(A)=\sup\{\mu(F):F\subseteq A,\ F\text{ 为闭集}\}.
+$$
+
+当 $\mu$ 有限时，同时有
+
+$$
+\mu(A)=\inf\{\mu(G):A\subseteq G,\ G\in\mathcal G\}.
+$$
+
+**推论 5.3.4**
+
+若 $X$ 为度量空间，$\mu$ 为 $\mathcal B(X)$ 上的有限测度，则对每个 $A\in\mathcal B(X)$，上述由闭集内逼近、开集外逼近的等式均成立。
+
+**定理 5.3.5**
+
+设 $X$ 为 Hausdorff 空间，$\mathcal A\supseteq\mathcal B(X)$ 为 $\sigma$ 代数，$\mu$ 为 $\mathcal A$ 上的正则测度。若 $A\in\mathcal A$ 且 $\mu(A)<\infty$，则
+
+$$
+\mu(A)=\sup\{\mu(K):K\subseteq A,\ K\in\mathcal K(X)\}.
+$$
+
+**定理 5.3.6**
+
+有限测度的正则性等价于其紧内正则性。
+
+**定理 5.3.7**
+
+若 $X$ 为具有可数基的局部紧 Hausdorff 空间，$\mu$ 为 $\mathcal B(X)$ 上的测度，则紧集逼近给出正则性的判别；特别地，若
+
+$$
+\mu(K)<\infty,\qquad K\in\mathcal K(X),
+$$
+
+则 $\mu$ 为 Radon 测度。
+
+**命题 5.3.9**
+
+对有限符号测度 $\mu$，有
+
+$$
+\mu\text{ 正则}\;\Longleftrightarrow\quad
+\mu^+\text{ 与 }\mu^-\text{ 均正则}.
+$$
+
+**命题 5.3.10**
+
+设 $X$ 为 Hausdorff 空间，$\mathcal A\supseteq\mathcal B(X)$ 为 $\sigma$ 代数，$\mu$ 为 $\mathcal A$ 上的内正则测度。若 $A\in\mathcal A$、$\mu(A)<\infty$，则对每个 $\varepsilon>0$，存在 $K\in\mathcal K(X)$，$K\subseteq A$，使得对每个 $B\in\mathcal A$，
+
+$$
+K\subseteq B\subseteq A\quad\Longrightarrow\quad |\mu(A)-\mu(B)|<\varepsilon.
+$$
+
+**定理 5.3.11**
+
+记 $\mathcal M(X,\mathcal B(X))$ 为 $\mathcal B(X)$ 上有限符号测度的全体，并记 $\mathcal M_r(X,\mathcal B(X))$ 为其中正则测度的全体。则 $\mathcal M(X,\mathcal B(X))$ 在全变差范数下为 Banach 空间，而 $\mathcal M_r(X,\mathcal B(X))$ 为其闭线性子空间。
+
+**定理 5.3.12**
+
+设 $X$ 为 Hausdorff 空间，$\mathcal A\supseteq\mathcal B(X)$ 为 $\sigma$ 代数，$\mu$ 为 $\mathcal A$ 上的正则测度。若 $f\geqslant0$ 为 $\mathcal A$ 可测函数且 $\mu(f)<\infty$，定义
+
+$$
+\nu(A)=\mu(f1_A),\qquad A\in\mathcal A,
+$$
+
+则 $\nu$ 为 $\mathcal A$ 上的有限正则测度。因此，若 $\mu$ 是 $\mathcal B(X)$ 上正则测度且 $f\in L^1(X,\mathcal B(X),\mu)$，则符号测度 $f\mu$ 是有限正则测度。
+
+**定理 5.3.14（Radon–Nikodým 型刻画）**
+
+设 $X$ 为局部紧 Hausdorff 空间，$\mu$ 为 $\mathcal B(X)$ 上的 Radon 测度，$\nu$ 为 $\mathcal B(X)$ 上的有限正则测度。下列条件等价：
+
+1. 存在 $f\in L^1(X,\mathcal B(X),\mu)$，使得 $\nu=f\mu$；
+2. $\nu\ll\mu$；
+3. 对每个 $K\in\mathcal K(X)$，$\mu(K)=0$ 蕴含 $\nu(K)=0$。
+
+这可视为 Radon 测度情形的 Radon--Nikod\'ym 定理。

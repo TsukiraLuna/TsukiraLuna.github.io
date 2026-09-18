@@ -1,0 +1,255 @@
+---
+title: "测度论 第 2 章 可测映射"
+pubDate: 2025-05-03
+description: "可测映射：可测性的等价刻画、函数生成的 $\\sigma$ 代数、可测函数的运算、几乎处处收敛、几乎一致收敛与依测度收敛的关系。"
+tags: ["测度论", "可测函数", "几乎处处收敛", "依测度收敛"]
+category: 数学
+series: 测度论
+seriesOrder: 20
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 2.1 定义及基本性质
+
+**定义 2.1.1**
+
+函数 $f:\Omega\to\overline{\mathbb R}$ 可测，当且仅当
+
+$$
+\{\omega:f(\omega)>a\}\in\mathcal F\qquad(a\in\mathbb R).
+$$
+
+**命题 2.1.2**
+
+若 $f,g$ 可测，则 $f+g,fg,\max\{f,g\},\min\{f,g\}$ 均可测（在有定义处）。
+
+**定理 2.1.3**
+
+若 $f_n$ 均可测，则 $\sup_nf_n,\inf_nf_n,\limsup_nf_n,\liminf_nf_n$ 可测；
+若 $f_n\to f$，则 $f$ 可测。
+
+非负简单函数是可测集合指示函数的有限线性组合。对非负可测函数 $f$，存在
+非负简单函数列 $f_n\uparrow f$。
+
+**命题 2.1.4**
+
+设 $f:(\Omega,\mathcal F)\to\overline{\mathbb R}$。下列条件等价：
+
+1. $f$ 可测；
+2. 对任意 $a\in\mathbb R$，$\{f<a\}\in\mathcal F$；
+3. 对任意 $a\in\mathbb R$，$\{f\leqslant a\}\in\mathcal F$；
+4. 对任意 $a\in\mathbb R$，$\{f>a\}\in\mathcal F$；
+5. 对任意 $a\in\mathbb R$，$\{f\geqslant a\}\in\mathcal F$。
+
+其中 $\{f<a\}=\{\omega:f(\omega)<a\}$。
+
+**命题 2.1.5**
+
+$(\Omega,\mathcal F)$ 上实值可测函数全体记为 $\mathcal R(\Omega)$。
+
+**命题 2.1.6**
+
+设 $f,g$ 及 $f_n\ (n\geqslant1)$ 都是 $(\Omega,\mathcal F)$ 上的可测函数，
+则下列函数（在有定义处）仍可测：
+
+$$
+fg,\qquad f\pm g,\qquad \frac{f}{g},\qquad
+\inf_n f_n,\quad\sup_n f_n,\quad
+\liminf_n f_n,\quad\limsup_n f_n,
+$$
+
+以及集合 $\{f\leqslant g\}$ 的指示函数。
+
+**定义 2.1.7**
+
+若 $A\subseteq\Omega$，令
+
+$$
+I_A(\omega)=
+\begin{cases}
+ 1,&\omega\in A,\\
+ 0,&\omega\notin A.
+\end{cases}
+$$
+
+称 $I_A$ 为 $A$ 的指示函数。设 $f:\Omega\to\mathbb R$ 的值域为有限集
+$\{a_1,\ldots,a_n\}$，令 $A_i=f^{-1}(\{a_i\})\ (i=1,\ldots,n)$，则
+
+$$
+\color{red}{f=\sum_{i=1}^{n}a_i I_{A_i}.}
+$$
+
+若 $(\Omega,\mathcal F)$ 可测，则这样的 $f$ 可测当且仅当每个
+$A_i\in\mathcal F$。
+
+**定理 2.1.8**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，$f$ 为可测函数。则存在一列简单可测函数
+$\{f_n\}_{n\geqslant1}$，使得
+
+$$
+f_n\longrightarrow f,\qquad |f_n|\leqslant |f|\quad(n\geqslant1).
+$$
+
+若 $f\geqslant0$，则可取 $f_n\geqslant0$ 且 $f_n\uparrow f$。
+
+**定理 2.1.9**
+
+设 $(\Omega,\mathcal F)$ 为可测空间，$\mathcal C$ 为一个 $\pi$ 类，
+$\mathcal H$ 为定义在 $\Omega$ 上的非负实值函数族。若 $\mathcal H$ 满足
+
+1. $f,g\in\mathcal H$，$\alpha,\beta\geqslant0$，则
+ $\alpha f+\beta g\in\mathcal H$；
+2. 若 $\{f_n\}_{n\geqslant1}\subseteq\mathcal H$，$f_n\uparrow f$，且
+ $f$ 有界，则 $f\in\mathcal H$；
+3. $A\in\mathcal C$ 蕴含 $I_A\in\mathcal H$，
+
+则 $\mathcal H$ 包含 $\Omega$ 上所有非负可测函数。
+
+**定义 2.1.10**
+
+设 $(E,\mathcal E)$ 为可测空间，$\mathcal H$ 为从 $\Omega$ 到 $E$ 的一族映射。令
+
+$$
+\sigma(\mathcal H)
+=\sigma\bigl\{f^{-1}(C): f\in\mathcal H,\ C\in\mathcal E\bigr\}.
+$$
+
+则 $\sigma(\mathcal H)$ 是使得 $\mathcal H$ 中每个函数均可测的、
+$\Omega$ 上最小的 $\sigma$ 代数，称为 $\mathcal H$ 在 $\Omega$ 上生成的
+$\sigma$ 代数。若 $(E,\mathcal E)=(\overline{\mathbb R},
+\mathcal B(\overline{\mathbb R}))$，简记 $\sigma(\{f\})$ 为 $\sigma(f)$。
+
+**定理 2.1.11**
+
+设 $f:\Omega\to(E,\mathcal E)$ 为可测映射，令 $\sigma(f)$ 为 $f$ 在
+$\Omega$ 上生成的 $\sigma$ 代数。则对 $\Omega$ 上函数 $h$，
+
+$$
+h\text{ 关于 }\sigma(f)\text{ 可测}
+\quad\Longleftrightarrow\quad
+\text{存在 }E\text{ 上的 }\mathcal E\text{-可测函数 }\varphi,
+\ h=\varphi\circ f.
+$$
+
+## 2.2 等价类与可测函数的运算
+
+**定理 2.2.1**
+
+$\mathcal C$ 为 $\Omega$ 上的一个集类，$\mathcal H$ 为 $\Omega$ 上一类实值可测函数。
+在下列条件下，$\mathcal H$ 包含由相应集类生成的所有可测函数：
+
+1. $1\in\mathcal H$；
+2. $f_n\in\mathcal H$，$n\geqslant1$，且 $0\leqslant f_n\uparrow f<\infty$
+ 时，$f\in\mathcal H$；
+3. 对每个 $A\in\mathcal C$，$I_A\in\mathcal H$。
+
+## 2.3 可测函数的几乎处处收敛
+
+若某性质在 $\Omega$ 上除一个零测集 $N$（$\mu(N)=0$）外的每一点均成立，
+则称它*几乎处处*（a.e.）成立。
+
+**定义 2.3.1**
+
+设 $\{f_n\}_{n\geqslant1}$ 与 $f$ 均为可测函数。
+
+1. 若存在零测集 $N$，使对每个 $\omega\in N^c$ 有
+
+ $$
+ \lim_{n\to\infty}f_n(\omega)=f(\omega),
+ $$
+
+ 则称 $\{f_n\}$ 几乎处处收敛于 $f$，记为
+ $f_n\xrightarrow{\mathrm{a.e.}}f$。
+2. 若对任意 $\varepsilon>0$，存在可测集 $N_\varepsilon$，
+ $\mu(N_\varepsilon)<\varepsilon$，使得 $f_n$ 在 $N_\varepsilon^c$ 上
+ 一致收敛于 $f$，则称 $f_n$ *几乎一致收敛*于 $f$，记为
+ $f_n\xrightarrow{\mathrm{a.u.}}f$。
+3. 若对任意 $\varepsilon>0$，
+
+ $$
+ \lim_{n\to\infty}\mu\bigl(\{|f_n-f|\geqslant\varepsilon\}\bigr)=0,
+ $$
+
+ 则称 $f_n$ *依测度收敛*于 $f$，记为
+ $f_n\xrightarrow{\mu}f$。
+
+**定义 2.3.2**
+
+若 $\{f_n\}$ 为可测函数列，且当 $n,m\to\infty$ 时
+
+$$
+f_n-f_m\xrightarrow{\mathrm{a.e.}}0,
+$$
+
+则称 $\{f_n\}$ 为几乎处处 Cauchy 列。函数列 $\{f_n\}$ 几乎处处收敛，
+当且仅当它为几乎处处 Cauchy 列。
+
+**定理 2.3.3**
+
+上述几乎处处收敛关系由去掉一个零测集后逐点收敛来刻画。
+
+**定理 2.3.4**
+
+设 $\{f_n\}_{n\geqslant1}$ 与 $f$ 为可测函数。
+
+1. $f_n\xrightarrow{\mathrm{a.e.}}f$ 当且仅当对任意 $\varepsilon>0$，
+
+ $$
+ \lim_{n\to\infty}\mu\!\left(
+ \bigcup_{i=n}^{\infty}\{|f_i-f|\geqslant\varepsilon\}\right)=0.
+ $$
+2. $f_n\xrightarrow{\mu}f$ 当且仅当对任意 $\varepsilon>0$，
+
+ $$
+ \lim_{n\to\infty}\mu\bigl(\{|f_n-f|\geqslant\varepsilon\}\bigr)=0.
+ $$
+3. $f_n\xrightarrow{\mu}f$ 当且仅当 $\{f_n\}$ 的每个子列都有一个子子列
+ $\{f_{n_{k_j}}\}$，使得
+
+ $$
+ f_{n_{k_j}}\xrightarrow{\mathrm{a.e.}}f.
+ $$
+
+**推论 2.3.5**
+
+1. $f_n\xrightarrow{\mathrm{a.u.}}f$ 蕴含
+ $f_n\xrightarrow{\mathrm{a.e.}}f$；在有限测度空间中，
+ $f_n\xrightarrow{\mathrm{a.e.}}f$ 蕴含 $f_n\xrightarrow{\mu}f$。
+2. 若 $\mu(\Omega)<\infty$，则
+
+ $$
+ f_n\xrightarrow{\mathrm{a.e.}}f
+ \quad\Longleftrightarrow\quad
+ f_n\xrightarrow{\mathrm{a.u.}}f.
+ $$
+3. 若 $f_n\xrightarrow{\mu}f$，则存在子列 $\{f_{n_k}\}$，使得
+ $f_{n_k}\xrightarrow{\mathrm{a.e.}}f$。
+
+**注 2.3**
+
+推论 2.3.5(2) 给出著名的 Egoroff 定理。在有限测度空间中，依测度收敛亦可由
+“任一子列都有几乎处处收敛于 $f$ 的子子列”来刻画。
+
+**定理 2.3.7**
+
+设 $g:\mathbb R^m\to\mathbb R$ 为连续函数，
+$\{f_n^{(i)}\}_{n\geqslant1}$ 与 $f^{(i)}$ 为可测函数，$1\leqslant i\leqslant m$。
+若对每个 $i$ 有 $f_n^{(i)}\to f^{(i)}$，则复合函数列的收敛性保持：
+
+1. 当各分量依测度收敛时，
+
+ $$
+ g\bigl(f_n^{(1)},\ldots,f_n^{(m)}\bigr)
+ \xrightarrow{\mu}
+ g\bigl(f^{(1)},\ldots,f^{(m)}\bigr);
+ $$
+2. 当各分量几乎处处收敛时，
+
+ $$
+ g\bigl(f_n^{(1)},\ldots,f_n^{(m)}\bigr)
+ \xrightarrow{\mathrm{a.e.}}
+ g\bigl(f^{(1)},\ldots,f^{(m)}\bigr).
+ $$

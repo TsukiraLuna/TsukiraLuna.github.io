@@ -133,6 +133,8 @@ tools/series-convention.md       ← 系列写作约定
 tools/latex-to-blog.md           ← LaTeX 转化流程
 tools/latex-to-blog-probe.mjs    ← LaTeX 探雷脚本
 tools/mdx-math-quirks-probe.mjs  ← 公式/颜色的 MDX+KaTeX 实测对照（排怪问题时跑）
+tools/check-mdx-math.mjs         ← 检查（可 --fix）公式定界符的三种已知坑
+tools/check-mdx-lists.mjs        ← 检查「只有公式的列表项」是否退化成代码块
 .github/workflows/deploy.yml     ← 推送 main 即部署
 ```
 

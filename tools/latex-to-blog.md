@@ -476,6 +476,91 @@ property **四类各自按节独立计数**。转写时逐节数，保留原编�
 这类方括号注记一律照抄，不改写、不"修正"原稿的数学笔误（例如原稿把
 「子群的并」写成「子群」、「$9$ 个对换之积，故为偶置换」等）。
 
+### 测度论（`measure-theory`，2026 年完成）
+
+源码：`E:\pdf workspace\测度论\pdf workspace\测度论.tex`（2081 行，原扫描件第 1–39 页已全部转录）
+产物：索引页 + 6 章，slug 为 `measure-theory` / `measure-theory-ch01..ch06`，
+`series: 测度论`、`seriesOrder` 0/10/20/30/40/50/60、`category: 数学`。
+
+**转换前探雷报出的风险**：
+
+| 项 | 值 |
+|---|---|
+| 章节 | 6 个 `\chapter`、29 个 `\section`、9 个 `\subsection` |
+| 块级公式 | `\[ \]` ×223、`equation/align` ×6、`align*` ×1 |
+| 行内公式 | 约 1321 个 |
+| 定理环境 | **0 处**（与其余三份都不同，见下） |
+| 自定义宏 | 6 个：`\Pow`→`\mathcal P`、`\calC`/`\calF`/`\calN`/`\calU`、`\sig{X}`→`\sigma(X)` |
+| 列表 | `enumerate` ×34、`description` ×1 |
+
+**转换后 `--check-output` 实测值**：
+
+| slug | katex-error | 公式数 | mtable | 体积 |
+|---|---|---|---|---|
+| `measure-theory`（索引） | 0 | 50 | 0 | 201 KB |
+| `measure-theory-ch01` | 0 | 203 | 5 | 839 KB |
+| `measure-theory-ch02` | 0 | 158 | 5 | 749 KB |
+| `measure-theory-ch03` | 0 | 484 | 0 | 2066 KB |
+| `measure-theory-ch04` | 0 | 119 | 10 | 600 KB |
+| `measure-theory-ch05` | 0 | 122 | 0 | 405 KB |
+| `measure-theory-ch06` | 0 | 460 | 60 | 2464 KB |
+
+合计 **1596 个公式**，`katex-error` 全为 0；构建 153 页零告警。
+
+**这一份与前几份的区别**：
+
+1. **没有 tcolorbox 定理环境**。原稿用 `\noindent\textbf{定义 1.1.8.}` 这种**加粗伪标题**，
+   所以没有「178 处定理环境」那类工作量，转成 `**定义 1.1.8**`（去掉标号后的句点）即可。
+2. **编号是三段式且原稿大量跳号**（如 3.4.4 → 3.4.6、5.1.1 → 5.1.10 → 5.1.18、
+   复习题 12 → 14）。**一律照原号，不要补号**，否则与手写原稿对不上。
+3. **公式基本在 `\[ \]` 里**（223 个），而不是 `equation` 环境。
+
+**这轮新增的两条经验**：
+
+1. **frontmatter 里的 `$\sigma$` 必须转义成 `$\\sigma$`** —— 见下节。这是本轮
+   最容易漏的坑：ch02、ch05、ch06 **三篇**都因此会从站点静默消失。
+2. **`enumerate` 中「只有公式、没有前置文字」的条目**，不能写成
+   「`3.` + 空行 + 缩进 `$$`」—— remark 会把 `3.` 解析成**空列表项**，
+   缩进的公式掉出列表、退化成**缩进代码块**（页面上一段代码，构建不报错）。
+   正确写法是让标记行**紧接**缩进公式、中间不留空行：
+
+   ```markdown
+   3.
+       $$
+       \int(f+g)\,d\mu=\int f\,d\mu+\int g\,d\mu;
+       $$
+   ```
+
+   有前置文字的条目（「对 $A\in\mathcal F$，」）用「文字 + 空行 + 缩进 `$$`」没问题。
+   用 `tools/check-mdx-lists.mjs` 自查（要求代码块数为 0）。
+
+### ⚠️ frontmatter 里写数学：`$\sigma$` 必须写成 `$\\sigma$`
+
+**双引号包裹的 YAML 标量里，`\s` 不是合法转义**，js-yaml 直接抛
+`unknown escape sequence` → `lib/content.ts` 捕获后跳过该文章 →
+**构建成功、文章从站点消失**（正是硬约束 ② 那一类静默失败）。
+
+```
+description: "…测度与 $\sigma$ 有限性…"     ❌ unknown escape sequence
+description: "…测度与 $\\sigma$ 有限性…"    ✅ 解析后仍是 $\sigma$
+```
+
+实测中招：`measure-theory-ch02` / `ch05` / `ch06` 三篇。
+**只用 `\s` 会中招**；`\p`、`\L`、`\l` 也不在 YAML 转义表里，同理危险
+（`$L^p$` 反而安全，因为 `p` 前没有反斜杠）。
+
+自查（两个都跑，缺一不可）：
+
+```powershell
+node tools/latex-to-blog-probe.mjs --check-frontmatter    # 不传 slug 即查全站
+node tools/check-mdx-math.mjs content/blog/<slug>/index.mdx
+```
+
+**再次踩到的教训**：这次不是 KaTeX 静默失败，而是 **YAML 静默失败** ——
+症状一样（构建全绿、文章没了），根因在另一个环节。所以「构建成功」
+永远不能当作「内容在站点上」的证据，必须查产物或跑 `--check-frontmatter`。
+
+
 ---
 
 ## 一页速查
@@ -484,9 +569,22 @@ property **四类各自按节独立计数**。转写时逐节数，保留原编�
 0. 读 进度说明.md  →  确认转录范围；分清扫描件 / 编译产物
 1. node tools/latex-to-blog-probe.mjs <file.tex>   →  探雷
 2. 按规则表转换：结构 / 环境 / 颜色 / 宏包 / 自定义宏
-3. 写 frontmatter（category: 数学） + 出处说明
-4. npm run build:verify  →  --check-output  →  人工抽查
-5. commit + push（改了站名才需要 npm run og）
+3. node tools/check-mdx-math.mjs <改动的 .mdx>     →  查三种定界符坑（可 --fix）
+4. node tools/check-mdx-lists.mjs <改动的 .mdx>    →  查缩进代码块 / 空列表项
+5. node tools/latex-to-blog-probe.mjs --check-frontmatter   →  查 YAML 转义
+6. 写 frontmatter（category: 数学） + 出处说明
+7. npm run build:verify  →  --check-output  →  人工抽查
+8. commit + push（改了站名才需要 npm run og）
 ```
+
+**第 3、4、5 步为什么要有**：这三类错误**都不会被 `next build` 的 TypeScript 阶段
+拦下**，而且多数能通过 MDX 解析，只在渲染某一页时才炸 —— 或者更糟，
+**什么错都不报，文章直接从站点消失**：
+
+| 检查 | 抓的问题 | 症状 |
+|---|---|---|
+| `check-mdx-math.mjs` | `$$` 与正文同行、正文裸写 `\textcolor`、`\textcolor` 参数内嵌 `$` | 构建失败或渲染期 `ReferenceError` |
+| `check-mdx-lists.mjs` | 只有公式的列表项被写成空列表项 | 公式在页面上变成一段**代码** |
+| `--check-frontmatter` | 双引号 YAML 里的非法转义（`$\sigma$` 应为 `$\\sigma$`） | **文章静默消失**，构建全绿 |
 
 仓库整体情况、部署方式、命令清单见 [`AI-HANDOFF.md`](./AI-HANDOFF.md)。

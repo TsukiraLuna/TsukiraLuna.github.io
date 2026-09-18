@@ -1,0 +1,282 @@
+---
+title: "测度论 第 1 章 集类与测度"
+pubDate: 2025-05-02
+description: "测度论基础：集合运算与集类、单调类定理、测度的定义与性质、外测度与可测集、可测函数。"
+tags: ["测度论", "集类", "单调类定理", "外测度"]
+category: 数学
+series: 测度论
+seriesOrder: 10
+tocDepth: 2
+---
+
+> 本文由手写笔记《测度论》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+
+## 1.1 集合运算与集类
+
+### 1.1.1 空集、交、并、差、对称差
+
+集合的差与对称差分别为
+
+$$
+A\setminus B=\{\omega:\omega\in A,\ \omega\notin B\},\qquad
+A\triangle B=(A\setminus B)\cup(B\setminus A).
+$$
+
+此外还有集合的包含关系与互不相交关系。
+
+### 1.1.2 交换律、分配律、结合律
+
+集合运算满足交换律、分配律与结合律。De Morgan 法则为
+
+$$
+(A\cap B)^c=A^c\cup B^c,\qquad
+(A\cup B)^c=A^c\cap B^c.
+$$
+
+### 1.1.3 集类与指标集
+
+用指标集表示一族集合及其并、交等运算。
+
+### 1.1.4 单调增集、单调减集与集合极限
+
+若 $A_n\subseteq A_{n+1}$，记 $A_n\uparrow A$，其中
+$A=\bigcup_{n=1}^{\infty}A_n$；若 $A_n\supseteq A_{n+1}$，记
+$A_n\downarrow A$，其中 $A=\bigcap_{n=1}^{\infty}A_n$。
+
+$$
+\color{red}{\begin{aligned}
+\limsup_{n\to\infty}A_n
+&=\bigcap_{n=1}^{\infty}\bigcup_{k=n}^{\infty}A_k
+=\{\omega:\omega\text{ 属于无穷多个 }A_n\},\\
+\liminf_{n\to\infty}A_n
+&=\bigcup_{n=1}^{\infty}\bigcap_{k=n}^{\infty}A_k
+=\{\omega:\omega\text{ 从某项起属于所有 }A_n\}.
+\end{aligned}}
+$$
+
+恒有 $\liminf_{n\to\infty}A_n\subseteq\limsup_{n\to\infty}A_n$。
+若二者相等，则称 $\{A_n\}$ 有极限，记为 $\lim_{n\to\infty}A_n$。
+
+### 1.1.5 将集合列化为两两不相交的集合列
+
+设 $\{A_n\}$ 为集合列，可以令
+
+$$
+B_1=A_1,\qquad
+B_n=A_n\cap A_1^c\cap\cdots\cap A_{n-1}^c\quad(n\geqslant2),
+$$
+
+则 $\{B_n\}$ 两两不相交，且 $\bigcup_nB_n=\bigcup_nA_n$。
+
+### 1.1.6 集类及其封闭性
+
+设 $\mathcal C$ 为集类，可以考察它对有限交、有限并、差、单调极限以及可数运算的封闭性。例如，$\mathcal C_{\cap f}$ 表示由
+$\mathcal C$ 中集合的有限交构成的集类；类似地记
+$\mathcal C_{\cup f},\mathcal C_{\delta},\mathcal C_{\sigma},\mathcal C_{\Sigma\delta}$
+等，分别考察有限并、可数交、可数并及其复合运算。
+
+**命题 1.1.7**
+
+1. $\mathcal C_{\cap f\cup f}=\mathcal C_{\cup f\cap f}$。
+2. 若 $\mathcal C$ 对有限交封闭，则 $\mathcal C_{\cup f},\mathcal C_{\delta},\mathcal C_{\sigma},\mathcal C_{\Sigma\delta}$ 等也对有限交封闭。
+3. 若 $\mathcal C$ 对有限并封闭，则 $\mathcal C_{\cap f},\mathcal C_{\delta}$ 等也对有限并封闭。
+
+**定义 1.1.8**
+
+设 $\mathcal C\subseteq\mathcal P(\Omega)$。
+
+- **$\pi$ 类**：$\varnothing\in\mathcal C$，且 $A,B\in\mathcal C\Rightarrow A\cap B\in\mathcal C$。
+- **半代数**：$\varnothing\in\mathcal C$，对有限交封闭；若 $A,B\in\mathcal C$，则 $A\setminus B$ 可写成 $\mathcal C$ 中有限个互不相交集合的并。
+- **代数（域）**：对有限集合运算封闭，且 $\Omega,\varnothing\in\mathcal C$。
+
+**$\sigma$ 代数与 $\lambda$ 类**
+
+$\mathcal C$ 为 $\sigma$ 代数（可测集族），如果 $\Omega\in\mathcal C$，
+$A\in\mathcal C\Rightarrow A^c\in\mathcal C$，并且对可数并封闭。
+$\mathcal C$ 为 $\lambda$ 类，如果 $\Omega\in\mathcal C$，
+$A,B\in\mathcal C$ 且 $B\subseteq A\Rightarrow A\setminus B\in\mathcal C$，
+并且 $A_n\in\mathcal C$、$A_n\uparrow A\Rightarrow A\in\mathcal C$。
+单调类则对单调极限封闭。$\sigma$ 代数也是 $\pi$ 类、$\lambda$ 类和单调类。
+
+**习题 1.1.4**
+
+$\mathcal C$ 对差与单调极限封闭，且 $\Omega\in\mathcal C$，则 $\mathcal C$ 为 $\sigma$ 代数；
+$\mathcal C$ 含 $\pi$ 类及 $\lambda$ 类所需的运算时，也成为 $\sigma$ 代数。
+
+## 1.2 单调类定理
+
+对 $\mathcal C\subseteq\mathcal P(\Omega)$，设
+
+$$
+\sigma(\mathcal C)=\bigcap\{\mathcal D:\mathcal D\text{ 为包含 }\mathcal C\text{ 的 }\sigma\text{ 代数}\}.
+$$
+
+$\sigma(\mathcal C)$ 为 $\mathcal C$ 生成的 $\sigma$ 代数；
+相应地，以 $\lambda(\mathcal C)$ 表示生成的 $\lambda$ 类，以
+$m(\mathcal C)$ 表示生成的单调类。它们满足
+$m(\mathcal C)\subseteq\lambda(\mathcal C)\subseteq\sigma(\mathcal C)$。
+
+**定理 1.2.1**
+
+1. 若 $\mathcal C$ 为代数，则 $m(\mathcal C)=\sigma(\mathcal C)$。
+2. 若 $\mathcal C$ 为 $\pi$ 类，则 $\lambda(\mathcal C)=\sigma(\mathcal C)$。
+
+应用：若在某个生成 $\sigma$ 代数的集类上元素具有某性质，只需证明
+该性质所对应的集类为单调类或 $\lambda$ 类，便可推广到生成的 $\sigma$ 代数。
+
+**定理 1.2.2**
+
+若 $\mathcal C\subseteq\mathcal F$，则
+
+1. $\mathcal C$ 为代数，$\mathcal F$ 为单调类时，$\sigma(\mathcal C)\subseteq\mathcal F$；
+2. $\mathcal C$ 为 $\pi$ 类，$\mathcal F$ 为 $\lambda$ 类时，$\sigma(\mathcal C)\subseteq\mathcal F$。
+
+**定理 1.2.3**
+
+1. 若 $\mathcal C$ 为代数，则 $m(\mathcal C)=\lambda(\mathcal C)=\sigma(\mathcal C)$。
+2. 若 $\mathcal C$ 为 $\pi$ 类，则 $\lambda(\mathcal C)=\sigma(\mathcal C)$。
+
+**定理 1.2.4**
+
+设 $\mathcal C$ 为包含 $\Omega$ 的 $\pi$ 类，若 $\mathcal D$ 为单调类且
+$\mathcal C\subseteq\mathcal D$，则 $\sigma(\mathcal C)\subseteq\mathcal D$。
+
+## 1.3 测度及其性质
+
+### 1.3.1 测度的定义
+
+设 $\mathcal F$ 为 $\Omega$ 上的 $\sigma$ 代数。映射
+$\mu:\mathcal F\to[0,\infty]$ 称为 $(\Omega,\mathcal F)$ 上的测度，如果
+$\mu(\varnothing)=0$，且对任意两两不交的 $\{A_n\}_{n\geqslant1}\subseteq\mathcal F$，
+
+$$
+\mu\!\left(\bigcup_{n=1}^{\infty}A_n\right)=\sum_{n=1}^{\infty}\mu(A_n).
+$$
+
+称 $(\Omega,\mathcal F,\mu)$ 为测度空间。
+
+**命题 1.3.1**
+
+设 $A,B,A_n\in\mathcal F$。
+
+1. $A\subseteq B\Rightarrow\mu(A)\leqslant\mu(B)$。
+2. $\mu(B\setminus A)=\mu(B)-\mu(A)$（当 $A\subseteq B$ 且 $\mu(A)<\infty$）。
+3. $\mu\bigl(\bigcup_nA_n\bigr)\leqslant\sum_n\mu(A_n)$。
+4. 若 $A_n\uparrow A$，则 $\mu(A_n)\uparrow\mu(A)$；若 $A_n\downarrow A$ 且
+$\mu(A_1)<\infty$，则 $\mu(A_n)\downarrow\mu(A)$。
+
+**定义 1.3.2**
+
+若 $\mu(\Omega)<\infty$，称 $\mu$ 为有限测度；若存在可数集列 $\{E_n\}$，
+$\Omega=\bigcup_nE_n$ 且 $\mu(E_n)<\infty$，称 $\mu$ 为 $\sigma$ 有限测度。
+
+**定理 1.3.3**
+
+设 $\mu,\nu$ 为 $(\Omega,\mathcal F)$ 上的两个测度，$\mathcal C$ 为生成 $\mathcal F$ 的
+$\pi$ 类。若 $\mu(\Omega)=\nu(\Omega)<\infty$，且
+$\mu(A)=\nu(A)$ 对所有 $A\in\mathcal C$ 成立，则 $\mu=\nu$。
+
+**定理 1.3.4**
+
+若 $\mu,\nu$ 都为 $\sigma$ 有限测度，且在生成 $\mathcal F$ 的 $\pi$ 类
+$\mathcal C$ 上相等，则 $\mu=\nu$。
+
+**定理 1.3.5**
+
+设 $\mu_n$ 为测度，$a_n\geqslant0$，则
+$\mu(A)=\sum_{n=1}^{\infty}a_n\mu_n(A)$ 定义了一个测度。
+
+## 1.4 外测度与可测集
+
+### 1.4.1 外测度
+
+集合函数 $\mu^*:\mathcal P(\Omega)\to[0,\infty]$ 称为外测度，如果
+
+1. $\mu^*(\varnothing)=0$；
+2. $A\subseteq B\Rightarrow\mu^*(A)\leqslant\mu^*(B)$；
+3. $\mu^*(\bigcup_nA_n)\leqslant\sum_n\mu^*(A_n)$。
+
+**Carathéodory 可测性**
+
+集合 $E\subseteq\Omega$ 称为 $\mu^*$ 可测的，如果对任意 $A\subseteq\Omega$，
+
+$$
+\mu^*(A)=\mu^*(A\cap E)+\mu^*(A\cap E^c).
+$$
+
+所有 $\mu^*$ 可测集构成 $\sigma$ 代数，记为 $\mathcal M(\mu^*)$；
+$\mu^*$ 在此 $\sigma$ 代数上的限制为测度。
+
+**定理 1.4.1**
+
+若 $\mu^*$ 是外测度，则 $\mathcal M(\mu^*)$ 为 $\sigma$ 代数，且
+$\mu^*|_{\mathcal M(\mu^*)}$ 为完备测度。
+
+**定义 1.4.2**
+
+设 $\mathcal F$ 为 $\Omega$ 上的 $\sigma$ 代数，若 $\mu$ 为 $\mathcal F$ 上的测度，
+则其完备化是
+
+$$
+\overline{\mathcal F}=\{A\cup N:A\in\mathcal F,\ N\subseteq Z,\ Z\in\mathcal F,\ \mu(Z)=0\}.
+$$
+
+定义 $\overline\mu(A\cup N)=\mu(A)$。此定义良好，且
+$(\Omega,\overline{\mathcal F},\overline\mu)$ 为完备测度空间。
+
+**定理 1.4.3**
+
+设 $\mu^*$ 是外测度。若 $E\in\mathcal M(\mu^*)$，则对任意 $A\subseteq\Omega$，
+
+$$
+\mu^*(A)\geqslant\mu^*(A\cap E)+\mu^*(A\cap E^c).
+$$
+
+反向不等式由次可加性给出。
+
+**定理 1.4.4**
+
+若 $\mu^*$ 为由测度 $\mu$ 诱导的外测度，则 $\mathcal F\subseteq\mathcal M(\mu^*)$，
+且 $\mu^*|_{\mathcal F}=\mu$。
+
+**命题 1.4.5**
+
+可测集族对补、可数并、可数交以及差封闭；对互不相交集合列，测度满足可数可加性。
+
+**定理 1.4.6**
+
+若 $\mu^*$ 是外测度，且存在集合列 $E_n\in\mathcal M(\mu^*)$ 使
+$\Omega=\bigcup_nE_n$ 且 $\mu^*(E_n)<\infty$，则对任意 $A\subseteq\Omega$，
+若 $\mu^*(A)=\mu^*(A\cap E)+\mu^*(A\cap E^c)$ 对所有 $E\in\mathcal M(\mu^*)$
+成立，则 $A\in\mathcal M(\mu^*)$。
+
+**定理 1.4.7**
+
+设 $\mathcal F$ 为 $\sigma$ 代数，$\mu$ 为其上测度。则
+$\mu^*(A)=\inf\{\mu(E):E\in\mathcal F,\ A\subseteq E\}$ 是一个外测度；
+$\mathcal F\subseteq\mathcal M(\mu^*)$ 且 $\mu^*|_{\mathcal F}=\mu$。
+
+**定理 1.4.8**
+
+若 $\mu$ 为 $\sigma$ 有限测度，则对任意 $A\in\mathcal F$，
+
+$$
+\mu(A)=\inf\{\mu(G):G\in\mathcal F,\ A\subseteq G\}.
+$$
+
+**定理 1.4.9**
+
+设 $\mu$ 为 $\sigma$ 有限测度，$A\in\mathcal F$。则存在可测集列 $G_n\supseteq A$，
+使得 $\mu(G_n\setminus A)\to0$。
+
+**定理 1.4.10**
+
+对任意 $A\subseteq\Omega$，$\mu^*(A)=0$ 蕴含 $A\in\mathcal M(\mu^*)$。
+
+## 1.5 可测函数
+
+### 1.5.1 可测函数及其基本性质
+
+设 $(\Omega,\mathcal F)$ 为可测空间。函数 $f:\Omega\to\overline{\mathbb R}$
+称为可测函数，如果对任意 Borel 集 $B\in\mathcal B(\overline{\mathbb R})$，
+$f^{-1}(B)\in\mathcal F$。

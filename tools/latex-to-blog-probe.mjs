@@ -15,6 +15,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import matter from "gray-matter";
 
 /* ============================================================
  * 一、KaTeX 兼容性知识库
@@ -426,6 +427,9 @@ function checkOutput(slug) {
 
   if (!fs.existsSync(file)) {
     console.error(`${BAD} 找不到产物文件。先运行 npm run build:verify。`);
+    console.error(`      若构建明明成功却没有产物，最常见的原因是 **frontmatter 校验失败** ——`);
+    console.error(`      该文章会被静默剔除（构建不报错）。先用下面的命令排查：`);
+    console.error(`      node tools/latex-to-blog-probe.mjs --check-frontmatter <slug>`);
     process.exit(1);
   }
 
@@ -470,10 +474,74 @@ function checkOutput(slug) {
 }
 
 /* ============================================================
- * 五、入口
+ * 五、frontmatter 模式
+ * ============================================================ */
+
+/**
+ * 校验 frontmatter 能否被 gray-matter 解析。
+ *
+ * 为什么单列一个模式：frontmatter 解析失败时**构建不会失败**，那篇文章只是
+ * 从站点消失（`lib/content.ts` 打印一行 `[content] frontmatter 解析失败，该文章已被跳过`）。
+ * 而 `--check-output` 要等构建完才发现「产物不存在」，且那时原因不明显。
+ *
+ * 最阴的一类错误：双引号 YAML 标量里的**非法转义**。数学写法 `$\sigma$`
+ * 在双引号里是 `\s`，js-yaml 直接抛 `unknown escape sequence`。
+ * 正确写法是 `$\\sigma$`（YAML 解析后仍是 `$\sigma$`），或改用单引号包裹。
+ */
+function checkFrontmatter(slug) {
+  const dir = path.join(process.cwd(), "content", "blog");
+
+  let targets;
+  if (slug) {
+    const p = path.join(dir, slug, "index.mdx");
+    if (!fs.existsSync(p)) {
+      console.error(`${BAD} 找不到 ${p}`);
+      process.exit(1);
+    }
+    targets = [slug];
+  } else {
+    targets = fs
+      .readdirSync(dir)
+      .filter((d) => fs.existsSync(path.join(dir, d, "index.mdx")));
+  }
+
+  console.log(`\n\u{1F4CB} frontmatter 解析检查（${targets.length} 篇）\n`);
+  let bad = 0;
+  for (const s of targets) {
+    const p = path.join(dir, s, "index.mdx");
+    try {
+      const r = matter(fs.readFileSync(p, "utf8"));
+      if (slug) {
+        console.log(`   ${OK} ${s}`);
+        console.log(`      ${JSON.stringify(r.data, null, 2).split("\n").join("\n      ")}`);
+      }
+    } catch (e) {
+      bad++;
+      console.log(`   ${BAD} ${s}`);
+      console.log(`      ${String(e.message ?? e).split("\n")[0]}`);
+    }
+  }
+
+  if (bad === 0) {
+    console.log(`\n   ${OK} 全部 ${targets.length} 篇 frontmatter 均可解析。`);
+  } else {
+    console.log(`\n   ${BAD} ${bad} 篇解析失败 —— 这些文章会从站点静默消失，必须修。`);
+    console.log(`      常见原因：双引号 YAML 值里有非法转义（如 "$\sigma$" 应为 "$\\\\sigma$"）、`);
+    console.log(`      引号未闭合、值里含未转义的冒号或 #。`);
+  }
+  console.log();
+  return bad;
+}
+
+/* ============================================================
+ * 六、入口
  * ============================================================ */
 
 const args = process.argv.slice(2);
+
+if (args[0] === "--check-frontmatter") {
+  process.exit(checkFrontmatter(args[1]) > 0 ? 1 : 0);
+}
 
 if (args[0] === "--check-output") {
   const slug = args[1];
@@ -489,11 +557,13 @@ if (!args[0] || args[0] === "-h" || args[0] === "--help") {
 LaTeX 讲义 → 博客文章 · 探雷脚本
 
 用法：
-  node tools/latex-to-blog-probe.mjs <file.tex>              分析源码里的转换风险
-  node tools/latex-to-blog-probe.mjs --check-output <slug>   检查构建产物的公式渲染
+  node tools/latex-to-blog-probe.mjs <file.tex>                    分析源码里的转换风险
+  node tools/latex-to-blog-probe.mjs --check-frontmatter [slug]    校验 frontmatter 可解析（不传 slug 查全站）
+  node tools/latex-to-blog-probe.mjs --check-output <slug>         检查构建产物的公式渲染
 
 为什么需要：KaTeX 对不认识的宏包命令、自定义宏、不支持的环境一律**静默失败** ——
-构建全绿但公式是错的。本脚本把风险点提前列出，并在转换后验证渲染健康度。
+构建全绿但公式是错的。而 frontmatter 写错时文章会**静默消失**，构建同样不报错。
+本脚本把这两类风险都提前列出来。
 
 完整规则表与流程见 tools/latex-to-blog.md
 `);

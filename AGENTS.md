@@ -143,18 +143,28 @@ git push                          # 3. 自动部署，1–2 分钟后生效
 ```powershell
 node tools/latex-to-blog-probe.mjs "<file.tex>"   # 1. 先探雷
 # 2. 按 tools/latex-to-blog.md 的规则表转换
-npm run build:verify                               # 3. 构建
-node tools/latex-to-blog-probe.mjs --check-output <slug>   # 4. 验证公式
+node tools/check-mdx-math.mjs <改动的 .mdx>        # 3. 查公式定界符（可加 --fix）
+node tools/check-mdx-lists.mjs <改动的 .mdx>       # 4. 查缩进代码块 / 空列表项
+node tools/latex-to-blog-probe.mjs --check-frontmatter   # 5. 查 YAML 转义（不传 slug 查全站）
+npm run build:verify                               # 6. 构建
+node tools/latex-to-blog-probe.mjs --check-output <slug>   # 7. 验证公式
 node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问题时对照实测结论
 ```
 
 **核心警告**：KaTeX 的失败是**静默的** —— 不认识的宏包命令（`physics`、`siunitx`）、
-自定义宏、定理环境都不报错，只是默默渲染错。所以第 1、4 步不能省。
+自定义宏、定理环境都不报错，只是默默渲染错。所以第 1 步与第 7 步不能省。
 
-**第二条警告**：`\textcolor{red}{…}` 写在**正文里**（不在 `$…$` 内）会让整个构建失败，
-且报错信息与 LaTeX 无关（`Could not parse expression with acorn` 或
-`ReferenceError: red is not defined`）。正确写法是 `$\textcolor{red}{…}$`。
-`$$` 也必须**独占一行**，否则会被渲染成行内公式。细则见 `tools/latex-to-blog.md`。
+**其余静默失败**（构建全绿也照样出事，对应第 3–5 步）：
+
+| 写法 | 症状 |
+|---|---|
+| `\textcolor{red}{…}` 写在正文里（不在 `$…$` 内） | 渲染期 `ReferenceError: red is not defined`，整页生成失败 |
+| `$$` 与正文同行 | 退化成行内公式；若夹了孤立 `$` 则 acorn 报错 |
+| `\textcolor{red}{$…$}`（参数内嵌 `$`） | acorn 报错 |
+| 只有公式的列表项写成「`3.` + 空行 + 缩进 `$$`」 | 公式在页面上变成一段**代码** |
+| frontmatter 里的 `$\sigma$`（应为 `$\\sigma$`） | **文章从站点静默消失** |
+
+细则与自查命令见 `tools/latex-to-blog.md`。
 
 ### 改站点信息
 
@@ -215,14 +225,17 @@ node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问�
 | `numerical-analysis-01..09` | 数值分析初步 第 N 章 | 算法 | 数值分析初步 |
 | `abstract-algebra` | 抽象代数 · 章节索引 | 数学 | 抽象代数 |
 | `abstract-algebra-ch01..ch05` | 抽象代数 第 N 章（预备知识 / 群论 / 环论 / 域论 / 综合例题） | 数学 | 抽象代数 |
+| `measure-theory` | 测度论 · 章节索引 | 数学 | 测度论 |
+| `measure-theory-ch01..ch06` | 测度论 第 N 章（集类与测度 / 可测映射 / 积分和空间 $L^p$ / 乘积空间 / Hausdorff 空间 / 复习题） | 数学 | 测度论 |
 | `general-physics-1` | 普通物理（一）复习笔记 | 数学 | — |
 | `latex-math` | LaTeX 公式测试 | 数学 | — |
 | `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 | — |
 
 > 模板自带的 `hello-world` 与 `syntax-test` 已按作者要求删除。
 
-**待办**：`E:\pdf workspace\` 下只剩**测度论**未转换（仅转录到原扫描件第 1–6 页，
-需先补齐转录）。流程与工具见 `tools/latex-to-blog.md`。
+**待办**：`E:\pdf workspace\` 下的四份 ElegantBook 手写笔记
+（普通物理一、数值分析初步、抽象代数、测度论）**已全部转换完毕**。
+流程与硬规则见 `tools/latex-to-blog.md`。
 
 **状态会过期** —— 动手前先跑一遍验证命令确认现状，别完全信这张表。
 
