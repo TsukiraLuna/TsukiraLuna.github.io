@@ -1,0 +1,675 @@
+---
+title: "高级数值分析 第 4 章 矩阵的特征值"
+pubDate: 2025-06-05
+description: "矩阵特征值计算：幂法与正交迭代、QR 方法（位移加速、Hessenberg 降阶、隐式双重位移）、Krylov 子空间、Arnoldi 方法与 Lanczos 方法。"
+tags: ["高级数值分析", "特征值", "QR 方法", "Krylov 子空间"]
+category: 算法
+series: 高级数值分析
+seriesOrder: 40
+tocDepth: 2
+---
+
+> 本文由手写笔记《高级数值分析》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+> 定理与定义的编号是本站为方便指代所加，原稿只有名称、没有编号。
+
+## 4.1 引言
+
+**定义 4.1（正交（酉）矩阵）**
+
+设 $A\in\mathbb C^{m\times n}$。当 $m>n$ 且 $A$ 的列向量两两正交归一时，称 $A$ 为列正交矩阵，并有
+
+$$
+A^{H}A=I_n.
+$$
+
+当 $m<n$ 且 $A$ 的行向量两两正交归一时，称 $A$ 为行正交矩阵，并有
+
+$$
+AA^{H}=I_m.
+$$
+
+（当 $m=n$ 时即为酉矩阵。）
+
+**定义 4.2（上 Hessenberg 矩阵）**
+
+矩阵 $H$ 若满足次对角线以下的元素全为零，即
+
+$$
+h_{ij}=0,\qquad i>j+1,
+$$
+
+则称 $H$ 为上 Hessenberg 矩阵。
+
+**定义 4.3（上三角矩阵）**
+
+矩阵 $T$ 若满足主对角线下方的元素全为零，即
+
+$$
+t_{ij}=0,\qquad i>j,
+$$
+
+则称 $T$ 为上三角矩阵。
+
+**定义 4.4（投影算子）**
+
+设 $S\subseteq\mathbb C^n$，$P_S:\mathbb C^n\to S$，且 $P_S^2=P_S$，则称 $P_S$ 为 $S$ 上的投影算子。
+
+**定理 4.1**
+
+若 $P_S$ 是 $S\subseteq\mathbb C^n$ 上的正交投影算子，则对任意 $x\in\mathbb C^n$，
+
+$$
+\min_{z\in S}\left\lVert x-z\right\rVert_2=\left\lVert x-P_Sx\right\rVert_2,
+$$
+
+且
+
+$$
+\min_{z\in S}\left\lVert x-z\right\rVert_2=\left\lVert x-z^*\right\rVert_2
+\quad\Longleftrightarrow\quad
+z^*\in S,\;x-z^*\in S^\perp.
+$$
+
+**定义 4.5**
+
+设 $W\in\mathbb C^n$（列向量正交归一），则 $WW^H$ 为 $\operatorname{span}\{W\}$ 上的正交投影矩阵，而 $I-WW^H$ 为 $\operatorname{span}\{W\}^{\perp}$ 上的正交投影矩阵。
+
+**定义 4.6（向量（子空间）夹角）**
+
+设 $W,W'\in\mathbb C^n$ 为单位向量，则存在唯一的 $\theta\in[0,\pi/2]$，使得
+
+$$
+\sin\theta=\left\lVert (I-WW^H)W'\right\rVert_2
+             =\left\lVert WW^H-W'W'^H\right\rVert_2.
+$$
+
+**定义 4.7**
+
+设 $Q=[q_1,q_2,\ldots,q_p]\in\mathbb C^{n\times p}$ 的列向量正交归一，则
+
+$$
+P_S=QQ^H
+$$
+
+为 $S=\operatorname{span}\{q_1,\ldots,q_p\}$ 上的正交投影矩阵，而 $I-QQ^H$ 为 $S^\perp$ 上的正交投影矩阵。
+
+**定义 4.8（子空间夹角）**
+
+设 $S=\operatorname{Im}(Q)$，$Q\in\mathbb C^{n\times p}$，以及 $S'=\operatorname{Im}(Q')$，$Q'\in\mathbb C^{n\times p}$。定义 $S,S'$ 的夹角 $\theta\in[0,\pi/2]$ 为
+
+$$
+\begin{aligned}
+\sin\theta
+&:=\max_{\substack{x\in S\\\left\lVert x\right\rVert_2=1}}
+      \left\lVert (I-Q'Q'^H)x\right\rVert_2 \\
+&=\max_{\left\lVert a\right\rVert_2=1}\left\lVert (I-Q'Q'^H)Qa\right\rVert_2
+ =\left\lVert (I-Q'Q'^H)Q\right\rVert_2.
+\end{aligned}
+$$
+
+等价地，
+
+$$
+\sin\theta=\left\lVert QQ^H-Q'Q'^H\right\rVert_2.
+$$
+
+**定理 4.2（Schur 分解）**
+
+设 $A\in\mathbb C^{n\times n}$，$\lambda_1,\ldots,\lambda_n$ 为其特征值，则存在酉矩阵 $Q=[q_1,q_2,\ldots,q_n]\in\mathbb C^{n\times n}$，使得
+
+$$
+Q^HAQ=R\qquad\text{或等价地}\qquad AQ=QR,
+$$
+
+其中 $R\in\mathbb C^{n\times n}$ 为上三角矩阵，且其对角元为 $\lambda_1,\ldots,\lambda_n$。
+
+于是，对 $Q_k=[q_1,\ldots,q_k]\in\mathbb C^{n\times k}$，令 $R_k$ 为 $R$ 的前 $k$ 阶主子矩阵，则
+
+$$
+Q_k^HAQ_k=R_k\qquad\text{或}\qquad AQ_k=Q_kR_k.
+$$
+
+**定理 4.3（实 Schur 分解）**
+
+设 $A\in\mathbb R^{n\times n}$，其特征值为 $\lambda_1,\ldots,\lambda_n$（按实数特征值及共轭复特征值排列）。则存在正交矩阵 $Q\in\mathbb R^{n\times n}$，使得
+
+$$
+Q^TAQ=T\qquad\text{或等价地}\qquad AQ=QT,
+$$
+
+其中 $T\in\mathbb R^{n\times n}$ 为拟上三角矩阵：其 $1\times1$ 对角块对应实特征值，$2\times2$ 对角块对应非实共轭特征值，排列顺序与特征值相同。
+
+若 $Q_k=[q_1,q_2,\ldots,q_k]\in\mathbb R^{n\times k}$（$n\ge k$）为 $Q$ 的前 $k$ 列，且 $T_k$ 为 $T$ 的前 $k$ 阶主子矩阵，则
+
+$$
+Q_k^TAQ_k=T_k\qquad\text{或}\qquad AQ_k=Q_kT_k.
+$$
+
+实 Schur 分解无法在有限精度内直接得到，因此先把 $A$ 化为上 Hessenberg 矩阵：
+
+$$
+Q^HAQ=H,
+$$
+
+其中 $Q$ 为酉矩阵，$H$ 为上 Hessenberg 矩阵；等价地，
+
+$$
+A=QHQ^H.
+$$
+
+该上 Hessenberg 分解可用 Householder 变换实现。
+
+**定义 4.9（隐式 $Q$ 定理）**
+
+设 $A\in\mathbb C^{n\times n}$，$H$ 为上 Hessenberg 矩阵，$Q$ 为酉矩阵，且 $H=Q^HAQ$。在给定适当的第一列信息时，$Q,H$ 由 $A$ 唯一确定（相差相位因子）。
+
+**定义 4.10**
+
+对任意 $B\in\mathbb C^{n\times n}$ 及任意 $\varepsilon>0$，存在可对角化（可相似对角化）的矩阵 $B_\varepsilon$，使得
+
+$$
+\left\lVert B_\varepsilon-B\right\rVert<\varepsilon.
+$$
+
+**定理 4.4（Bauer–Fike 定理）**
+
+设 $A$ 可对角化，$A=X\Lambda X^{-1}$。若 $A_\varepsilon=A+E$，则 $A_\varepsilon$ 的任意特征值 $\mu$ 满足
+
+$$
+\min_{1\le i\le n}|\mu-\lambda_i|
+\le \operatorname{cond}(X)\,\left\lVert E\right\rVert_2,
+$$
+
+其中
+
+$$
+\operatorname{cond}(X)=\left\lVert X^{-1}\right\rVert_2\,\left\lVert X\right\rVert_2.
+$$
+
+**定理 4.5（Gershgorin 第一圆盘定理）**
+
+设 $A=(a_{ij})\in\mathbb C^{n\times n}$，则 $A$ 的全部特征值都位于下列 $n$ 个圆盘的并集中：
+
+$$
+D_i=\left\{z\in\mathbb C:\ |z-a_{ii}|\le r_i\right\},
+\qquad i=1,\ldots,n,
+$$
+
+其中
+
+$$
+r_i=\sum_{j\ne i}|a_{ij}|.
+$$
+
+## 4.2 QR 方法
+
+### 4.2.1 改进的幂法
+
+**定义 4.11（Krylov 子空间）**
+
+对 $k\ge1$，定义
+
+$$
+\mathcal K_k(A,v):=\operatorname{span}\{v,Av,\ldots,A^{k-1}v\}.
+$$
+
+更一般地，对块向量（矩阵）$V$，
+
+$$
+\mathcal K_k(A,V):=\operatorname{span}\{V,AV,\ldots,A^{k-1}V\}.
+$$
+
+（例如 $m\ge 2k$ 时，$\mathcal K_k(A,V)\subseteq\mathcal K_m(A,V)$。）
+
+Krylov 子空间满足嵌套关系
+
+$$
+\mathcal K_k(A,V)\subseteq\mathcal K_{k+1}(A,V),
+$$
+
+并且
+
+$$
+A\mathcal K_k(A,V)\subseteq\mathcal K_{k+1}(A,V).
+$$
+
+### 4.2.2 改进幂法与正交迭代
+
+从初始向量 $v_1,\ldots,v_p$ 出发，令
+
+$$
+S_p=\operatorname{span}\{v_1,\ldots,v_p\}.
+$$
+
+考察子空间序列 $S_p,AS_p,A^2S_p,\ldots$。希望当 $i\to\infty$ 时，
+$A^iS_p$ 与由所求特征向量张成的子空间
+
+$$
+T_p=\operatorname{span}\{q_1,\ldots,q_p\}
+$$
+
+之间的子空间夹角趋于零。
+
+#### 4.2.2.1 基本改进幂法
+
+1. 取初始空间 $S_p$ 的一组正交基，记
+  $$
+  Q_0=[q_1^{(0)},\ldots,q_p^{(0)}].
+  $$
+2. 计算
+  $$
+  Z_1=AQ_0\in\mathbb C^{n\times p}.
+  $$
+  $Z_1$ 的列向量一般不再正交。
+3. 对 $Z_1$ 作 QR 分解：
+  $$
+  Z_1=Q_1R_1,
+  \qquad Q_1=[q_1^{(1)},\ldots,q_p^{(1)}].
+  $$
+  因而
+  $$
+  \color{red}{Q_1=Z_1R_1^{-1}}
+  $$
+  是 $Z_1$ 列向量正交化后得到的正交矩阵。
+4. 重复上述过程：
+  $$
+  Z_k=AQ_{k-1},\qquad Z_k=Q_kR_k,
+  $$
+  直至满足预定的收敛精度。
+5. 由 $Q_k$ 构成的子空间得到 $A$ 的近似不变子空间，并可在该子空间上求取相应的近似特征信息。
+
+#### 4.2.2.2 基于正交迭代的投影思想
+
+取初始正交矩阵 $Q\in\mathbb C^{n\times p}$，将 $A\in\mathbb C^{n\times n}$ 投影到该子空间上，得到
+
+$$
+\color{red}{B=Q^HAQ},
+$$
+
+其中 $B$ 称为 $A$ 在该子空间上的 Rayleigh 商矩阵。若 $(\mu,y)$ 是 $B$ 的特征对，则 $Qy$ 给出 $A$ 的 Ritz 向量，$\mu$ 为相应的 Ritz 值；可用这些 Ritz 向量更新投影子空间。
+
+#### 4.2.2.3 基本投影迭代
+
+设 $Ax=\lambda x$。若 $u\in S_p=\operatorname{Im}(Q)$，$Q\in\mathbb C^{n\times p}$，并且 $\mu$ 是在子空间 $S_p$ 上对特征值的近似，则由 Galerkin 条件要求残量满足
+
+$$
+Au-\mu u\perp S_p.
+$$
+
+等价地，$\mu$ 使
+
+$$
+\min_{z\in S_p}\left\lVert Au-z\right\rVert_2
+=\left\lVert Au-\mu u\right\rVert_2
+$$
+
+成立。设 $S_p$ 的正交投影算子为 $P_{S_p}$，其矩阵为 $QQ^H$。令 $u=Qy$，则有
+
+$$
+QQ^HAu=\mu u,
+$$
+
+从而
+
+$$
+Q^HAQy=\mu y.
+$$
+
+记 $B=Q^HAQ$，则 $B$ 为 Rayleigh 商矩阵；若
+
+$$
+By=\mu y,
+$$
+
+则 $(\mu,Qy)$ 是 $A$ 的 Ritz 对。
+
+#### 4.2.2.4 投影迭代步骤
+
+1. 取 $Q\subset\mathbb C^n$ 为一个 $m$ 维子空间，选取其标准正交基
+  $$
+  Q=[q_1,\ldots,q_m].
+  $$
+2. 计算 $A$ 在该子空间上的 Rayleigh 商：
+  $$
+  B=Q^HAQ.
+  $$
+3. 计算 $B$ 的特征对 $(\mu_j,y_j)$。
+4. 得到 $A$ 的 Ritz 对 $(\mu_j,Qy_j)$。
+5. 将 Ritz 向量 $Qy_j$ 用于更新投影子空间，再继续迭代。
+
+### 4.2.3 基本 QR 方法
+
+1. 令 $A_1=A$，作 QR 分解
+  $$
+  A_1=Q_1R_1,
+  $$
+  其中 $R_1$ 为上三角矩阵。
+2. 令
+  $$
+  A_2=R_1Q_1,
+  $$
+  再对 $A_2$ 作 QR 分解：$A_2=Q_2R_2$。
+3. 一般地，依次计算
+  $$
+  A_k=Q_kR_k,\qquad A_{k+1}=R_kQ_k,
+  $$
+  直至
+  $$
+  \left\lVert A_{k+1}-\operatorname{diag}(A_{k+1})\right\rVert_{\infty}\le\varepsilon.
+  $$
+
+**定理 4.6**
+
+基本 QR 迭代满足
+
+$$
+\begin{aligned}
+A_{k+1}&=Q_k^HA_kQ_k,\\
+A_{k+1}&=(Q_1Q_2\cdots Q_k)^H A(Q_1Q_2\cdots Q_k),\\
+A^k&=(Q_1Q_2\cdots Q_k)(R_k\cdots R_2R_1).
+\end{aligned}
+$$
+
+### 4.2.4 带位移的 QR 方法
+
+在第 $k$ 步选取位移 $s_k$，令
+
+$$
+B_k=A_k-s_kI.
+$$
+
+对 $B_k$ 作 QR 分解：
+
+$$
+B_k=\widetilde Q_k\widetilde R_k,
+$$
+
+然后令
+
+$$
+A_{k+1}=\widetilde R_k\widetilde Q_k+s_kI.
+$$
+
+由此可写为
+
+$$
+A_k=(Q_1\cdots Q_{k-1})^H A(Q_1\cdots Q_{k-1}),
+$$
+
+其中 $Q_j$ 表示各步得到的正交变换。
+
+收敛速度可用相邻特征值模的比值估计；合适的位移能显著加快收敛。常用思想包括：
+
+1. 对收敛较慢的情形采用原点位移；
+2. 采用带位移的 QR 迭代，并使用上 Hessenberg 形式降低计算量；
+3. 对共轭复特征值使用双重位移。
+
+### 4.2.5 基于 Hessenberg 矩阵的 QR 方法
+
+1. 先将 $A$ 化为上 Hessenberg 矩阵：
+  $$
+  H_1=Q_0^HAQ_0.
+  $$
+2. 对每一步作 QR 分解
+  $$
+  H_k-s_kI=Q_kR_k,
+  $$
+  该分解可用 Givens 变换实现。
+3. 令
+  $$
+  H_{k+1}-s_kI=R_kQ_k.
+  $$
+
+**定理 4.7**
+
+若 $H_k$ 是上 Hessenberg 矩阵，则由上述 QR 迭代得到的 $H_{k+1}$ 仍为上 Hessenberg 矩阵。
+
+**定理 4.8**
+
+带位移 Hessenberg QR 迭代满足
+
+$$
+\begin{aligned}
+H_{k+1}&=Q_k^HH_kQ_k,\\
+H_{k+1}&=(Q_1\cdots Q_k)^H H_1(Q_1\cdots Q_k),\\
+\prod_{j=1}^{k}(H_j-s_jI)&=(Q_1\cdots Q_k)(R_k\cdots R_1).
+\end{aligned}
+$$
+
+位移 $s_k$ 的常用选取方法如下：
+
+1. **Rayleigh 商位移：**取
+  $$
+  s_k=(H_k)_{nn},
+  $$
+  可加快收敛；
+2. **Wilkinson 位移：**取右下角 $2\times2$ 主子矩阵的特征值中更接近 $(H_k)_{nn}$ 的一个作为 $s_k$。
+
+### 4.2.6 隐式双重位移 QR 方法
+
+**定理 4.9**
+
+设 $H$ 为不可约上 Hessenberg 矩阵，$s_k$ 及其共轭 $\overline{s}_k$ 为所取双重位移。则相应的隐式双重位移 QR 步可保持上 Hessenberg 结构。
+
+#### 4.2.6.1 算法
+
+1. 先将 $A$ 化为上 Hessenberg 矩阵：
+  $$
+  H_1=Q_0^HAQ_0.
+  $$
+2. 构造
+  $$
+  \color{red}{M=(H_k-s_kI)(H_k-\overline{s}_kI)}.
+  $$
+3. 对 $M$ 作 QR 分解：
+  $$
+  M=Q_MR_M.
+  $$
+4. 计算
+  $$
+  H_{k+1}=Q_M^HH_kQ_M.
+  $$
+
+为说明该算法可行，注意
+
+$$
+Me_1=Q_MR_Me_1=r_{11}Q_Me_1.
+$$
+
+因此 $Me_1$ 与 $Q_Me_1$ 共线。由隐式 $Q$ 定理，$Q_M$ 的第一列可由 $M$ 的第一列确定，进而可在不显式构造 $M$ 的情形下，通过追赶（bulge chasing）过程完成隐式双重位移 QR 迭代。
+
+## 4.3 Krylov 子空间方法
+
+QR 方法的不足包括：它会破坏矩阵的稀疏结构；每次 QR 分解的计算量较大；并且通常需要同时求取全部特征值。Krylov 子空间方法利用 $A$ 的结构，在较低维的子空间中构造 Ritz 近似。
+
+设 $v\ne0$，定义 $d=d(A,v)$ 为满足
+
+$$
+v,Av,\ldots,A^{d-1}v\ \text{线性无关，}
+$$
+
+而 $v,Av,\ldots,A^dv$ 线性相关的最小整数。于是存在 $d_0,\ldots,d_{d-1}$，使得
+
+$$
+A^dv=\sum_{j=0}^{d-1}d_jA^jv.
+$$
+
+若 $p(A)v=0$，其中 $p$ 为多项式，则上述关系给出了 Krylov 子空间的终止条件。
+
+定义第 $k$ 阶 Krylov 子空间为
+
+$$
+\mathcal K_k(A,v)=\operatorname{span}\{v,Av,\ldots,A^{k-1}v\}.
+$$
+
+它具有以下性质：
+
+1. 对非零标量 $\alpha,\beta$，有
+  $$
+  \mathcal K_k(\alpha A,\beta v)=\mathcal K_k(A,v).
+  $$
+2. 子空间具有嵌套性：
+  $$
+  \mathcal K_k(A,v)\subseteq\mathcal K_{k+1}(A,v).
+  $$
+3. 多项式表示为
+  $$
+  \mathcal K_k(A,v)=\{p(A)v:\ p\in\mathcal P_{k-1}\}.
+  $$
+4. 一旦
+  $$
+  \mathcal K_k(A,v)=\mathcal K_{k+1}(A,v),
+  $$
+  则后续 Krylov 子空间不再增长。
+5. 此时 $\mathcal K_k(A,v)$ 是 $A$ 的不变子空间；即对任意 $x\in\mathcal K_k(A,v)$，有
+  $$
+  Ax\in\mathcal K_{k+1}(A,v)=\mathcal K_k(A,v).
+  $$
+
+由 Krylov 子空间的定义可知
+
+$$
+A\mathcal K_k(A,v)\subseteq\operatorname{span}\{Av,A^2v,\ldots,A^kv\}
+\subseteq\mathcal K_{k+1}(A,v).
+$$
+
+基本思想是：把 $\mathcal K_k(A,v)$ 作为投影子空间，求其一组正交基 $Q_k$，从而构造
+
+$$
+\mathcal K_k(A,v)=Q_kR_k,\qquad
+B_k=Q_k^HAQ_k.
+$$
+
+求 $B_k$ 的特征对即可得到 $A$ 的 Ritz 对。
+
+### 4.3.1 Arnoldi 方法
+
+Krylov 子空间逐步增长，可采用 QR 分解中的 Gram–Schmidt 正交化来构造正交基。
+
+**定理 4.10（Arnoldi 基与 Lanczos 基）**
+
+对 Krylov 子空间 $\mathcal K_k(A,v)$，由逐步正交化得到的正交向量 $q_1,\ldots,q_k$ 构成 Arnoldi 基。若 $A$ 为 Hermite 矩阵，则 Arnoldi 基就是 Lanczos 基。
+
+#### 4.3.1.1 Gram–Schmidt 过程
+
+令
+
+$$
+\color{red}{q_1=\frac{v}{\left\lVert v\right\rVert_2}}.
+$$
+
+在第 $j$ 步，先计算
+
+$$
+\color{red}{r=Aq_j-\sum_{i=1}^{j}(q_i^HAq_j)q_i},
+$$
+
+再令
+
+$$
+\color{red}{q_{j+1}=\frac{r}{\left\lVert r\right\rVert_2}}.
+$$
+
+若 $r=0$，则算法终止。记
+
+$$
+h_{ij}=q_i^HAq_j,
+\qquad r=h_{j+1,j}q_{j+1}.
+$$
+
+令 $Q_k=[q_1,\ldots,q_k]$，$H_k=(h_{ij})_{k\times k}$，则 $H_k$ 为上 Hessenberg 矩阵，且有 Arnoldi 关系
+
+$$
+\color{red}{AQ_k=Q_kH_k+h_{k+1,k}q_{k+1}e_k^T}.
+$$
+
+Arnoldi 关系也可写为
+
+$$
+AQ_k=Q_{k+1}\widehat H_k,
+$$
+
+其中
+
+$$
+Q_{k+1}=[Q_k,q_{k+1}]\in\mathbb C^{n\times(k+1)},
+\qquad
+\widehat H_k=
+\begin{bmatrix}
+  H_k\\ h_{k+1,k}e_k^T
+\end{bmatrix}.
+$$
+
+**定理 4.11（Arnoldi 迭代的矩阵表示）**
+
+设 $A\in\mathbb C^{n\times n}$、$v\in\mathbb C^n$。若 $\mathcal K_{k+1}(A,v)$ 的维数为 $k+1$，且其 QR 分解给出正交基 $Q_{k+1}$，则存在 $(k+1)\times k$ 的上 Hessenberg 矩阵 $\widehat H_k$，使得
+
+$$
+AQ_k=Q_{k+1}\widehat H_k.
+$$
+
+其中 $Q_k$ 是 $Q_{k+1}$ 的前 $k$ 列，且
+
+$$
+H_k=Q_k^HAQ_k.
+$$
+
+#### 4.3.1.2 Arnoldi 迭代算法
+
+1. 给定初始向量 $v$，将其归一化：
+  $$
+  q_1=\frac{v}{\left\lVert v\right\rVert_2}.
+  $$
+2. 经 $k$ 步 Arnoldi 迭代，得到
+  $$
+  AQ_k=Q_kH_k+h_{k+1,k}q_{k+1}e_k^T.
+  $$
+3. 求 $H_k$ 的特征对 $(\mu_j,y_j)$。
+4. 构造 Ritz 向量
+  $$
+  w_j=Q_ky_j.
+  $$
+  当残量满足
+  $$
+  \left\lVert h_{k+1,k}e_k^Ty_j\right\rVert_2\le\varepsilon
+  $$
+  时，相应的 Ritz 对可作为 $A$ 的近似特征对。
+
+### 4.3.2 Lanczos 方法
+
+当 $A$ 为 Hermite 矩阵时，Arnoldi 过程中得到的 $H_k$ 也是 Hermite 矩阵，因此 $H_k$ 必为三对角矩阵。此时 Arnoldi 关系化为 Lanczos 关系：
+
+$$
+AQ_k=Q_kT_k+\beta_kq_{k+1}e_k^T,
+$$
+
+其中 $T_k$ 为三对角矩阵。
+
+向量递推形式为
+
+$$
+\begin{aligned}
+Aq_1&=\alpha_1q_1+\beta_1q_2,\\
+Aq_j&=\beta_{j-1}q_{j-1}+\alpha_jq_j+\beta_jq_{j+1}.
+\end{aligned}
+$$
+
+其中
+
+$$
+\color{red}{\alpha_j=q_j^HAq_j},
+$$
+
+并令
+
+$$
+\color{red}{r_j=Aq_j-\alpha_jq_j-\beta_{j-1}q_{j-1}},
+\qquad
+\color{red}{\beta_j=\left\lVert r_j\right\rVert_2},
+\qquad
+q_{j+1}=\frac{r_j}{\beta_j}.
+$$
+
+**定理 4.12（Ritz 值）**
+
+对 $A$ 的 Rayleigh 商矩阵 $Q_k^HAQ_k$，其 Ritz 对应的特征值是 $A$ 的特征值的近似。

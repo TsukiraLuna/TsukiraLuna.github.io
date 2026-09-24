@@ -560,6 +560,43 @@ node tools/check-mdx-math.mjs content/blog/<slug>/index.mdx
 症状一样（构建全绿、文章没了），根因在另一个环节。所以「构建成功」
 永远不能当作「内容在站点上」的证据，必须查产物或跑 `--check-frontmatter`。
 
+### 高级数值分析（`advanced-numerical-analysis`，2026 年完成）
+
+源码：`E:\pdf workspace\高级数值分析\pdf workspace\高级数值分析.tex`（2563 行，原扫描件第 2–64 页已全部转录）
+产物：索引页 + 7 章，slug 为 `advanced-numerical-analysis` / `-ch01..ch07`，
+`series: 高级数值分析`、`seriesOrder` 0/10/…/70、**`category: 算法`**。
+
+**转换前探雷报出的风险**：
+
+| 项 | 值 |
+|---|---|
+| 章节 | 7 个 `\chapter`、38 个 `\section`、28 个 `\subsection` |
+| 块级公式 | `\[ \]` ×339、`equation` ×20、`align` ×6、`align*` ×7 |
+| 行内公式 | 约 726 个 |
+| 定理环境 | **43 处**：`theorem` ×30、`definition` ×13 |
+| 自定义宏 | 6 个：`\C`/`\R`→`\mathbb C`/`\mathbb R`、`\Span`/`\Imn`/`\cond`→`\operatorname{…}`、**`\norm{X}`→`\left\lVert X\right\rVert`（带参数）** |
+
+**这轮的三个新经验**：
+
+1. **原稿的 `theorem` / `definition` 环境完全没有编号** —— 只有名称
+   （`\begin{theorem}[Schur 分解]`），且正文里**没有任何 `\label`/`\ref`**。
+   所以不存在「保留原编号」这条路，只能新编。本站约定：**定理、定义各自在本章内
+   从 1 起编号**，形如 `**定理 4.7（Schur 分解）**`、`**定义 4.11（Krylov 子空间）**`。
+   索引页与每章开头都注明「这个编号是本站加的，原稿没有」。
+   > 遇到「原稿无编号」时，**先把约定想清楚再动手**，否则各章会各编一套，
+   > 读者没法跨章指代。
+
+2. **`\norm{}` 的下标常在花括号外**。`\norm{x}_2`、`\norm{x^{(k)}-x^*}_A`、
+   `\norm{F(x)}_2^2` 这类写法展开后是 `\left\lVert x\right\rVert_2` ——
+   **只替换 `\norm{…}` 这一段，不要把后面的 `_2` 吞进去**。全文出现 60+ 次。
+
+3. **`\bm` 虽然被 `\usepackage`，但正文并未使用** —— 不必为它做准备。
+
+**忠实转录的边界**：原稿有多处疑似笔误（Legendre 多项式列表缺 $P_3$、
+Butcher 表出现对角元与「显式方法」自相矛盾、Gauss 求积误差阶写成 $f^{(2n+2)}$、
+隐式 $Q$ 定理用 `definition` 环境装一条唯一性定理等）。**一律照抄，不改写**，
+只在交付说明里列给作者。
+
 
 ---
 

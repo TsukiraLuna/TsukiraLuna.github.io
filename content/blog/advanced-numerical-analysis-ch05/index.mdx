@@ -1,0 +1,268 @@
+---
+title: "高级数值分析 第 5 章 线性方程组迭代法"
+pubDate: 2025-06-06
+description: "线性方程组迭代法：最速下降法、共轭梯度法及其 Krylov 子空间最优性、MINRES 与 GMRES 方法。"
+tags: ["高级数值分析", "迭代法", "共轭梯度法", "GMRES"]
+category: 算法
+series: 高级数值分析
+seriesOrder: 50
+tocDepth: 2
+---
+
+> 本文由手写笔记《高级数值分析》扫描件的 LaTeX 转录稿改写而来，忠实保留原稿的文字与公式。
+> 定理与定义的编号是本站为方便指代所加，原稿只有名称、没有编号。
+
+## 5.1 引言
+
+考虑线性方程组
+
+$$
+Ax=b.
+$$
+
+将 $A$ 作分裂 $A=M-N$，可得定常迭代格式
+
+$$
+x^{(k+1)}=M^{-1}Nx^{(k)}+M^{-1}b.
+$$
+
+常见的分裂及其迭代格式如下（记 $A=D-L-U$）：
+
+$$
+\begin{aligned}
+\text{Jacobi:}\quad
+x^{(k+1)}&=D^{-1}(L+U)x^{(k)}+D^{-1}b,\\
+\text{Gauss–Seidel:}\quad
+x^{(k+1)}&=(D-L)^{-1}Ux^{(k)}+(D-L)^{-1}b,\\
+\text{SOR:}\quad
+x^{(k+1)}&=(D-\omega L)^{-1}
+\bigl[(1-\omega)D+\omega U\bigr]x^{(k)}
++\omega(D-\omega L)^{-1}b.
+\end{aligned}
+$$
+
+矩阵迭代也可写成不动点形式
+
+$$
+x^{(k+1)}=Hx^{(k)}+g=\varphi(x^{(k)}).
+$$
+
+一般迭代格式记为
+
+$$
+x^{(0)}=\varphi_0(A,b),\qquad
+x^{(k)}=\varphi_k\bigl(x^{(0)},\ldots,x^{(k-1)};A,b\bigr).
+$$
+
+误差与残量分别为
+
+$$
+e^{(k)}=x^{(k)}-x^*,\qquad
+r^{(k)}=b-Ax^{(k)}=-Ae^{(k)}.
+$$
+
+于是 Jacobi、Gauss–Seidel 与 SOR 的残量形式为
+
+$$
+\begin{aligned}
+x^{(k+1)}&=x^{(k)}+D^{-1}r^{(k)},\\
+x^{(k+1)}&=x^{(k)}+(D-L)^{-1}r^{(k)},\\
+x^{(k+1)}&=x^{(k)}+\omega(D-\omega L)^{-1}r^{(k)}.
+\end{aligned}
+$$
+
+若采用 Jacobi 型预条件，则
+
+$$
+r^{(k+1)}=r^{(k)}-AP^{-1}r^{(k)}\equiv Br^{(k)}.
+$$
+
+## 5.2 最速下降法
+
+定义能量函数
+
+$$
+E(x)=\frac12(Ax,x)-(b,x),
+$$
+
+其中 $A=A^T\succ0$。则 $Ax=b$ 的解 $x^*$ 等价于 $E(x)$ 的唯一极小点，且
+
+$$
+\nabla E(x)=Ax-b,\text{qquad} -\nabla E(x^{(k)})=r^{(k)}.
+$$
+
+取下降方向 $d^{(k)}$，令
+
+$$
+x^{(k+1)}=x^{(k)}+\alpha_kd^{(k)},
+\qquad \alpha_k>0,
+$$
+
+使 $E(x^{(k+1)})<E(x^{(k)})$。最速下降方向为 $d^{(k)}=r^{(k)}$。沿该方向作精确线搜索：
+
+$$
+\alpha_k=\arg\min_{\alpha}E\bigl(x^{(k)}+\alpha r^{(k)}\bigr)
+=\frac{(r^{(k)},r^{(k)})}{(Ar^{(k)},r^{(k)})}.
+$$
+
+因此最速下降法为
+
+$$
+\begin{aligned}
+r^{(k)}&=b-Ax^{(k)},\\
+\alpha_k&=\frac{(r^{(k)},r^{(k)})}{(Ar^{(k)},r^{(k)})},\\
+x^{(k+1)}&=x^{(k)}+\alpha_kr^{(k)},\\
+r^{(k+1)}&=r^{(k)}-\alpha_kAr^{(k)}.
+\end{aligned}
+$$
+
+终止条件可取 $\left\lVert r^{(k)}\right\rVert_2\le\varepsilon$；相邻两步残量满足
+$\bigl(r^{(k+1)},r^{(k)}\bigr)=0$。
+
+**定理 5.1（最速下降法收敛性）**
+
+设 $A\in\mathbb R^{n\times n}$ 对称正定，特征值满足
+$\lambda_1\ge\cdots\ge\lambda_n>0$。则
+
+$$
+\left\lVert x^{(k)}-x^*\right\rVert_2
+\le
+\sqrt{\frac{\lambda_1}{\lambda_n}}
+\left(\frac{\lambda_1-\lambda_n}{\lambda_1+\lambda_n}\right)^k
+\left\lVert x^{(0)}-x^*\right\rVert_2.
+$$
+
+初值 $x^{(0)}$ 可任意选取，并且 $E(x^{(0)})>E(x^{(1)})>\cdots$。
+
+## 5.3 共轭梯度法
+
+在 Krylov 子空间
+
+$$
+\mathcal K_k(A,r^{(0)})
+=\operatorname{span}\{r^{(0)},Ar^{(0)},\ldots,A^{k-1}r^{(0)}\}
+$$
+
+中寻找近似解。对 $A=A^T\succ0$，定义 $A$-内积
+
+$$
+(u,v)_A=(Au,v),\qquad \left\lVert u\right\rVert_A^2=(Au,u).
+$$
+
+若 $(p_i,p_j)_A=0\ (i\ne j)$，则称 $\{p_i\}$ 为 $A$-共轭方向组。若
+$x^*=\sum_{i=0}^{n-1}\alpha_ip_i$，则与 $p_k$ 作内积得到
+
+$$
+\alpha_k=\frac{(b,p_k)}{(Ap_k,p_k)}.
+$$
+
+$$
+x^{(k+1)}=x^{(k)}+\alpha_kp_k.
+$$
+
+共轭梯度法的三项递推为
+
+$$
+\begin{aligned}
+x^{(k+1)}&=x^{(k)}+\alpha_kp^{(k)},\\
+r^{(k+1)}&=r^{(k)}-\alpha_kAp^{(k)},\\
+p^{(k+1)}&=r^{(k+1)}+\beta_kp^{(k)},
+\end{aligned}
+$$
+
+其中
+
+$$
+\alpha_k=\frac{(r^{(k)},r^{(k)})}{(p^{(k)},Ap^{(k)})},
+\qquad
+\beta_k=\frac{(r^{(k+1)},r^{(k+1)})}{(r^{(k)},r^{(k)})}.
+$$
+
+初始取 $r^{(0)}=b-Ax^{(0)}$、$p^{(0)}=r^{(0)}$。
+
+**定理 5.2（共轭梯度法的最优性）**
+
+对任意 $x\in x^{(0)}+\mathcal K_k(A,r^{(0)})$，共轭梯度迭代点使
+
+$$
+\left\lVert x^{(k)}-x^*\right\rVert_A
+=\min_{x\in x^{(0)}+\mathcal K_k(A,r^{(0)})}\left\lVert x-x^*\right\rVert_A,
+$$
+
+并且 $r^{(k)}\perp\mathcal K_k(A,r^{(0)})$，搜索方向两两 $A$-共轭。
+
+若 $\kappa(A)=\lambda_{\max}/\lambda_{\min}$，则有经典估计
+
+$$
+\left\lVert x^{(k)}-x^*\right\rVert_A
+\le 2\left(\frac{\sqrt{\kappa(A)}-1}{\sqrt{\kappa(A)}+1}\right)^k
+\left\lVert x^{(0)}-x^*\right\rVert_A.
+$$
+
+条件数越大，收敛越慢；若特征值聚集，则收敛较快。
+
+## 5.4 MINRES
+
+对对称（可不定）矩阵 $A$，在 Krylov 子空间中取
+
+$$
+x^{(k)}\in x^{(0)}+\mathcal K_k(A,r^{(0)}),
+\qquad
+\left\lVert r^{(k)}\right\rVert_2=\min\left\lVert b-Ax\right\rVert_2,
+$$
+
+所得方法称为 MINRES。由 Lanczos 分解，令
+
+$$
+Q_k=[q_1,\ldots,q_k],\qquad q_1=\frac{r^{(0)}}{\left\lVert r^{(0)}\right\rVert_2},
+$$
+
+则
+
+$$
+AQ_k=Q_{k+1}\overline T_k,
+$$
+
+其中 $\overline T_k$ 为上 Hessenberg（对称情形为三对角）矩阵。设
+$\beta=\left\lVert r^{(0)}\right\rVert_2$，$x=x^{(0)}+Q_ky$，则
+
+$$
+\left\lVert b-Ax\right\rVert_2
+=\left\lVert\beta e_1-\overline T_ky\right\rVert_2.
+$$
+
+因此每一步只需解小规模最小二乘问题
+
+$$
+y_k=\arg\min_y\left\lVert\beta e_1-\overline T_ky\right\rVert_2,
+\qquad x^{(k)}=x^{(0)}+Q_ky_k,
+$$
+
+可用 Givens 变换进行 QR 分解。
+
+## 5.5 GMRES
+
+对一般（非对称）矩阵 $A$，GMRES 在
+$x^{(0)}+\mathcal K_k(A,r^{(0)})$ 中最小化残量二范数。取
+
+$$
+q_1=\frac{r^{(0)}}{\left\lVert r^{(0)}\right\rVert_2},
+$$
+
+通过 Arnoldi 过程得到
+
+$$
+AQ_k=Q_{k+1}\overline H_k,
+$$
+
+其中 $Q_{k+1}$ 列正交、$\overline H_k$ 为上 Hessenberg 矩阵。令
+$\beta=\left\lVert r^{(0)}\right\rVert_2$，则
+
+$$
+x^{(k)}=x^{(0)}+Q_ky_k,
+\qquad
+y_k=\arg\min_y\left\lVert\beta e_1-\overline H_ky\right\rVert_2.
+$$
+
+利用 Givens 旋转逐步更新 $\overline H_k$ 的 QR 分解，即可高效求得 $y_k$ 和
+$x^{(k)}$；当 $\left\lVert r^{(k)}\right\rVert_2\le\varepsilon$ 时停止。

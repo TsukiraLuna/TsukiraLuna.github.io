@@ -1,0 +1,406 @@
+---
+title: "高级数值分析 第 1 章 函数逼近"
+pubDate: 2025-06-02
+description: "函数逼近：最佳逼近、正交多项式（Legendre 与 Chebyshev）、最小二乘与最佳平方逼近、最佳一致逼近与 Chebyshev 交错定理、三角多项式逼近、深度神经网络与函数表示。"
+tags: ["高级数值分析", "函数逼近", "正交多项式", "Chebyshev"]
+category: 算法
+series: 高级数值分析
+seriesOrder: 10
+tocDepth: 2
+---
+
+> 本文由手写笔记《高级数值分析》扫描件的 LaTeX 转录稿改写而来，忠实保留原稿的文字与公式。
+> 定理与定义的编号是本站为方便指代所加，原稿只有名称、没有编号。
+
+## 1.1 最佳逼近
+
+### 1.1.1 引言
+
+函数逼近的基本问题是：在一个给定的函数空间中，选取较易处理的函数来近似目标函数 $f$。设 $H_n$ 是近似函数构成的 $n+1$ 维线性空间；若存在 $p^*\in H_n$，使得
+
+$$
+  \left\lVert f-p^*\right\rVert=\min_{p\in H_n}\left\lVert f-p\right\rVert,
+$$
+
+则称 $p^*$ 为 $f$ 在 $H_n$ 中的*最佳逼近*。
+
+### 1.1.2 正交多项式
+
+设 $\rho(x)$ 是区间 $[a,b]$ 上的权函数，即 $\rho\in C[a,b]$、$\rho(x)>0$。在 $C[a,b]$ 中定义内积
+
+$$
+  \langle f,g\rangle=\int_a^b f(x)g(x)\rho(x)\,\mathrm dx.
+$$
+
+若 $\langle \psi_i,\psi_j\rangle=0\ (i\ne j)$，则称函数组 $\{\psi_i\}$ 为关于权函数 $\rho$ 的正交函数组。若再有 $\langle\psi_i,\psi_i\rangle=1$，则称其为正交归一函数组。
+
+令 $P_n$ 表示次数不超过 $n$ 的多项式空间。对 $x^n$ 作正交化可得
+
+$$
+ \psi_n(x)=x^n-
+ \sum_{i=0}^{n-1}
+ \frac{\langle x^n,\psi_i\rangle}{\langle\psi_i,\psi_i\rangle}\psi_i(x).
+$$
+
+因此，$\{\psi_0,\psi_1,\ldots,\psi_n,\ldots\}$ 可构成一组正交多项式。
+
+**定理 1.1（正交多项式的三项递推）**
+
+设 $\{\psi_n\}_{n\ge0}$ 是区间 $[a,b]$ 上关于 $\rho$ 的正交多项式组，且 $\psi_0(x)=1$。则
+
+$$
+ \psi_1(x)=(x-\alpha_0)\psi_0(x),
+$$
+
+并且对 $n\ge1$，
+
+$$
+ \psi_{n+1}(x)=(x-\alpha_n)\psi_n(x)-\beta_n\psi_{n-1}(x),
+$$
+
+其中
+
+$$
+ \alpha_n=\frac{\langle x\psi_n,\psi_n\rangle}
+                  {\langle\psi_n,\psi_n\rangle},\qquad
+ \beta_n=\frac{\langle x\psi_n,\psi_{n-1}\rangle}
+                 {\langle\psi_{n-1},\psi_{n-1}\rangle}.
+$$
+
+**定理 1.2（正交展开）**
+
+若 $\{\psi_0,\ldots,\psi_n\}$ 是 $P_n$ 的一组正交基，则任意 $p_n\in P_n$ 均可唯一表示为
+
+$$
+ p_n(x)=\sum_{i=0}^n
+ \frac{\langle p_n,\psi_i\rangle}{\langle\psi_i,\psi_i\rangle}\psi_i(x).
+$$
+
+**定理 1.3**
+
+次数为 $n$ 的正交多项式在开区间 $(a,b)$ 内有 $n$ 个互异实零点。
+
+#### 1.1.2.1 Legendre 多项式
+
+在 $[-1,1]$ 上取权函数 $\rho(x)=1$，Legendre 多项式定义为
+
+$$
+ P_n(x)=\frac{1}{2^n n!}\frac{\mathrm d^n}{\mathrm dx^n}(x^2-1)^n.
+$$
+
+其中
+
+$$
+ P_0(x)=1,\quad P_1(x)=x,\quad
+ P_2(x)=\frac12(3x^2-1),\quad
+ P_4(x)=\frac18(35x^4-30x^2+3).
+$$
+
+它们满足
+
+$$
+ \langle P_n,P_m\rangle=
+ \begin{cases}
+  0,&m\ne n,\\[2pt]
+  \dfrac{2}{2n+1},&m=n,
+ \end{cases}
+ \qquad P_n(-x)=(-1)^nP_n(x),
+$$
+
+以及递推关系
+
+$$
+ (n+1)P_{n+1}(x)=(2n+1)xP_n(x)-nP_{n-1}(x).
+$$
+
+#### 1.1.2.2 Chebyshev 多项式
+
+在 $[-1,1]$ 上取
+
+$$
+ \rho(x)=\frac1{\sqrt{1-x^2}},\qquad
+ T_n(x)=\cos(n\arccos x).
+$$
+
+前几个 Chebyshev 多项式为
+
+$$
+ T_0=1,\quad T_1=x,\quad T_2=2x^2-1,\quad
+ T_3=4x^3-3x,\quad T_4=8x^4-8x^2+1.
+$$
+
+其正交性为
+
+$$
+ \int_{-1}^1\frac{T_n(x)T_m(x)}{\sqrt{1-x^2}}\,\mathrm dx=
+ \begin{cases}
+  0,&m\ne n,\\[2pt]
+  \dfrac\pi2,&m=n\ne0,\\[2pt]
+  \pi,&m=n=0.
+ \end{cases}
+$$
+
+此外，
+
+$$
+ T_n(-x)=(-1)^nT_n(x),\qquad
+ T_{n+1}(x)=2xT_n(x)-T_{n-1}(x).
+$$
+
+它的零点与常用插值节点分别为
+
+$$
+ x_k=\cos\frac{(2k-1)\pi}{2n}\quad(k=1,\ldots,n),
+ \qquad
+ \bar x_k=\cos\frac{k\pi}{n}\quad(k=0,\ldots,n),
+$$
+
+且 $T_n(\bar x_k)=(-1)^k$。
+
+## 1.2 最小二乘逼近
+
+给定节点 $x_0,\ldots,x_m$ 及函数值
+
+$$
+ F=(f(x_0),\ldots,f(x_m))^T,
+$$
+
+在 $P_n$ 中求 $p^*$，使离散平方误差最小：
+
+$$
+ \left\lVert F-P^*\right\rVert_2^2
+ =\min_{p\in P_n}\sum_{j=0}^m[f(x_j)-p(x_j)]^2,
+ \qquad
+ P^*=(p^*(x_0),\ldots,p^*(x_m))^T.
+$$
+
+设 $\{\psi_0,\ldots,\psi_n\}$ 为 $P_n$ 的一组基，写成
+
+$$
+ p^*(x)=a_0^*\psi_0(x)+\cdots+a_n^*\psi_n(x).
+$$
+
+令
+
+$$
+ \Phi_i=(\psi_i(x_0),\psi_i(x_1),\ldots,\psi_i(x_m))^T,
+ \qquad i=0,1,\ldots,n,
+$$
+
+则 $P^*=a_0^*\Phi_0+\cdots+a_n^*\Phi_n$。令
+
+$$
+ G=(\langle\Phi_i,\Phi_j\rangle)_{0\le i,j\le n},\qquad
+ a=(a_0,\ldots,a_n)^T,\qquad
+ d=(\langle\Phi_0,F\rangle,\ldots,\langle\Phi_n,F\rangle)^T,
+$$
+
+其中 $G$ 称为 Gram 矩阵。最小二乘解的系数满足正规方程组
+
+$$
+ Ga=d.
+$$
+
+**定理 1.4（最小二乘逼近的判别）**
+
+$P_n$ 中存在唯一的最小二乘逼近 $p^*$ 当且仅当 $\det G\ne0$；等价地，向量 $\Phi_0,\ldots,\Phi_n$ 线性无关。并且
+
+$$
+ p^*\text{ 为最小二乘逼近}
+ \quad\Longleftrightarrow\quad
+ \langle F-P^*,P\rangle=0,\quad \forall P\in\operatorname{span}\{\Phi_0,\ldots,\Phi_n\}.
+$$
+
+若 $x_0,\ldots,x_m$ 互异，则对任意给定函数值，$P_n$ 中存在唯一的最小二乘逼近当且仅当 $m\ge n$。
+
+## 1.3 最佳平方逼近
+
+连续情形的最佳平方逼近满足
+
+$$
+ \left\lVert f-p^*\right\rVert_2^2
+ =\min_{p\in P_n}\int_a^b[f(x)-p(x)]^2\,\mathrm dx.
+$$
+
+若 $\{\psi_0,\ldots,\psi_n\}$ 是 $[a,b]$ 上的一组正交多项式，则最佳平方逼近为
+
+$$
+ p_n^*(x)=\sum_{i=0}^n a_i^*\psi_i(x),
+ \qquad
+ a_i^*=\frac{\langle f,\psi_i\rangle}{\langle\psi_i,\psi_i\rangle}.
+$$
+
+## 1.4 最佳一致逼近
+
+在一致范数
+
+$$
+ \left\lVert g\right\rVert_\infty=\max_{a\le x\le b}|g(x)|
+$$
+
+下，$f$ 在 $P_n$ 中的最佳一致逼近 $p_n^*$ 定义为
+
+$$
+ \left\lVert f-p_n^*\right\rVert_\infty
+ =\min_{p\in P_n}\left\lVert f-p\right\rVert_\infty
+ =\min_{p\in P_n}\max_{a\le x\le b}|f(x)-p(x)|.
+$$
+
+**定理 1.5（Weierstrass 逼近定理）**
+
+若 $f\in C[a,b]$，则对任意 $\varepsilon>0$，存在多项式 $p$，使得
+
+$$
+ \left\lVert f-p\right\rVert_\infty=\max_{a\le x\le b}|f(x)-p(x)|<\varepsilon.
+$$
+
+**定理 1.6（Bernstein 多项式）**
+
+若 $f\in C[0,1]$，定义
+
+$$
+ B_n(f)(x)=\sum_{k=0}^{n}f\!\left(\frac{k}{n}\right)
+ \binom{n}{k}x^k(1-x)^{n-k},\qquad x\in[0,1],
+$$
+
+其中 $\binom nk=\dfrac{n!}{k!(n-k)!}$。则 $B_n(f)\to f$ 在 $[0,1]$ 上一致收敛。
+
+设
+
+$$
+ E_n(f):=\inf_{p\in P_n}\left\lVert f-p\right\rVert_\infty.
+$$
+
+由 $P_n$ 的有限维性可知，存在 $p_n^*\in P_n$ 使
+
+$$
+ \left\lVert f-p_n^*\right\rVert_\infty=E_n(f).
+$$
+
+**定理 1.7（Chebyshev 交错定理）**
+
+设 $f\in C[a,b]$。多项式 $p_n^*\in P_n$ 是 $f$ 的最佳一致逼近，当且仅当存在
+
+$$
+ a\le x_0<x_1<\cdots<x_{n+1}\le b,
+$$
+
+使得
+
+$$
+ f(x_j)-p_n^*(x_j)=(-1)^j\sigma E_n(f),
+ \qquad j=0,1,\ldots,n+1,
+$$
+
+其中 $\sigma\in\{1,-1\}$。特别地，最佳一致逼近唯一。
+
+**定理 1.8（Chebyshev 多项式的极小偏差性质）**
+
+在所有首项系数为 $1$ 的 $n$ 次多项式中，
+
+$$
+ P_n^*(x)=2^{1-n}T_n(x),\qquad x\in[-1,1],
+$$
+
+具有最小的一致范数，且
+
+$$
+ \left\lVert P_n^*\right\rVert_\infty=2^{1-n}.
+$$
+
+区间 $[a,b]$ 上的相应结论可由线性变换
+
+$$
+ x=\frac{b-a}{2}t+\frac{a+b}{2},\qquad t\in[-1,1],
+$$
+
+得到。
+
+## 1.5 三角多项式逼近
+
+次数不超过 $n$ 的实三角多项式写成
+
+$$
+ S_n(x)=\frac{a_0}{2}+\sum_{k=1}^n\bigl(a_k\cos kx+b_k\sin kx\bigr).
+$$
+
+记
+
+$$
+ T_n=\operatorname{span}\{1,\cos x,\sin x,\ldots,\cos nx,\sin nx\}
+ =\operatorname{span}\{\varphi_0,\varphi_1,\ldots,\varphi_{2n}\}.
+$$
+
+若 $f\in C_{2\pi}$ 是连续 $2\pi$ 周期函数，则三角多项式可在一致范数下任意逼近 $f$。相应的最佳一致逼近也由交错条件刻画：若 $S_n^*\in T_n$ 为最佳一致逼近，则误差 $f-S_n^*$ 至少在 $2n+2$ 个依次排列的点上取得交错的极值。
+
+**定理 1.9（Vallée–Poussin 算子）**
+
+对 $f\in C_{2\pi}$，令
+
+$$
+ V_n(f)(x)=
+ \frac{\displaystyle\int_{-\pi}^{\pi}f(t)
+ \left(\cos\frac{x-t}{2}\right)^{2n}\,\mathrm dt}
+ {\displaystyle\int_{-\pi}^{\pi}
+ \left(\cos\frac{x-t}{2}\right)^{2n}\,\mathrm dt}.
+$$
+
+则 $V_n(f)$ 是次数不超过 $n$ 的三角多项式。该构造给出了周期连续函数的三角逼近。
+
+在内积
+
+$$
+ \langle f,g\rangle=\int_{-\pi}^{\pi}f(x)g(x)\,\mathrm dx
+$$
+
+下，$f\in C_{2\pi}$ 的最佳平方三角逼近为
+
+$$
+ S_n^*(x)=\frac{a_0}{2}+\sum_{k=1}^n
+ \bigl(a_k\cos kx+b_k\sin kx\bigr),
+$$
+
+其中 Fourier 系数为
+
+$$
+ a_k=\frac1\pi\int_{-\pi}^{\pi}f(x)\cos kx\,\mathrm dx,
+ \qquad
+ b_k=\frac1\pi\int_{-\pi}^{\pi}f(x)\sin kx\,\mathrm dx
+ \quad(k\ge1),
+$$
+
+且 $a_0=\dfrac1\pi\int_{-\pi}^{\pi}f(x)\,\mathrm dx$。
+
+对等距节点
+
+$$
+ x_j=-\pi+\frac{j\pi}{N},\qquad j=0,1,\ldots,2N-1,
+ \qquad N>n,
+$$
+
+可用离散内积构造最小二乘三角逼近。令
+
+$$
+ F=(f(x_0),\ldots,f(x_{2N-1}))^T,
+ \qquad
+ \Phi_k=(\varphi_k(x_0),\ldots,\varphi_k(x_{2N-1}))^T,
+$$
+
+则由离散正交性可直接得到系数的离散 Fourier 形式。
+
+## 1.6 深度神经网络与函数表示
+
+深度神经网络也可视为一类分层的函数逼近模型。对输入 $x$，一层仿射变换与非线性激活可写为
+
+$$
+ z^{(\ell)}=h^{(\ell)}\bigl(W^{(\ell)}z^{(\ell-1)}+b^{(\ell)}\bigr),
+ \qquad z^{(0)}=x,
+$$
+
+其中 $W^{(\ell)}$ 为权重矩阵、$b^{(\ell)}$ 为偏置向量，$h^{(\ell)}$ 为激活函数。输出层通常写成
+
+$$
+ y=W^{(L+1)}z^{(L)}+b^{(L+1)}.
+$$
+
+通过调节各层权重和偏置，网络能够以组合非线性函数的方式逼近复杂的目标函数。

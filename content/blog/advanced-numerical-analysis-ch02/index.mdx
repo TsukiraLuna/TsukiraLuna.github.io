@@ -1,0 +1,323 @@
+---
+title: "高级数值分析 第 2 章 数值积分"
+pubDate: 2025-06-03
+description: "数值积分：机械求积与插值型求积公式、Newton–Cotes 公式、Gauss 求积（Legendre 及含权奇异积分）、振荡积分与 Filon 型方法、高维数值积分。"
+tags: ["高级数值分析", "数值积分", "Gauss 求积", "Newton–Cotes"]
+category: 算法
+series: 高级数值分析
+seriesOrder: 20
+tocDepth: 2
+---
+
+> 本文由手写笔记《高级数值分析》扫描件的 LaTeX 转录稿改写而来，忠实保留原稿的文字与公式。
+
+## 2.1 数值积分概述
+
+### 2.1.1 机械求积公式
+
+设
+
+$$
+I(f)=\int_a^b f(x)\,\mathrm dx.
+$$
+
+机械求积公式用有限个节点上的函数值近似积分：
+
+$$
+I_n(f)=\sum_{i=0}^{n}A_i f(x_i),
+\qquad
+R_n(f)=I(f)-I_n(f).
+$$
+
+若对所有次数不超过 $m$ 的多项式 $p$ 都有 $R_n(p)=0$，则称该求积公式具有 $m$ 阶代数精度（或代数精度为 $m$）。求积公式的稳定性可表述为：对任意 $\varepsilon>0$，存在 $\delta>0$，使得
+
+$$
+|f(x_i)-\widetilde f(x_i)|\le \delta\quad(i=0,\ldots,n)
+\quad\Longrightarrow\quad
+|I_n(f)-I_n(\widetilde f)|\le\varepsilon.
+$$
+
+此外，求积公式的收敛性定义为
+
+$$
+\lim_{n\to\infty}R_n(f)=0.
+$$
+
+若各节点误差满足 $|f(x_i)-\widetilde f(x_i)|\le\delta$，则有更具体的稳定性估计
+
+$$
+|I_n(f)-I_n(\widetilde f)|
+\le \delta\sum_{i=0}^n|A_i|.
+$$
+
+当 $A_i\ge0$（所有求积系数非负）时，称该求积公式具有正性；正性通常保证了对节点函数值扰动的稳定响应。
+
+### 2.1.2 插值型求积公式
+
+取节点 $x_0,\ldots,x_n$，以 Lagrange 插值多项式近似 $f$：
+
+$$
+f(x)\approx L_n(x)=\sum_{i=0}^n f(x_i)\ell_i(x),
+\qquad
+\ell_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j}.
+$$
+
+积分得到插值型求积公式
+
+$$
+I_n(f)=\sum_{i=0}^n A_i f(x_i),
+\qquad
+A_i=\int_a^b\ell_i(x)\,\mathrm dx.
+$$
+
+其余项为
+
+$$
+R_n(f)=\int_a^b f(x)\,\mathrm dx-\sum_{i=0}^n A_i f(x_i)
+=\frac{1}{(n+1)!}\int_a^b f^{(n+1)}(\xi_x)
+W_{n+1}(x)\,\mathrm dx,
+$$
+
+其中
+
+$$
+W_{n+1}(x)=\prod_{i=0}^n(x-x_i).
+$$
+
+### 2.1.3 Newton–Cotes 求积公式
+
+低阶 Newton–Cotes 公式为
+
+$$
+\int_a^b f(x)\,\mathrm dx
+\approx \frac{b-a}{2}\,[f(a)+f(b)]
+\qquad (n=1),
+$$
+
+以及
+
+$$
+\int_a^b f(x)\,\mathrm dx
+\approx \frac{b-a}{6}\left[f(a)+4f\!\left(\frac{a+b}{2}\right)+f(b)\right]
+\qquad (n=2).
+$$
+
+当 Newton–Cotes 公式的阶数继续增加时，误差并不一定单调减小；高阶情形可能出现 Runge 现象，通常 $n\ge 8$ 时数值稳定性变差甚至不收敛。
+
+## 2.2 Gauss 求积
+
+Gauss 型求积公式写为
+
+$$
+\int_a^b \rho(x)f(x)\,\mathrm dx
+\approx \sum_{i=1}^{n}A_i f(x_i),
+$$
+
+其中节点 $x_i$ 取为关于权函数 $\rho$ 的 $n$ 次正交多项式 $p_n$ 的零点。由于
+
+$$
+\int_a^b\rho(x)p(x)p_n(x)\,\mathrm dx=0,
+\qquad \deg p\le n-1,
+$$
+
+$n$ 点 Gauss 公式具有 $2n-1$ 阶代数精度。令
+
+$$
+\ell_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j},
+\qquad
+A_i=\int_a^b\rho(x)\ell_i(x)\,\mathrm dx.
+$$
+
+若 $f\in C^{2n}[a,b]$，则 Gauss 求积误差为
+
+$$
+R_n(f)=\frac{f^{(2n)}(\xi)}{(2n)!}
+\int_a^b\rho(x)\,p_n^2(x)\,\mathrm dx,
+\qquad \xi\in(a,b).
+$$
+
+若采用笔记中的 $n+1$ 个节点记号 $x_0,\ldots,x_n$，则相应地写成
+
+$$
+I_n(f)=\sum_{i=0}^{n}A_i f(x_i),
+\qquad \deg I_n=2n+1,
+$$
+
+并且 Gauss 节点的充要条件是
+
+$$
+\int_a^b\rho(x)q(x)W_{n+1}(x)\,\mathrm dx=0,
+\qquad q\in P_n,
+\qquad W_{n+1}(x)=\prod_{i=0}^n(x-x_i).
+$$
+
+此时误差也可写为
+
+$$
+R_n(f)=\frac{f^{(2n+2)}(\xi)}{(2n+2)!}
+\int_a^b\rho(x)W_{n+1}^2(x)\,\mathrm dx.
+$$
+
+### 2.2.1 Gauss–Legendre 求积
+
+在 $[-1,1]$ 上取 $\rho(x)=1$。两点 Gauss–Legendre 公式为
+
+$$
+\int_{-1}^{1}f(x)\,\mathrm dx
+\approx f\!\left(-\frac{1}{\sqrt3}\right)
+      +f\!\left(\frac{1}{\sqrt3}\right),
+$$
+
+三点公式为
+
+$$
+\int_{-1}^{1}f(x)\,\mathrm dx
+\approx \frac59f\!\left(-\sqrt{\frac35}\right)
++\frac89f(0)
++\frac59f\!\left(\sqrt{\frac35}\right).
+$$
+
+区间 $[a,b]$ 可通过线性变换
+
+$$
+t=\frac{2}{b-a}\left(x-\frac{a+b}{2}\right),
+\qquad [a,b]\longrightarrow[-1,1]
+$$
+
+化为标准区间上的 Gauss–Legendre 求积。
+
+### 2.2.2 含奇异性与权函数的积分
+
+对于
+
+$$
+I=\int_a^b f(x)\,\mathrm dx,
+\qquad f(x)=\frac{g(x)}{(x-a)^p},
+$$
+
+可将 $g(x)$ 在奇异点附近作 Taylor 展开，分解为可解析积分的部分与光滑余项，再分别计算：
+
+$$
+g(x)=\sum_{k=0}^{p-1}\frac{g^{(k)}(a)}{k!}(x-a)^k+
+      (x-a)^p r(x),
+$$
+
+从而将 $f$ 分解为显式可积的奇异项与光滑函数 $r(x)$：
+
+$$
+I=\int_a^b \widetilde f(x)\,\mathrm dx+
+  \int_a^b h(x)\,\mathrm dx.
+$$
+
+这种处理把奇异部分显式积分，而对剩余光滑函数使用常规求积公式。
+
+对于带权积分
+
+$$
+I=\int_0^{+\infty}e^{-x}f(x)\,\mathrm dx,
+$$
+
+可使用 Gauss–Laguerre 求积。三点 Gauss–Laguerre 节点为
+
+$$
+x_0=2-\sqrt2,\qquad x_1=2,\qquad x_2=2+\sqrt2,
+$$
+
+（来自 $L_3(x)$ 的零点），从而
+
+$$
+I\approx \frac{2+\sqrt2}{4}f(2-\sqrt2)
++\frac12f(2)
++\frac{2-\sqrt2}{4}f(2+\sqrt2).
+$$
+
+## 2.3 振荡积分与 Filon 型方法
+
+考虑振荡积分
+
+$$
+\int_a^b g(x)\sin(mx)\,\mathrm dx,
+\qquad
+\int_a^b g(x)\cos(mx)\,\mathrm dx.
+$$
+
+Filon 型方法用插值多项式 $s(x)\approx g(x)$，并对 $s(x)\sin(mx)$ 或 $s(x)\cos(mx)$ 作解析积分。以余弦积分为例，分部积分得到
+
+$$
+\begin{aligned}
+\int_a^b s(x)\cos(mx)\,\mathrm dx
+={}&\left[\frac{s(x)\sin(mx)}{m}
++\frac{s'(x)\cos(mx)}{m^2}
+-\frac{s''(x)\sin(mx)}{m^3}\right]_a^b\\
+&+\frac{1}{m^3}\int_a^b s^{(3)}(x)\sin(mx)\,\mathrm dx.
+\end{aligned}
+$$
+
+同理，正弦积分满足
+
+$$
+\begin{aligned}
+\int_a^b s(x)\sin(mx)\,\mathrm dx
+={}&\left[-\frac{s(x)\cos(mx)}{m}
++\frac{s'(x)\sin(mx)}{m^2}
++\frac{s''(x)\cos(mx)}{m^3}\right]_a^b\\
+&-\frac{1}{m^3}\int_a^b s^{(3)}(x)\cos(mx)\,\mathrm dx.
+\end{aligned}
+$$
+
+当 $m$ 较大时，积分余项很小，可以忽略；在每个小区间 $[x_i,x_{i+1}]$ 上还可用
+
+$$
+s^{(3)}(x)\approx\frac{M_{i+1}-M_i}{h}
+$$
+
+作近似，其中 $h=x_{i+1}-x_i$。
+
+## 2.4 高维数值积分
+
+对区域
+
+$$
+D=\{(x,y)\mid a\le x\le b,\ c(x)\le y\le d(x)\},
+$$
+
+二重积分可写成累次积分
+
+$$
+I=\iint_D f(x,y)\,\mathrm dx\,\mathrm dy
+=\int_a^b\left[\int_{c(x)}^{d(x)}f(x,y)\,\mathrm dy\right]\mathrm dx.
+$$
+
+令
+
+$$
+T(x)=\int_{c(x)}^{d(x)}f(x,y)\,\mathrm dy.
+$$
+
+对内层积分使用 Simpson 公式，记
+
+$$
+h_y(x)=d(x)-c(x),
+\qquad m_y(x)=\frac{c(x)+d(x)}2,
+$$
+
+则
+
+$$
+T(x)\approx\frac{h_y(x)}6
+\bigl[f(x,c(x))+4f(x,m_y(x))+f(x,d(x))\bigr].
+$$
+
+再对外层积分使用 Simpson 公式，令
+
+$$
+h_x=b-a,
+\qquad m_x=\frac{a+b}{2},
+$$
+
+可得
+
+$$
+I=\int_a^bT(x)\,\mathrm dx
+\approx\frac{h_x}{6}\,[T(a)+4T(m_x)+T(b)].
+$$

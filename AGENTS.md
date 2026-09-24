@@ -227,14 +227,16 @@ node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问�
 | `abstract-algebra-ch01..ch05` | 抽象代数 第 N 章（预备知识 / 群论 / 环论 / 域论 / 综合例题） | 数学 | 抽象代数 |
 | `measure-theory` | 测度论 · 章节索引 | 数学 | 测度论 |
 | `measure-theory-ch01..ch06` | 测度论 第 N 章（集类与测度 / 可测映射 / 积分和空间 $L^p$ / 乘积空间 / Hausdorff 空间 / 复习题） | 数学 | 测度论 |
+| `advanced-numerical-analysis` | 高级数值分析 · 章节索引 | 算法 | 高级数值分析 |
+| `advanced-numerical-analysis-ch01..ch07` | 高级数值分析 第 N 章（函数逼近 / 数值积分 / 常微分方程数值解法 / 矩阵的特征值 / 线性方程组迭代法 / 非线性方程组迭代法 / 复习题） | 算法 | 高级数值分析 |
 | `general-physics-1` | 普通物理（一）复习笔记 | 数学 | — |
 | `latex-math` | LaTeX 公式测试 | 数学 | — |
 | `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 | — |
 
 > 模板自带的 `hello-world` 与 `syntax-test` 已按作者要求删除。
 
-**待办**：`E:\pdf workspace\` 下的四份 ElegantBook 手写笔记
-（普通物理一、数值分析初步、抽象代数、测度论）**已全部转换完毕**。
+**待办**：`E:\pdf workspace\` 下的五份 ElegantBook 手写笔记
+（普通物理一、数值分析初步、抽象代数、测度论、高级数值分析）**已全部转换完毕**。
 流程与硬规则见 `tools/latex-to-blog.md`。
 
 **状态会过期** —— 动手前先跑一遍验证命令确认现状，别完全信这张表。
