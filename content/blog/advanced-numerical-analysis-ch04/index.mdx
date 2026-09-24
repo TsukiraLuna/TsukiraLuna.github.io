@@ -159,11 +159,11 @@ $$
 
 该上 Hessenberg 分解可用 Householder 变换实现。
 
-**定义 4.9（隐式 $Q$ 定理）**
+**定理 4.4（隐式 $Q$ 定理）**
 
 设 $A\in\mathbb C^{n\times n}$，$H$ 为上 Hessenberg 矩阵，$Q$ 为酉矩阵，且 $H=Q^HAQ$。在给定适当的第一列信息时，$Q,H$ 由 $A$ 唯一确定（相差相位因子）。
 
-**定义 4.10**
+**定义 4.9**
 
 对任意 $B\in\mathbb C^{n\times n}$ 及任意 $\varepsilon>0$，存在可对角化（可相似对角化）的矩阵 $B_\varepsilon$，使得
 
@@ -171,7 +171,7 @@ $$
 \left\lVert B_\varepsilon-B\right\rVert<\varepsilon.
 $$
 
-**定理 4.4（Bauer–Fike 定理）**
+**定理 4.5（Bauer–Fike 定理）**
 
 设 $A$ 可对角化，$A=X\Lambda X^{-1}$。若 $A_\varepsilon=A+E$，则 $A_\varepsilon$ 的任意特征值 $\mu$ 满足
 
@@ -186,7 +186,7 @@ $$
 \operatorname{cond}(X)=\left\lVert X^{-1}\right\rVert_2\,\left\lVert X\right\rVert_2.
 $$
 
-**定理 4.5（Gershgorin 第一圆盘定理）**
+**定理 4.6（Gershgorin 第一圆盘定理）**
 
 设 $A=(a_{ij})\in\mathbb C^{n\times n}$，则 $A$ 的全部特征值都位于下列 $n$ 个圆盘的并集中：
 
@@ -205,7 +205,7 @@ $$
 
 ### 4.2.1 改进的幂法
 
-**定义 4.11（Krylov 子空间）**
+**定义 4.10（Krylov 子空间）**
 
 对 $k\ge1$，定义
 
@@ -358,7 +358,7 @@ $$
   \left\lVert A_{k+1}-\operatorname{diag}(A_{k+1})\right\rVert_{\infty}\le\varepsilon.
   $$
 
-**定理 4.6**
+**定理 4.7**
 
 基本 QR 迭代满足
 
@@ -420,11 +420,11 @@ $$
   H_{k+1}-s_kI=R_kQ_k.
   $$
 
-**定理 4.7**
+**定理 4.8**
 
 若 $H_k$ 是上 Hessenberg 矩阵，则由上述 QR 迭代得到的 $H_{k+1}$ 仍为上 Hessenberg 矩阵。
 
-**定理 4.8**
+**定理 4.9**
 
 带位移 Hessenberg QR 迭代满足
 
@@ -447,7 +447,7 @@ $$
 
 ### 4.2.6 隐式双重位移 QR 方法
 
-**定理 4.9**
+**定理 4.10**
 
 设 $H$ 为不可约上 Hessenberg 矩阵，$s_k$ 及其共轭 $\overline{s}_k$ 为所取双重位移。则相应的隐式双重位移 QR 步可保持上 Hessenberg 结构。
 
@@ -546,7 +546,7 @@ $$
 
 Krylov 子空间逐步增长，可采用 QR 分解中的 Gram–Schmidt 正交化来构造正交基。
 
-**定理 4.10（Arnoldi 基与 Lanczos 基）**
+**定理 4.11（Arnoldi 基与 Lanczos 基）**
 
 对 Krylov 子空间 $\mathcal K_k(A,v)$，由逐步正交化得到的正交向量 $q_1,\ldots,q_k$ 构成 Arnoldi 基。若 $A$ 为 Hermite 矩阵，则 Arnoldi 基就是 Lanczos 基。
 
@@ -600,7 +600,7 @@ Q_{k+1}=[Q_k,q_{k+1}]\in\mathbb C^{n\times(k+1)},
 \end{bmatrix}.
 $$
 
-**定理 4.11（Arnoldi 迭代的矩阵表示）**
+**定理 4.12（Arnoldi 迭代的矩阵表示）**
 
 设 $A\in\mathbb C^{n\times n}$、$v\in\mathbb C^n$。若 $\mathcal K_{k+1}(A,v)$ 的维数为 $k+1$，且其 QR 分解给出正交基 $Q_{k+1}$，则存在 $(k+1)\times k$ 的上 Hessenberg 矩阵 $\widehat H_k$，使得
 
@@ -670,6 +670,6 @@ $$
 q_{j+1}=\frac{r_j}{\beta_j}.
 $$
 
-**定理 4.12（Ritz 值）**
+**定理 4.13（Ritz 值）**
 
 对 $A$ 的 Rayleigh 商矩阵 $Q_k^HAQ_k$，其 Ritz 对应的特征值是 $A$ 的特征值的近似。
