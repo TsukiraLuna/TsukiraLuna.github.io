@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img" aria-label="Armijo 准则示意图：曲线 phi(alpha) 与试探点 alpha">
+  <title>Armijo 准则</title>
+  <desc>横轴为步长 alpha，纵轴为 phi(alpha)=f(x^k+alpha d^k)。虚线标出试探点 alpha。</desc>
+
+  <style>
+    .axis   { stroke: currentColor; stroke-width: 1.6; fill: none; }
+    .curve  { stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .dashed { stroke: currentColor; stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+    .label  { fill: currentColor; font-family: "Cambria Math", "Latin Modern Math", Georgia, serif; font-size: 15px; font-style: italic; }
+    .cjk    { fill: currentColor; font-family: "Songti SC", "Noto Serif CJK SC", SimSun, serif; font-size: 13px; font-style: normal; }
+  </style>
+
+  <!-- 坐标轴 -->
+  <line class="axis" x1="60" y1="240" x2="540" y2="240"/>
+  <polygon points="540,240 530,236 530,244" fill="currentColor"/>
+  <line class="axis" x1="60" y1="240" x2="60" y2="40"/>
+  <polygon points="60,40 56,50 64,50" fill="currentColor"/>
+
+  <!-- 轴标签 -->
+  <text class="label" x="548" y="245">α</text>
+  <text class="label" x="86" y="48">φ(α)=f(x^k+αd^k)</text>
+
+  <!-- φ(α) 曲线 -->
+  <path class="curve" d="M 60 78
+    C 130 150, 190 68, 250 108
+    C 320 155, 380 130, 470 178"/>
+
+  <!-- 试探点 -->
+  <line class="dashed" x1="200" y1="240" x2="200" y2="96"/>
+  <circle cx="200" cy="96" r="3.5" fill="currentColor"/>
+  <text class="cjk" x="200" y="266" text-anchor="middle">试探点</text>
+
+  <!-- 第二个候选点 -->
+  <line class="dashed" x1="350" y1="240" x2="350" y2="140"/>
+  <circle cx="350" cy="140" r="3.5" fill="currentColor"/>
+</svg>

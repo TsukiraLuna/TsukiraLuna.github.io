@@ -1,0 +1,1180 @@
+---
+title: "优化问题数值方法 第 5 章 全书复习题"
+pubDate: 2025-07-06
+description: "优化问题数值方法全书复习题：凸性与 Hessian 计算、牛顿法仿射变换、最优性条件、对偶问题求解、泛函变分与伴随方程、半连续性、Kalman 可控性判据等。"
+tags: ["优化问题数值方法", "复习题", "KKT 条件", "变分法"]
+category: 算法
+series: 优化问题数值方法
+seriesOrder: 50
+tocDepth: 2
+---
+
+> 本文由手写笔记《优化问题数值方法》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+>
+> 本章是全书复习题与解答，题号沿用原稿编号。
+
+**1.**
+
+**（1）** $h(x)=g(Ax-b)$，求 Hessian 矩阵。
+
+$$
+\text{令 }h(x)=g(Ax-b),\qquad
+\nabla h(x)=(h'(x))^T=A^T\nabla g(Ax-b).
+$$
+
+$$
+\begin{aligned}
+  \nabla^2h(x)
+  &=A^T\bigl(\nabla g(Ax-b)\bigr)'\\
+  &=A^T\bigl(\nabla^2g(Ax-b)\bigr)^TA\\
+  &=A^T\nabla^2g(Ax-b)A.
+\end{aligned}
+$$
+
+**（2）** $f(x)=\dfrac12x^TAx$，$A$ 实对称，判断凸性。
+
+$$
+\begin{aligned}
+  f(x)
+  &=\frac12x^TAx
+    =\frac14\bigl(x^TAx+x^TA^Tx\bigr)
+    =\frac14x^T(A+A^T)x=\frac12x^TAx,\\
+  \nabla f(x)&=Ax,\qquad
+  \nabla^2f(x)=(\nabla f(x))'=A.
+\end{aligned}
+$$
+
+$A\succeq0$，凸。
+
+**（3）** $f(x)=\dfrac12\|Ax-b\|^2$。
+
+$$
+\begin{aligned}
+  f(x)
+  &:=\frac12\langle Ax-b,Ax-b\rangle
+    =\frac12(Ax-b)^T(Ax-b)\\
+  &=\frac12\left(x^TA^TAx-b^TAx-x^TA^Tb+\|b\|^2\right),\\
+  \nabla f(x)&=A^TAx-A^Tb,\qquad
+  \nabla^2f(x)=A^TA.
+\end{aligned}
+$$
+
+凸。
+
+**（4）** 判断凸集
+$S_1:=\{x\mid\|Ax-b\|_2\leqslant1\}$。
+令 $y=Ax-b$，集合 $S_2:=\{y\mid\|y\|_2\leqslant1\}$，
+$\textcolor{red}{\text{原像}}$，$S_2$ 凸，$S_1$ 凸。
+
+**（5）** $\sqrt{|x|}$下水平集为凸集，但不是凸函数。
+
+**2.**
+
+**（1）** $f(x)=x^4$，$x^*=0$ 局部极小点，但是不满足
+$\nabla^2f(x^*)\succ0$。
+
+**（2）** $f(x)=\dfrac12x^TAx+b^Tx+c$，$A\in S^n$。
+梯度 Lipschitz 常数 $\|A\|_2$，强凸常数 $\lambda_{\min}(A)$。
+
+**3.**
+
+$$
+V(b,c):=\min_y\left(c^Ty+\frac12y^TQy\right),
+\qquad Q\succeq0,\qquad \text{s.t. }Ay\geqslant b.
+$$
+
+证：关于 $c$ 凹，关于 $b$ 凸。
+
+**（1）** $\forall y\in A$，$f(x,y)$ 关于 $x$ 凹，则
+$g(x):=\inf_{y\in A}f(x,y)$ 凹。
+
+$$
+\begin{aligned}
+  &\forall\alpha\in[0,1],\quad x_1,x_2\in\operatorname{dom}g,\qquad
+  g(\alpha x_1+(1-\alpha)x_2)\\
+  &:=\inf_{y\in A}f(\alpha x_1+(1-\alpha)x_2,y)\\
+  &\geqslant\inf_{y\in A}
+    \bigl[\alpha f(x_1,y)+(1-\alpha)f(x_2,y)\bigr]\\
+  &\geqslant\alpha\inf_{y\in A}f(x_1,y)
+    +(1-\alpha)\inf_{y\in A}f(x_2,y)\\
+  &=\alpha g(x_1)+(1-\alpha)g(x_2).
+\end{aligned}
+$$
+
+$c^Ty+\dfrac12y^TQy$ 关于 $c$ 凹，从而 $V(b,c)$ 关于 $c$ 凹。
+
+**（2）** $\{(y,b)\mid Ay\geqslant b\}$ 为凸集，
+$\underline{\textcolor{red}{V(b,c)\text{ 关于 }b\text{ 凸}}}$。
+$c^Ty+\dfrac12y^TQy$ 关于 $(y,b)$ 凸，取 $\min$ 也是凸。
+
+**4.**
+
+$$
+f(x,y,z):=\frac{(x-z)^2}{y+1}
++\max\{1+|x|-y,0\},\qquad y+1>0.
+$$
+
+解：$y+1>0$ 为凸集。$|x|$ 凸，$|x|-y$ 凸，故
+$\max\{1+|x|-y,0\}$ 凸。
+
+$$
+g(p,q):=\frac{p^2}{q},\qquad
+\nabla^2g(p,q)=\frac{2}{q^3}
+\begin{pmatrix}q^2&-pq\\-pq&p^2\end{pmatrix}.
+$$
+
+$$
+\forall(x_1,x_2)^T\in\mathbb R^2,\qquad
+(x_1,x_2)
+\begin{pmatrix}q^2&-pq\\-pq&p^2\end{pmatrix}
+\begin{pmatrix}x_1\\x_2\end{pmatrix}
+=(x_1q-x_2p)^2\geqslant0.
+$$
+
+所以 $g(p,q)$ 凸，$\textcolor{red}{\text{复合函数}}$；
+$\dfrac{(x-z)^2}{y+1}$ 也凸，从而 $f(x,y,z)$ 凸。
+
+**5.**
+
+$$
+f(x):=\sum_{i=1}^{m}\log\left(1+\exp(-b_i-a_i^Tx)\right).
+$$
+
+解：令
+
+$$
+g(x):=\log(1+e^x),\qquad h_i(x):=-b_i-a_i^Tx.
+$$
+
+则
+
+$$
+f(x)=\sum_{i=1}^{m}g(h_i(x)),\qquad
+g'(x)=\frac{e^x}{1+e^x}>0,\qquad
+g''(x)=\frac{e^x}{(1+e^x)^2}>0.
+$$
+
+$g(x)$ 单调递增且严格凸，$h_i(x)$ 凸。
+$\underline{\textcolor{red}{g(h_i(x))\text{ 凸，从而 }f(x)\text{ 凸}}}$
+（$\textcolor{red}{\text{复合函数}}$）。
+
+**6.**
+
+$$
+\min_x\ \frac12x^TQx-b^Tx,\qquad Q\succ0,\qquad x^*=Q^{-1}b.
+$$
+
+证：$Qx^*-b=0$。
+
+解：
+$\underline{\textcolor{red}{f(x):=\dfrac12x^TQx-b^Tx}}$，
+
+$$
+\nabla f(x)=Qx-b,\qquad \nabla^2f(x)=Q.
+$$
+
+令 $d^k:=-\nabla f(x^k)=-Qx^k+b$ 为下降方向。
+令 $\phi(\alpha):=f(x^k+\alpha d^k)$，对 $\alpha$ 求极小。
+
+$$
+\begin{aligned}
+  \phi'(\alpha)
+  &=\nabla f(x^k+\alpha d^k)^Td^k\\
+  &=[Q(x^k+\alpha d^k)-b]^Td^k\\
+  &=-b^Td^k+(x^k+\alpha d^k)^TQd^k\\
+  &=b^T\nabla f(x^k)-(x^k)^TQ\nabla f(x^k)
+    +\alpha\nabla f(x^k)^TQ\nabla f(x^k)\\
+  &=-\|\nabla f(x^k)\|^2
+    +\alpha\nabla f(x^k)^TQ\nabla f(x^k).
+\end{aligned}
+$$
+
+$$
+\phi''(\alpha)=\nabla f(x^k)^TQ\nabla f(x^k)>0,
+\qquad
+\color{red}{\boxed{
+  \alpha_0=\frac{\|\nabla f(x^k)\|^2}
+  {\nabla f(x^k)^TQ\nabla f(x^k)}
+}}.
+$$
+
+$$
+x^{k+1}:=x^k+\alpha_0d^k
+=x^k-\frac{\|\nabla f(x^k)\|^2}
+{\nabla f(x^k)^TQ\nabla f(x^k)}\,\nabla f(x^k).
+$$
+
+当 $\nabla f(x^0)\ne0$ 时，若存在
+$\lambda\in\mathbb R$，$\lambda\ne0$，使
+
+$$
+Q\nabla f(x^0)=\lambda\nabla f(x^0),\tag{1}
+$$
+
+从而
+
+$$
+x^1=x^0-\frac{\|\nabla f(x^0)\|^2}
+{\nabla f(x^0)^TQ\nabla f(x^0)}\nabla f(x^0)
+=x^0-\frac{\nabla f(x^0)}{\lambda}.\tag{2}
+$$
+
+由 (1) 有
+
+$$
+Q(Qx^0-b)=\lambda(Qx^0-b).
+$$
+
+从而
+
+$$
+\begin{aligned}
+  Qx^1-b
+  &=Qx^0-b-\frac{Q(Qx^0-b)}{\lambda}\\
+  &=Qx^0-b-\frac{\lambda(Qx^0-b)}{\lambda}=0,
+\end{aligned}
+$$
+
+所以 $x^1=Q^{-1}b$。
+
+反之，若 $x^1=x^*$，则
+
+$$
+x^0-\left[
+\frac{\|\nabla f(x^0)\|^2}
+{\nabla f(x^0)^TQ\nabla f(x^0)}
+\right]\nabla f(x^0)=Q^{-1}b.
+$$
+
+即
+
+$$
+x^0-Q^{-1}b=\alpha_0\nabla f(x^0),\qquad
+Qx^0-b=\alpha_0Q\nabla f(x^0),
+$$
+
+即
+
+$$
+Q\nabla f(x^0)=\frac1{\alpha_0}(Qx^0-b)
+=\frac1{\alpha_0}\nabla f(x^0).
+$$
+
+由此结论，从而 $\nabla f(x^0)$ 是 $Q$ 的特征向量。
+
+**7.**
+
+$$
+\displaystyle\min_{x\in\mathbb R^2}
+\left(4x_1^2+x_2^2-x_1-2x_2\right)
+\quad\text{s.t.}\quad x_1+x_2\leqslant1,\quad x_1^2\leqslant1.
+$$
+
+**（1）** $\textcolor{red}{\text{最优解存在性：连续函数在紧集（有界闭集）中存在极小值；连续强制函数在非空闭集中有极小值。}}$
+
+**（2）** $\textcolor{red}{\text{可行域约束分两类：CQ 成立；CQ 不成立。}}$
+
+**（3）** $\textcolor{red}{\text{极值：}\{\text{CQ 条件，解 KKT；CQ 不成立，解局部极小的条件}\}\text{。}}$
+
+**（4）** $\textcolor{red}{\text{比较。}}$
+
+解：若原问题在某点上有相对极小点，则利用极值条件。
+设
+
+$$
+g_1(x)=2x_1+x_2-1,\qquad g_2(x)=x_1^2-1,
+$$
+
+$$
+\nabla g_1(x)=(2,1)^T,\qquad
+\nabla g_2(x)=(2x_1,0)^T.
+$$
+
+**（1）** 当 $x_1\ne0$ 时，$\nabla g_1(x)$ 与 $\nabla g_2(x)$ 线性无关，满足 LICQ，
+从而极小点必满足 KKT 条件。
+
+故
+
+$$
+\begin{aligned}
+  L(x_1,x_2,\lambda_1,\lambda_2)
+  &:=4x_1^2+x_2^2-x_1-2x_2
+  +\lambda_1(2x_1+x_2-1)+\lambda_2(x_1^2-1),\\
+  &\hspace{8em}\lambda_1,\lambda_2\geqslant0.
+\end{aligned}
+$$
+
+KKT 条件为
+
+$$
+\left\{
+\begin{aligned}
+  8x_1-1+2\lambda_1+2x_1\lambda_2&=0,\\
+  2x_2-2+\lambda_1&=0,\\
+  2x_1+x_2-1&\leqslant0,\\
+  x_1^2-1&\leqslant0,\\
+  \lambda_1&\geqslant0,\qquad \lambda_2\geqslant0,\\
+  \lambda_1(2x_1+x_2-1)&=0,\\
+  \lambda_2(x_1^2-1)&=0.
+\end{aligned}
+\right.
+$$
+
+**（1）** $\lambda_1=0,\lambda_2=0$：$x_1=\dfrac18,x_2=1$，不满足原始可行性。
+
+**（2）** $\lambda_1\ne0,\lambda_2=0$：
+
+$$
+\left\{
+\begin{aligned}
+  2x_1+x_2-1&=0,\\
+  8x_1-1+2\lambda_1&=0,\\
+  2x_2-2+\lambda_1&=0,
+\end{aligned}
+\right.
+\quad\Longrightarrow\quad
+x_1=\frac1{16},\quad x_2=\frac78,\quad\lambda_1=\frac14.
+$$
+
+**（3）** $\lambda_1=0,\lambda_2\ne0$：
+
+$$
+\left\{
+\begin{aligned}
+  x_1^2-1&=0,\\
+  8x_1-1+2x_1\lambda_2&=0,\\
+  2x_2-2&=0,
+\end{aligned}
+\right.
+\quad\Longrightarrow\quad
+x_1=-1,\quad x_2=1,\quad\lambda_2=-\frac92,
+$$
+
+不满足对偶可行性。
+
+**（4）** $\lambda_1\ne0,\lambda_2\ne0$：
+
+$$
+\left\{
+\begin{aligned}
+  8x_1-1+2\lambda_1+2x_1\lambda_2&=0,\\
+  2x_2-2+\lambda_1&=0,\\
+  2x_1+x_2-1&=0,\\
+  x_1^2-1&=0,
+\end{aligned}
+\right.
+\quad\Longrightarrow\quad
+(x_1,x_2)=(1,-1)\ \text{或}\ (-1,3).
+$$
+
+$$
+f(1,-1)=6,\qquad f(-1,3)=8,
+\qquad f\!\left(\frac1{16},\frac78\right)=-\frac{33}{32}.
+$$
+
+**（2）** 当 $x_1=0$ 时，原极值问题变为
+
+$$
+\min\ x_2^2-2x_2\qquad \mathrm{s.t.}\quad x_2\leqslant1.
+$$
+
+$x_2=1$ 时有最小值 $-1$，又 $-1>-\dfrac{33}{32}$。
+
+从而极小值为 $-\dfrac{33}{32}$，点为
+
+$$
+\left(\frac1{16},\frac78\right).
+$$
+
+**8.**
+
+$$
+\min f(x_1,x_2)=\frac92x_1^2+\frac{11}{2}x_2^2-9x_1+11x_2+10.
+$$
+
+**（1）** 判断局部极小点，全局是否存在极小点。
+
+解：
+
+$$
+\nabla f(x)=
+\begin{pmatrix}9x_1-9\\11x_2+11\end{pmatrix},
+\qquad \nabla f(x)=0\ \Longrightarrow\ x=(1,-1)^T.
+$$
+
+$$
+\nabla^2f(x)=
+\begin{pmatrix}9&0\\0&11\end{pmatrix}\succ0,
+$$
+
+故 $(1,-1)^T$ 为局部极小点，且 $f$ 为凸函数，从而为全局极小点；
+
+$$
+f(1,-1)=0.
+$$
+
+**（2）** 梯度法+精确线搜索能提高收敛速度？
+
+若
+
+$$
+f(x)=\frac12x^TAx+b^Tx+c,\qquad A\succ0,
+$$
+
+最优解为 $x^*$。用梯度法，$\alpha_k$ 精确线搜索，$x^k$ 与 $x^*$ $Q$-线性收敛，且
+
+$$
+\|x^{k+1}-x^*\|_A^2
+\leqslant
+\left(\frac{\lambda_1-\lambda_n}{\lambda_1+\lambda_n}\right)^2
+\|x^k-x^*\|_A^2,
+$$
+
+其中 $\lambda_1,\lambda_n$ 为 $A$ 的最大、最小特征值，
+
+$$
+\|x\|_A:=\sqrt{x^TAx}.
+$$
+
+解：对问题 8，
+
+$$
+A=\begin{pmatrix}9&0\\0&11\end{pmatrix},\qquad
+b=\begin{pmatrix}-9\\11\end{pmatrix},\qquad c=10.
+$$
+
+$$
+\lambda_1=11,\qquad \lambda_n=9,
+$$
+
+因而有
+
+$$
+\|x^{k+1}-x^*\|_A^2
+\leqslant \left(\frac1{10}\right)^2
+\|x^k-x^*\|_A^2.
+$$
+
+因而有
+
+$$
+\begin{aligned}
+  f(x^k)
+  &=\frac92(x_1^k)^2+\frac{11}{2}(x_2^k)^2-9x_1^k+11x_2^k+10\\
+  &=\frac12\left[9(x_1^k-1)^2+11(x_2^k+1)^2\right]\\
+  &=\frac12(x^k-x^*)^T
+    \begin{pmatrix}9&0\\0&11\end{pmatrix}(x^k-x^*)\\
+  &=\frac12\|x^k-x^*\|_A^2
+   =f(x^k)-f(x^*).
+\end{aligned}
+$$
+
+从而有
+
+$$
+f(x^{k+1})\leqslant\frac1{100}f(x^k),
+$$
+
+收敛速度为 $\dfrac1{100}$，$Q$-线性。
+
+**（3）** 选择初始点 $[0,1]^T$，能够多少步可下降到 $10^{-10}$？
+
+解：
+
+$$
+f(x^k)\leqslant\rho^k f(x^0),\qquad
+\rho=\frac1{100},\qquad f(x^0)=10.
+$$
+
+$$
+10^{-2k+1}\leqslant10^{-10},\qquad -2k+1\leqslant-10, k_{\min}=6.
+$$
+
+**9.**
+
+$$
+\min_{x_1,x_2}(x_1-1)^2+x_2
+\quad\mathrm{s.t.}\quad 2-x_1-x_2\geqslant0,\quad x_2\geqslant0.
+$$
+
+分析 KKT，指出其是否为局部极小点，判断是否为全局极小点。
+
+解：
+
+$$
+L(x_1,x_2,\lambda_1,\lambda_2)
+:=(x_1-1)^2+x_2-\lambda_1(2-x_1-x_2)-\lambda_2x_2,
+\qquad \lambda_1,\lambda_2\geqslant0.
+$$
+
+KKT 条件为
+
+$$
+\left\{
+\begin{aligned}
+  2x_1-2+\lambda_1&=0,\\
+  1+\lambda_1-\lambda_2&=0,\\
+  2-x_1-x_2&\geqslant0,\qquad x_2\geqslant0,\\
+  \lambda_1&\geqslant0,\qquad \lambda_2\geqslant0,\\
+  \lambda_1(2-x_1-x_2)&=0,\\
+  \lambda_2x_2&=0.
+\end{aligned}
+\right.
+$$
+
+$$
+\Longrightarrow\quad x_1=1,\quad x_2=0,\quad
+\lambda_1=0,\quad\lambda_2=1.
+$$
+
+令
+
+$$
+g_1(x)=x_1+x_2-2,\qquad g_2(x)=-x_2.
+$$
+
+在 $x^*=(1,0)^T$ 处，考虑可行方向集
+
+$$
+F(x^*)=\{d\mid d^T\nabla g_1(x^*)\leqslant0,
+\ d^T\nabla g_2(x^*)\leqslant0\},
+$$
+
+以及临界锥
+
+$$
+C(x^*,\lambda^*)
+=\{d\mid d^T\nabla g_1(x^*)\leqslant0,
+\ d^T\nabla g_2(x^*)=0\}
+=\{d\mid d_2=0,\ d_1\leqslant0\}.
+$$
+
+因对任意 $d\in C(x^*,\lambda^*)$，$d\ne0$，有
+
+$$
+d^T\nabla_{xx}^2L(x^*,\lambda^*)d
+=d^T
+\begin{pmatrix}2&0\\0&0\end{pmatrix}d
+=2d_1^2>0,
+$$
+
+从而是严格局部极小，又因为这是凸问题，从而为全局极小。
+
+**9.**
+
+$$
+Q\text{-超线性收敛速度：}\qquad
+\rho_k=\left(\frac1k\right)^k.
+$$
+
+极限：
+
+$$
+\lim_{k\to\infty}\left(\frac1k\right)^k=0,\qquad\text{又有}
+$$
+
+$$
+\lim_{k\to\infty}
+\frac{\left(\frac1{k+1}\right)^{k+1}-0}
+     {\left(\frac1k\right)^k-0}
+=\lim_{k\to\infty}\frac{k^k}{(k+1)^{k+1}}
+=\lim_{k\to\infty}\frac{1}{\left(1+\frac1k\right)^k(k+1)}=0.
+$$
+
+$$
+\lim_{k\to\infty}
+\frac{\left(\frac1{k+1}-0\right)^{k+1}}
+     {\left(\frac1k-0\right)^p}
+=\lim_{k\to\infty}
+  \left(\frac{k}{k+1}\right)^{(k+1)}\frac{k^{(p-1)k}}{k}=\infty.(p>1)
+$$
+
+**11.**
+
+对于
+
+$$
+\min f(x_1,x_2),\qquad
+f(x_1,x_2)=\frac13x_1^3+\frac12x_1^2+2x_1x_2
++\frac12x_2^2-x_2,
+$$
+
+判断其是否为凸函数，是否存在极小值。
+
+解：
+
+$$
+\nabla f(x)=
+\begin{pmatrix}
+  x_1^2+x_1+2x_2\\
+  2x_1+x_2-1
+\end{pmatrix}=0.
+$$
+
+令
+
+$$
+a=(2,-3)^T,\qquad b=(1,-1)^T,
+$$
+
+则这两个点均为驻点。又
+
+$$
+\nabla^2f(x)=
+\begin{pmatrix}
+  2x_1+1&2\\2&1
+\end{pmatrix},\qquad
+\nabla^2f(a)=
+\begin{pmatrix}5&2\\2&1\end{pmatrix},\qquad
+\nabla^2f(b)=
+\begin{pmatrix}3&2\\2&1\end{pmatrix}.
+$$
+
+因此 $\nabla^2f(a)\succ0$，而 $\nabla^2f(b)$ 不定，
+从而 $a$ 为局部极小点，$b$ 为鞍点。函数不是凸函数，且不存在全局极小值。
+
+**12.**
+
+（一）梯度法发散
+
+**（1）** $f(x)$ 在 $\mathbb R^n$ 上凸，梯度 $L$-连续；
+
+**（2）** $\min f(x)$ 的极小解存在；
+
+**（3）** 初始点在 $C_R$；
+
+**（4）** 步长确定为$\frac{2}{L}$。
+
+取
+
+$$
+f(x)=\frac12x^2,\qquad f'(x)=x,\qquad L=1,
+\qquad x^0=1,\qquad \alpha_k=2.
+$$
+
+则
+
+$$
+x_{k+1}=x_k-\alpha_k\nabla f(x_k)
+=x_k-2x_k=-x_k,\qquad x_k=(-1)^k,
+$$
+
+从而发散。
+
+（二）牛顿法发散
+
+$$
+\min_{x\in\mathbb R} f(x)=\sqrt{1+x^2},
+\qquad 0\text{ 为唯一最优解}.
+$$
+
+$$
+f'(x)=\frac{x}{\sqrt{1+x^2}},\qquad
+f''(x)=\frac1{(1+x^2)^{3/2}}.
+$$
+
+从而牛顿迭代为
+
+$$
+x^{k+1}=x^k-\frac{f'(x^k)}{f''(x^k)}
+=x^k-x^k\bigl(1+(x^k)^2\bigr)
+=-(x^k)^3.
+$$
+
+若 $|x^0|<1$，则收敛；否则不收敛。
+
+**13. 仿射变换下的牛顿法**
+
+研究
+
+$$
+\min f(x),\qquad f:\mathbb R^n\to\mathbb R,
+$$
+
+其中 $Q\in\mathbb R^{n\times n}$ 非奇异。对 $f(x)$ 用 Newton 法，初始点为
+$x^0$；对
+
+$$
+\varphi(y):=f(Q^{-1}y)
+$$
+
+用 Newton 法，初始点为 $y^0=Qx^0$。有
+
+$$
+y^k=Qx^k,\qquad \forall k\geqslant1.
+$$
+
+证明：
+
+$$
+x^{k+1}=x^k-
+\bigl[\nabla^2f(x^k)\bigr]^{-1}\nabla f(x^k),
+$$
+
+$$
+y^{k+1}=y^k-
+\bigl[\nabla^2\varphi(y^k)\bigr]^{-1}\nabla\varphi(y^k).
+$$
+
+$$
+\begin{aligned}
+  \nabla\varphi(y)
+  &=\bigl(\varphi'(y)\bigr)^T
+    =\bigl(f'(Q^{-1}y)Q^{-1}\bigr)^T\\
+  &=(Q^{-1})^T\nabla f(Q^{-1}y),
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+  \nabla^2\varphi(y)
+  &=\nabla\bigl[(Q^{-1})^T\nabla f(Q^{-1}y)\bigr]\\
+  &=(Q^{-1})^T\nabla^2f(Q^{-1}y)Q^{-1}.
+\end{aligned}
+$$
+
+从而
+
+$$
+\begin{aligned}
+  y^{k+1}
+  &=y^k-
+    \bigl[(Q^{-1})^T\nabla^2f(Q^{-1}y^k)Q^{-1}\bigr]^{-1}
+    (Q^{-1})^T\nabla f(Q^{-1}y^k)\\
+  &=y^k-Q\bigl[\nabla^2f(Q^{-1}y^k)\bigr]^{-1}
+    Q^T(Q^{-1})^T\nabla f(Q^{-1}y^k)\\
+  &=y^k-Q\bigl[\nabla^2f(Q^{-1}y^k)\bigr]^{-1}
+    \nabla f(Q^{-1}y^k).
+\end{aligned}
+$$
+
+若 $y^k=Qx^k$，则
+
+$$
+\begin{aligned}
+  y^{k+1}
+  &=Qx^k-Q\bigl[\nabla^2f(x^k)\bigr]^{-1}\nabla f(x^k)\\
+  &=Q\left[x^k-\bigl[\nabla^2f(x^k)\bigr]^{-1}
+    \nabla f(x^k)\right]
+   =Qx^{k+1}.
+\end{aligned}
+$$
+
+**14.**
+
+考虑
+
+$$
+\min_x\ x_1^2+x_2^2,\qquad
+\mathrm{s.t.}\quad x_1+x_2=1.
+$$
+
+写出二阶充分条件并求 KKT。
+
+解：强制函数在闭约束集合有极小点。
+定义
+
+$$
+F(x,\delta):=x_1^2+x_2^2
++\delta(x_1+x_2-1)^2,\qquad \delta>0.
+$$
+
+稳定点为
+
+$$
+x_{1,\delta}^*=x_{2,\delta}^*
+=\frac{\delta}{1+2\delta}.
+$$
+
+$$
+\nabla_x^2F(x^*,\delta)=
+\begin{pmatrix}
+  2+2\delta&2\delta\\
+  2\delta&2+2\delta
+\end{pmatrix},
+\qquad \nabla_x^2F(x^*,\delta)\succ0.
+$$
+
+从而 $x^*$ 为非约束局部极小点，又可知 $F(x,\delta)$ 的局部极小点为 $x^*$。
+
+**15.**
+
+**（1）** 可行方向锥
+
+$$
+S=\{x\mid -x+3\leqslant0\},
+$$
+
+$$
+T_S(3)=\{d\mid d\geqslant0\},\qquad
+F_S(3)=\{d\mid d(-1)\leqslant0\}
+=\{d\mid d\geqslant0\}.
+$$
+
+$$
+S=\{x\mid (-x+3)^2\leqslant0\},
+$$
+
+$$
+T_S(3)=\{d\mid d=0\},\qquad
+F_S(3)=\{d\mid d\cdot0\leqslant0\}=\mathbb R.
+$$
+
+因此 $T_S$ 仅有可行性方向，$F_S$ 是线性化约束得到的方向。
+
+**（2）** 若局部最优点处约束资格条件不满足，则 $x^*$ 不一定满足 KKT。
+
+解：
+
+$$
+\min_x\ x,\qquad
+\mathrm{s.t.}\quad (x-3)^2\leqslant0,\qquad x^*=3.
+$$
+
+在 $x^*=3$ 处，$\nabla f(x^*)=1$，而
+$\nabla g(x^*)=2(x^*-3)=0$，故 KKT 驻点条件
+
+$$
+1+\lambda\,2(x^*-3)=0
+$$
+
+无解，因而 $x^*$ 不满足 KKT。
+
+**（3）** KKT 不一定给出局部极小点
+
+解：
+
+$$
+\min_{x_1,x_2}\ x_1+x_2,\qquad
+\mathrm{s.t.}\quad x_1^2+x_2^2-2=0.
+$$
+
+$$
+(-1,-1)^T,\qquad (1,1)^T\quad\text{均有 KKT，}
+$$
+
+但 $(1,1)^T$ 不是局部极小点。
+
+**15.求泛函的导数**
+
+**（1）** 设
+
+$$
+Ax=u,
+$$
+
+且把 $x$ 与 $u$ 作变量变换。若 $J(u)=c^Tx$，则
+
+$$
+\Delta x=A^{-1}\Delta u.
+$$
+
+由 Taylor 展开，有
+
+$$
+J(u+\Delta u)=J(u)+L(c,\Delta x)+o(\Delta u).
+$$
+
+于是
+
+$$
+\begin{aligned}
+  J(u+\Delta u)-J(u)
+  &=L(c,\Delta x)\\
+  &=L(c,A^{-1}\Delta u)\\
+  &=\bigl(c^TA^{-1}\bigr)\Delta u
+   =\bigl((A^{-1})^Tc\bigr)^T\Delta u.
+\end{aligned}
+$$
+
+从而
+
+$$
+\nabla J(u)=(A^{-1})^Tc,\qquad A^Tp=c.
+$$
+
+**（2）** 考虑状态方程
+
+$$
+\left\{
+\begin{aligned}
+  \dot{x}(t)+Ax(t)&=Bu(t),\qquad t\in[0,T],\\
+  x(0)&=x_0,
+\end{aligned}
+\right.
+$$
+
+以及泛函
+
+$$
+J_1(u):=\frac12\|x(T)-x_T\|^2
++\frac{\lambda}{2}\int_0^T\|u\|^2\,\mathrm dt,
+\qquad u\in L^2([0,T],\mathbb R^m).
+$$
+
+对 $u$ 作变分，有
+
+$$
+\begin{aligned}
+  J_1(u+\delta u)
+  &=\frac12\|x(T)-x_T+\delta x(T)\|^2
+    +\frac{\lambda}{2}\int_0^T\|u+\delta u\|^2\,\mathrm dt\\
+  &=J_1(u)+\langle x(T)-x_T,\delta x(T)\rangle
+    +\frac12\|\delta x(T)\|^2\\
+  &\quad +\lambda\int_0^T\langle u,\delta u\rangle\,\mathrm dt
+    +\frac{\lambda}{2}\int_0^T\langle\delta u,\delta u\rangle\,\mathrm dt.
+\end{aligned}
+$$
+
+其中 $\color{red}{\frac12\|\delta x(T)\|^2=O(\|\delta u\|^2)}$。
+变分 $\delta x$ 满足
+
+$$
+\left\{
+\begin{aligned}
+  \delta\dot{x}(t)+A\delta x(t)&=B\delta u(t),\qquad t\in[0,T],\\
+  \delta x(0)&=0,\qquad\text{(1)}
+\end{aligned}
+\right.
+$$
+
+此时有
+
+$$
+J_1(u+\delta u)=J_1(u)
++\int_0^T\langle\nabla J_1(u),\delta u\rangle\,\mathrm dt
++o(\|\delta u\|),
+$$
+
+（在 Hilbert 空间中，$u$ 为函数变量）。
+由 $J_1(u+\delta u)$ 的展开可得
+
+$$
+\int_0^T\langle\nabla J_1(u),\delta u\rangle\,\mathrm dt
+=\langle x(T)-x_T,\delta x(T)\rangle
++\lambda\int_0^T\langle u,\delta u\rangle\,\mathrm dt,\qquad\text{(2)}
+$$
+
+引入 $p(t)$，使
+
+$$
+\left\{
+\begin{aligned}
+  -\dot p(t)+A^Tp(t)&=0,\\
+  p(T)&=x(T)-x_T.
+\end{aligned}
+\right.
+$$
+
+$p(t)$ 满足上述终端值问题。由 (1) 有
+
+$$
+\begin{aligned}
+  0
+  &=\int_0^T\langle\delta\dot{x}(t)+A\delta x(t)-B\delta u(t),p(t)\rangle\,\mathrm dt\\
+  &=\langle\delta x(T),p(T)\rangle
+    -\int_0^T\langle\delta x(t),\dot p(t)\rangle\,\mathrm dt
+    +\int_0^T\langle A\delta x(t),p(t)\rangle\,\mathrm dt
+    -\int_0^T\langle B\delta u(t),p(t)\rangle\,\mathrm dt\\
+  &=\langle\delta x(T),p(T)\rangle
+    +\int_0^T\langle A^Tp(t)-\dot p(t),\delta x(t)\rangle\,\mathrm dt
+    -\int_0^T\langle B^Tp(t),\delta u(t)\rangle\,\mathrm dt\\
+  &=\langle\delta x(T),p(T)\rangle
+    -\int_0^T\langle B^Tp(t),\delta u(t)\rangle\,\mathrm dt.
+\end{aligned}
+$$
+
+因此
+
+$$
+\int_0^T\langle\nabla J_1(u),\delta u\rangle\,\mathrm dt
+=\int_0^T\langle B^Tp(t)+\lambda u,\delta u\rangle\,\mathrm dt,
+$$
+
+$$
+\color{red}{\nabla J_1(u)=B^Tp(t)+\lambda u.}
+$$
+
+**16. 上半连续与下半连续**
+
+**（1）**
+
+$$
+f(x):=
+\begin{cases}
+  0,&x\in[0,\frac12),\\
+  1,&x\in[\frac12,1],
+\end{cases}
+\qquad\text{上半连续};
+$$
+
+$$
+g(x):=
+\begin{cases}
+  0,&x\in[0,\frac12],\\
+  1,&x\in(\frac12,1],
+\end{cases}
+\qquad\text{下半连续}.
+$$
+
+**（2）**
+
+$$
+f_\alpha(x):=|1-x|^\alpha,\qquad
+x\in[0,1],\quad \alpha\in\Lambda:=(0,+\infty).
+$$
+
+$$
+\inf_{\alpha\in\Lambda}f_\alpha(x)=
+\begin{cases}
+  1,&x=0,\\
+  0,&x\in(0,1].
+\end{cases}
+$$
+
+$$
+\left\{
+\begin{aligned}
+  \dot{x}(t)&=Ax(t)+Bu(t),\qquad t\in[0,T],\\
+  x(0)&=x_0,
+\end{aligned}
+\right.
+\qquad
+A=\begin{pmatrix}
+  0&-1&0\\
+  0&0&-1\\
+  2&4&3
+\end{pmatrix},\qquad
+B=\begin{pmatrix}
+  -1&1\\
+  0&-1\\
+  1&-1
+\end{pmatrix}.
+$$
+
+记：系统可控。由 Kalman 秩条件，必须有
+
+$$
+\color{red}{\operatorname{rank}\bigl(B,-AB,(-A)^2B\bigr)=3}.
+$$
+
+其中
+
+$$
+(B,-AB,(-A)^2B)=
+\begin{pmatrix}
+  -1&1&0&-1&1&-1\\
+  0&-1&1&-1&-1&5\\
+  1&-1&-1&5&-1&-9
+\end{pmatrix},
+\qquad \operatorname{rank}=3.\quad\text{所以可控}.
+$$
+
+**17.对偶问题的求解**
+
+**（1）**
+
+$$
+\min_x\ c^Tx,\qquad
+\mathrm{s.t.}\quad Ax=b,\quad x\geqslant0.
+$$
+
+$$
+L(x,\mu,\lambda)=c^Tx+\mu^T(Ax-b)-\lambda^Tx,
+\qquad \lambda\geqslant0.
+$$
+
+$$
+\begin{aligned}
+  d(\mu,\lambda)
+  &=\inf_x\bigl\{c^Tx+\mu^T(Ax-b)-\lambda^Tx\bigr\}\\
+  &=\inf_x\bigl\{(c+A^T\mu-\lambda)^Tx-\mu^Tb\bigr\}\\
+  &=\begin{cases}
+      -\mu^Tb,&c+A^T\mu-\lambda=0,\\
+      -\infty,&\text{其他}.
+    \end{cases}
+\end{aligned}
+$$
+
+从而对偶问题为
+
+$$
+\max_{\mu,\lambda}\ -b^T\mu,
+\qquad \mathrm{s.t.}\quad A^T\mu+c-\lambda=0,\quad \lambda\geqslant0.
+$$
+
+**（2）**
+
+$$
+\min_{x,y}\ e^{-x},
+\qquad \mathrm{s.t.}\quad x^2-y=0,\quad y\geqslant0.
+$$
+
+$$
+L(x,y,\lambda_1,\lambda_2)
+=e^{-x}+\lambda_1(x^2-y)-\lambda_2y,
+\qquad \lambda_1\in\mathbb R,\quad \lambda_2\geqslant0.
+$$
+
+$$
+\begin{aligned}
+  d(\lambda_1,\lambda_2)
+  &=\inf_{x,y}\bigl\{e^{-x}+\lambda_1x^2-(\lambda_1+\lambda_2)y\bigr\}\\
+  &=\begin{cases}
+      0,&\lambda_1=0,\ \lambda_2=0,\\
+      -\infty,&\text{其他}.
+    \end{cases}
+\end{aligned}
+$$
+
+因此对偶问题为
+
+$$
+\max_{\lambda_1,\lambda_2}\ d(\lambda_1,\lambda_2)=0,
+\qquad \mathrm{s.t.}\quad \lambda_1=0,\quad \lambda_2=0,
+\qquad d^*=0.
+$$
+
+**（3）**
+
+$$
+X:=[0,2],\qquad
+\min_{x\in X}-x^2,\qquad \mathrm{s.t.}\quad x=1.
+$$
+
+解：
+
+$$
+L(x,\mu)=-x^2+\mu(x-1).
+$$
+
+$$
+\begin{aligned}
+  d(\mu)
+  &=\inf_{x\in X}L(x,\mu)
+    =\inf_{x\in X}\{-x^2+\mu(x-1)\}\\
+  &=\begin{cases}
+      \mu-4,&\mu\leqslant2,\\
+      -\mu,&\mu\geqslant2.
+    \end{cases}
+\end{aligned}
+$$
+
+对偶问题为 $\max_\mu d(\mu)$，且
+
+$$
+d^*=-2,\qquad f^*=-1,\qquad
+\color{red}{\text{对偶间隙 }f^*-d^*=1}.
+$$
+
+或者令
+
+$$
+L(x,\mu)=-x^2+\mu(x-1)+I_X(x),
+\qquad
+I_X(x):=
+\begin{cases}
+  0,&x\in X,\\
+  +\infty,&\text{otherwise}.
+\end{cases}
+$$

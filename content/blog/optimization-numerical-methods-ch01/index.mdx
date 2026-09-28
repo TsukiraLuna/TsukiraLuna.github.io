@@ -1,0 +1,411 @@
+---
+title: "优化问题数值方法 第 1 章 最优化基础"
+pubDate: 2025-07-02
+description: "最优化基础：最优化问题的提法与基本概念、梯度与 Hessian、方向导数、Taylor 展开与 Jacobi 矩阵、凸集与凸函数、极小点的存在性、优化算法基本概念。"
+tags: ["优化问题数值方法", "最优化", "凸优化", "凸函数"]
+category: 算法
+series: 优化问题数值方法
+seriesOrder: 10
+tocDepth: 2
+---
+
+> 本文由手写笔记《优化问题数值方法》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+> 定理与定义的编号沿用原稿编号，便于与 PDF 对照。
+
+## 1.1 最优化问题及其基本概念
+
+$$
+\min f(x) \qquad \mathrm{s.t.}\quad x\in S
+$$
+
+决策变量，目标函数，可行域。
+
+最优解，最优值。
+
+## 1.2 预备知识
+
+**定义 1.2**
+
+设 $f:\mathbb{R}^n\to\mathbb{R}$，梯度
+
+$$
+\nabla f=\left(\frac{\partial f}{\partial x_1},\ldots,
+  \frac{\partial f}{\partial x_n}\right)^{T}.
+$$
+
+Hessian 矩阵
+
+$$
+[\nabla^2 f]_{ij}=\left(\frac{\partial^2 f}{\partial x_i\partial x_j}\right).
+$$
+
+**定义 1.3**
+
+设 $f:\mathbb{R}^n\to\mathbb{R}$，$p\in\mathbb{R}^n$，$p$ 单位方向向量，
+
+$$
+\frac{\partial f}{\partial p}
+  :=\lim_{\varepsilon\to0^+}\frac{f(x+\varepsilon p)-f(x)}{\varepsilon}
+  =p^T\nabla f(x).
+$$
+
+**定义 1.4**
+
+Taylor 展开。
+
+**定义 1.5**
+
+设 $F:\mathbb{R}^n\to\mathbb{R}^m$，
+
+$$
+F(x)=F(x_1,\ldots,x_n)
+  =\begin{pmatrix}
+    f_1(x_1,\ldots,x_n)\\
+    \vdots\\
+    f_m(x_1,\ldots,x_n)
+  \end{pmatrix}.
+$$
+
+若 $f_i$ 可微，则 Jacobi 矩阵
+
+$$
+(F'(x))_{ij}=\frac{\partial f_i(x)}{\partial x_j}.
+$$
+
+并且
+
+$$
+\nabla F=[\nabla f_1,\ldots,\nabla f_m],
+  \qquad
+  \color{red}{F'(x)=(\nabla F(x))^T}.
+$$
+
+注：
+
+1. $m=1$ 时，$\color{red}{F'(x)=(\nabla f(x))^T}$；
+2. $\color{red}{(\nabla f(x))'=\nabla^2 f(x)}$。
+
+**定理 1.1**
+
+$$
+\color{red}{h'(x)=f'(g(x))g'(x)},
+$$
+
+$$
+\color{red}{\bigl(g(x)^T h(x)\bigr)'
+  =g(x)^T h'(x)+h(x)^T g'(x)}.
+$$
+
+**定义 1.6**
+
+范数判定条件：有常见范数。
+
+**命题 1.1**
+
+向量范数的 Hölder 不等式
+
+$$
+\sum_{i=1}^{n}|x_i y_i|\leqslant \|x\|_p\|y\|_q,
+  \qquad p^{-1}+q^{-1}=1.
+$$
+
+### 1.2.1 凸优化问题
+
+**定义 1.7**
+
+任意 $x_1,x_2\in S$，若
+
+$$
+\theta x_1+(1-\theta)x_2\in S,
+  \qquad \forall\,0\leqslant\theta\leqslant1,
+$$
+
+则称 $S$ 为凸集。
+
+**定义 1.8**
+
+$$
+x=\theta_1x_1+\cdots+\theta_kx_k,
+$$
+
+且
+
+$$
+\theta_1+\cdots+\theta_k=1,
+  \qquad \forall\,0\leqslant\theta_i\leqslant1,
+  \quad i=1,2,\ldots,k,
+$$
+
+称为凸组合。
+
+**定理 1.2**
+
+凸集的交、数乘、加、减为凸集。
+
+**定理 1.3**
+
+凸集在仿射变换下的原像与像仍为凸集。
+
+**例 1.4**
+
+常见凸集：超平面、半空间、范数球、单位范数球；
+
+$$
+\{x\in\mathbb{R}^n\mid x^TPx\leqslant1\},
+  \qquad P\in S_{++}^n\text{ 对称正定}.
+$$
+
+任意多个凸集之和为凸集。
+
+### 1.2.2 凸优化
+
+**定义 1.9**
+
+函数 $f(x)$ 定义在凸集 $S$ 上。若
+
+$$
+\forall\,0<\alpha<1,\quad \forall\,x,y\in S,
+$$
+
+有
+
+$$
+f(\alpha x+(1-\alpha)y)
+  \leqslant \alpha f(x)+(1-\alpha)f(y),
+$$
+
+则称 $f(x)$ 为 $S$ 上凸函数。
+
+**定义 1.10**
+
+上述定义中若将“$\leqslant$”改为“$<$”，则称为严格凸函数。
+
+**例 1.6**
+
+仿射函数既凸又凹；范数函数为凸函数。
+
+**定理 1.4（凸函数一阶等价条件）**
+
+设 $f(x)$ 在非空开凸集 $S$ 上一阶可微，则
+
+$$
+f(x)\text{ 为 }S\text{ 上凸函数}
+  \Longleftrightarrow
+  f(y)\geqslant f(x)+\nabla f(x)^T(y-x).
+$$
+
+**定理 1.5（凸函数的二阶等价条件）**
+
+设 $f(x)$ 在非空开凸集 $S$ 上二阶可微，则
+
+$$
+f(x)\text{ 为 }S\text{ 上凸函数}
+  \Longleftrightarrow
+  \nabla^2 f(x)\geqslant0,
+  \qquad \forall x\in S.
+$$
+
+**定理 1.6**
+
+严格凸函数。
+
+**例 1.7**
+
+1. $f(x)=\dfrac12 x^TAx$ 为凸函数 $\Longleftrightarrow A\geqslant0$；
+2. $f(x)=\dfrac12\|Ax-b\|^2$ 为凸函数。
+
+**定理 1.7**
+
+1. 若 $f_1,f_2$ 凸，$\alpha\geqslant0$，$\beta\geqslant0$，则 $\alpha f_1+\beta f_2$ 凸；
+2. 若 $f$ 凸，则 $f(Ax+b)$ 凸；
+3. 若 $f_1,\ldots,f_m$ 凸，则 $\max\{f_1,\ldots,f_m\}$ 凸；
+4. 对任意 $y\in A$，若 $f(x,y)$ 关于 $x$ 凸，则
+
+$$
+g(x):=\sup_{y\in A}f(x,y)
+$$
+
+凸；
+5. 若 $f(x,y)$ 关于 $(x,y)$ 整体凸，且 $S$ 凸，则
+
+$$
+g(x):=\inf_{y\in S}f(x,y)
+$$
+
+凸；
+6. 设 $g:\mathbb{R}^n\to\mathbb{R}$，$h:\mathbb{R}\to\mathbb{R}$，
+  $f(x):=h(g(x))$。若 $g$ 凸，$h$ 凸且单调不减，则 $f$ 凸
+  （复合，可推广到多元）；若 $g$ 凹，$h$ 凸且单调不增，则 $f$ 凸。
+
+### 1.2.3 凸函数、凸集关系
+
+**定义 1.11**
+
+设函数 $f$ 定义在 $S\subset\mathbb{R}^n$ 上，其上图集合
+
+$$
+\operatorname{epi}(f)=\{(x,t)\mid x\in S,\ f(x)\leqslant t\}.
+$$
+
+**定理 1.8**
+
+$f$ 为 $S$ 上凸函数，当且仅当 $\operatorname{epi}(f)$ 为凸集。
+
+**定义 1.12**
+
+设 $f:S\subset\mathbb{R}^n\to\mathbb{R}$。对任意 $\alpha$，
+
+$$
+L_{\alpha}=\{x\mid f(x)\leqslant\alpha,\ x\in S\}
+$$
+
+称为 $f$ 的 $\alpha$-下水平集。
+
+**定理 1.9**
+
+若 $f(x)$ 为 $S$ 上凸函数，则对任意 $\alpha\in\mathbb{R}$，$L_{\alpha}$ 为凸集。
+
+### 1.2.4 凸优化问题
+
+设 $S\subset\mathbb{R}^n$ 为凸集，$f$ 在 $S$ 上为凸函数，考虑
+
+$$
+\min_{x\in S}f(x).
+$$
+
+## 1.3 极小点、极小值及其存在性
+
+**定义 1.13**
+
+若存在 $x^*\in S$，使得
+
+$$
+f(x^*)\leqslant f(x),\qquad \forall x\in S,
+$$
+
+则称 $x^*$ 为全局最优解，并记为
+
+$$
+x^*\in\operatorname*{arg\,min}_{x\in S}f(x).
+$$
+
+**定义 1.14**
+
+局部极小解：$x^*$ 的 $\delta$ 邻域。
+
+**定义 1.15**
+
+严格局部极小解。
+
+**定义 1.16（强制函数）**
+
+$S$ 上任一满足 $\|x^k\|\to\infty$ 的序列 $\{x^k\}$，有
+
+$$
+f(x^k)\to+\infty.
+$$
+
+**定理 1.10**
+
+设 $f(x):\mathbb{R}^n\to\mathbb{R}$ 连续，且在闭集 $S$ 上是强制函数，则有全局极小值。
+
+**定理 1.11**
+
+凸优化有以下两个结论：
+
+1. 局部最优为全局最优，最优解集凸；
+2. 严格凸且存在，则 $x^*$ 唯一。严格凸但不保证存在，例如
+
+$$
+f(x)=e^{-x},\qquad x\in\mathbb{R}.
+$$
+
+## 1.4 优化算法基本概念
+
+**定义 1.17**
+
+迭代点收敛：
+
+$$
+\|x^k-x^*\|\longrightarrow0.
+$$
+
+**定义 1.18**
+
+依目标函数值收敛：
+
+$$
+\bigl\|f(x^k)-f(x^*)\bigr\|\longrightarrow0.
+$$
+
+**定义 1.19**
+
+Q-收敛。
+
+**定义 1.20**
+
+局部收敛。
+
+**定义 1.21**
+
+Q-次线性收敛：
+
+$$
+\frac{\|x^{k+1}-x^*\|}{\|x^k-x^*\|}
+  \longrightarrow1.
+$$
+
+**定义 1.22**
+
+Q-线性收敛：
+
+$$
+\frac{\|x^{k+1}-x^*\|}{\|x^k-x^*\|}
+  \leqslant q,\qquad q\in(0,1),
+  \qquad k\text{ 充分大}.
+$$
+
+**定义 1.23**
+
+Q-超线性收敛：
+
+$$
+\frac{\|x^{k+1}-x^*\|}{\|x^k-x^*\|}
+  \longrightarrow0.
+$$
+
+**定义 1.24**
+
+Q-二次收敛：
+
+$$
+\frac{\|x^{k+1}-x^*\|}{\|x^k-x^*\|^2}
+  \leqslant q,\qquad q\in(0,+\infty),
+  \qquad k\text{ 充分大}.
+$$
+
+**定义 1.25**
+
+Q-$p$ 阶收敛：
+
+$$
+\frac{\|x^{k+1}-x^*\|}{\|x^k-x^*\|^p}
+  \leqslant q,\qquad q\in(0,+\infty),
+  \qquad k\text{ 充分大}.
+$$
+
+**定义 1.26**
+
+$R$-收敛。存在序列 $\{t_k\}$，$x^k\to x^*$，且
+
+$$
+\|x^k-x^*\|\leqslant t_k,
+$$
+
+其中
+
+$$
+t_k>0,\qquad t_k\text{ Q-线性}\longrightarrow0.
+$$
+
+$Q$ 收敛是具有相应速度的 $R$ 收敛。

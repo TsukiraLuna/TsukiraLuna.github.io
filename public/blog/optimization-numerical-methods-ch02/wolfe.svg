@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 320" role="img" aria-label="Wolfe 准则示意图：截线 phi(alpha)、充分下降直线与可接受区间">
+  <title>Wolfe 准则</title>
+  <desc>横轴为步长 alpha，纵轴为 phi(alpha)。直线 phi(0)+c1·alpha·phi'(0) 给出充分下降的下界；alpha^k 之后满足曲率条件的区间为可接受区间。</desc>
+
+  <style>
+    .axis   { stroke: currentColor; stroke-width: 1.6; fill: none; }
+    .curve  { stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .line   { stroke: currentColor; stroke-width: 1.4; fill: none; opacity: .85; }
+    .dashed { stroke: currentColor; stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+    .label  { fill: currentColor; font-family: "Cambria Math", "Latin Modern Math", Georgia, serif; font-size: 15px; font-style: italic; }
+    .cjk    { fill: currentColor; font-family: "Songti SC", "Noto Serif CJK SC", SimSun, serif; font-size: 13px; font-style: normal; }
+  </style>
+
+  <!-- 坐标轴 -->
+  <line class="axis" x1="60" y1="258" x2="565" y2="258"/>
+  <polygon points="565,258 555,254 555,262" fill="currentColor"/>
+  <line class="axis" x1="60" y1="258" x2="60" y2="38"/>
+  <polygon points="60,38 56,48 64,48" fill="currentColor"/>
+
+  <!-- 轴标签 -->
+  <text class="label" x="573" y="263">α</text>
+  <text class="label" x="84" y="46">φ(α)</text>
+
+  <!-- 充分下降直线 φ(0)+c1 α φ'(0) -->
+  <line class="line" x1="60" y1="70" x2="520" y2="180"/>
+  <text class="label" x="300" y="112">φ(0)+c₁αφ′(0)</text>
+
+  <!-- φ(α) 曲线：先降后升 -->
+  <path class="curve" d="M 60 60
+    C 130 160, 190 96, 255 128
+    C 320 160, 355 176, 400 166
+    C 460 152, 490 96, 520 52"/>
+
+  <!-- alpha^k -->
+  <line class="dashed" x1="150" y1="258" x2="150" y2="120"/>
+  <circle cx="150" cy="120" r="3.5" fill="currentColor"/>
+  <text class="label" x="150" y="278" text-anchor="middle">α^k</text>
+
+  <!-- 可接受区间起点 -->
+  <line class="dashed" x1="400" y1="258" x2="400" y2="166"/>
+  <circle cx="400" cy="166" r="3.5" fill="currentColor"/>
+
+  <!-- 可接受区间标注 -->
+  <line class="axis" x1="400" y1="290" x2="520" y2="290" stroke-dasharray="0"/>
+  <line class="dashed" x1="520" y1="258" x2="520" y2="290"/>
+  <text class="cjk" x="460" y="308" text-anchor="middle">可接受</text>
+</svg>

@@ -1,0 +1,160 @@
+---
+title: "优化问题数值方法 第 4 章 ODE 控制优化"
+pubDate: 2025-07-05
+description: "ODE 控制优化：上下半连续与弱下半连续、最优控制的存在性、Kalman 可控性秩条件，以及直接算法流程。"
+tags: ["优化问题数值方法", "ODE 控制", "最优控制", "Kalman 可控性"]
+category: 算法
+series: 优化问题数值方法
+seriesOrder: 40
+tocDepth: 2
+---
+
+> 本文由手写笔记《优化问题数值方法》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+> 定理与定义的编号沿用原稿编号，便于与 PDF 对照。
+
+**定义 4.7**
+
+设 $X$ 为度量空间，$\overline{\mathbb R}:=\mathbb R\cup\{+\infty\}$。
+
+1. $f:X\to\overline{\mathbb R}$ 下半连续，若对任意 $r\in\mathbb R$，
+
+    $$
+    \{x\in X\mid f(x)\leqslant r\}\ \text{为闭集}.
+    $$
+
+2. $f$ 下半连续 $\Longleftrightarrow$ 对任意 $x^*\in X$，若 $x_k\to x^*$，则
+
+    $$
+    f(x^*)\leqslant\liminf_{k\to\infty}f(x_k).
+    $$
+
+3. 弱下半连续：$x_k\rightharpoonup x^*$。
+
+弱下半连续弱于下半连续。
+
+**命题 4.1**
+
+$X$ 为度量空间，$f:X\to\mathbb R$，则 $f$ 连续 $\Longleftrightarrow f$ 上半连续且下半连续。
+
+**命题 4.2**
+
+$X$ 为度量空间，$f:X\to\overline{\mathbb R}$ 下半连续，$x\in A$。
+
+1. $A$ 为有限集，则 $\inf f$ 在 $A$ 上可达；
+2. $\sup f$ 在 $A$ 上可达；
+3. $\inf f$ 在 $A$ 上可达。
+
+控制区域为闭集的，若性能指标不具有凸性，则最优控制可能不存在。
+
+$$
+\text{若 }J(w):=(c,x),
+\qquad \nabla J(w):=(A^{-1})^T c,
+$$
+
+$$
+J(w):=\frac12(x,x),
+\qquad \nabla J(w):=(A^{-1})^T x.
+$$
+
+状态方程
+
+$$
+\left\{
+\begin{aligned}
+  \dot{x}(t)+Ax(t)&=Bu(t)+e,\qquad t\in[0,T],\\
+  x(0)&=x_0,
+\end{aligned}
+\right.
+\qquad A\in\mathbb R^{n\times n}.
+$$
+
+若 $A,B$ 满足 Kalman 秩条件
+
+$$
+\operatorname{rank}\bigl(B,AB,\ldots,A^{n-1}B\bigr)=n,
+$$
+
+则为可控系统。
+
+$$
+\inf_{u\in L^2(0,T;\mathbb R^m)}\|x(T)-x_T\|^2
+\qquad\text{s.t. 状态方程}
+$$
+
+## 4.1 直接算法
+
+1. 给定初始值：$u^k\in L^2(0,T;\mathbb R^m)$，$x_0,x_T\in\mathbb R^n$，$\varepsilon>0$，$k=1$。
+2. 状态方程
+
+    $$
+    \left\{
+    \begin{aligned}
+      \dot{x}^k(t)+Ax^k(t)&=Bu^k(t),\qquad t\in[0,T],\\
+      x^k(0)&=x_0,
+    \end{aligned}
+    \right.
+    \quad\Longrightarrow\quad x^k(T).
+    $$
+
+3. 求解随伴方程
+
+    $$
+    \left\{
+    \begin{aligned}
+      -\dot{p}^k(t)+A^Tp^k(t)&=0,\qquad t\in[0,T],\\
+      p^k(T)&:=x^k(T)-x_T,
+    \end{aligned}
+    \right.
+    \quad\Longrightarrow\quad p^k(t).
+    $$
+
+4. 梯度下降，步长 $\rho_k\in(0,1)$，计算
+
+    $$
+    u^{k+1}:=u^k-\rho_k\bigl(B^Tp^k+\lambda u^k\bigr).
+    $$
+
+5. 若 $\|u^{k+1}-u^k\|>\varepsilon$，令 $k:=k+1$，回到第 2 步。
+6. $u^*\gets u^{k+1}$。
+
+若
+
+$$
+J(u):=\frac12\|x(T)-x_T\|^2
++\frac{\lambda}{2}\int_0^T\|u(t)\|^2\,\mathrm dt,
+\qquad \forall u\in L^2(0,T;\mathbb R^m).
+$$
+
+**(A) 无约束优化**
+
+$$
+\inf_{x\in X}J(x):=F(x,u^\delta)+\lambda G(x),
+$$
+
+$$
+F(x,u^\delta):=\|Kx-u^\delta\|^p,
+\qquad K:X\to Y\text{ 为算子}.
+$$
+
+若 $X,Y$ 为 Banach 空间，$X$ 为闭凸集，$F(x,u^\delta),G(x)$ 连续，并且
+
+1. 对任意 $\{x_n\}$，$\{J(x_n)\}$ 有界 $\Longrightarrow\{x_n\}$ 一致有界；
+2. $G$ 下半连续；若 $x_n\rightharpoonup x$，$E\subset X$ 为闭集，$f:E\to\overline{\mathbb R}$ 为连续函数；
+3. 算子 $K$ 有界，
+
+则最优解 $u$ 存在。
+
+**(B)**
+
+$$
+\left\{
+\begin{aligned}
+  \dot{x}(t)&=A(t)x(t)+B(t)u(t),\\
+  x(0)&=x_0\in\mathbb R^m,
+\end{aligned}
+\right.
+\qquad
+J(x,u):=\int_0^T F(x,u)\,\mathrm dt+G(x(T)).
+$$
+
+若 $A,B\in L^\infty$，控制区间 $U\subset\mathbb R^m$ 为闭集，$F,G$ 为连续有界函数，则有最优控制。

@@ -186,6 +186,53 @@ Select-String -Path 'content/blog/<slug>/index.mdx' -Pattern '\$\$\S'
 判定产物是否真的成块：看 `--check-output` 的 `katex-display` 计数，或数公式块是否
 各有自己的 `<span class="katex-display">`。
 
+### ⚠️⚠️ `$$` 与内容同行 + 闭合 `$$` 在**续行尾**：最阴的一类（真踩过）
+
+这是转换《优化问题数值方法》时踩到的坑，**症状指向错误的位置**，值得单独记一笔。
+
+**坏形态**：
+
+```markdown
+$$\nabla f=\left(\frac{\partial f}{\partial x_1},\ldots,
+  \frac{\partial f}{\partial x_n}\right)^{T}.$$
+后面紧跟行内公式 $f(x_0)$。
+```
+
+**它的三种表现，一种比一种阴**：
+
+| 场合 | 表现 |
+|---|---|
+| 单独存在 | ✅ 能编过、能渲染 —— 所以自测时容易放行 |
+| 后面紧跟含 `{` 的行内公式（如 `$f(x_0)$`、`$x_i$`） | ❌ `next build` 报 `Could not parse expression with acorn`，**整个构建失败**；而报错行的行号指向的是**下一行**，不是真凶 |
+| 被粗暴拆成「内容行 + 独立 `$$` 行」 | ❌ 显示块被当普通文本，KaTeX 只拿到残缺片段 → `\right)` 找不到 `\left(` → 渲染成 `katex-error`，而**构建全绿不报错** |
+
+**根因**：`remark-math` 只认**独占行**的 `$$`。行内的 `$$` 让解析结果依赖上下文 ——
+第一种表现能过纯属侥幸（后续行不含 `{`），换个上下文就炸。
+
+**唯一规范形态**（`$$` 前后都必须独占行，内容可多行）：
+
+```markdown
+$$
+\nabla f=\left(\frac{\partial f}{\partial x_1},\ldots,
+  \frac{\partial f}{\partial x_n}\right)^{T}.
+$$
+```
+
+**自查与修复**：
+
+```powershell
+node tools/check-mdx-math.mjs <改动的 .mdx>          # 报「`$$` 未独占一行」
+node tools/check-mdx-math.mjs <改动的 .mdx> --fix    # 自动规范化成规范形态
+```
+
+> ⚠️ 这个 `--fix` 曾经**写坏过内容**（把 `\left(…\right)` 与 `\color{red}{…}`
+> 从中间切断，留下不配平的括号）。现已改为**完整的块扫描**（先找配对的闭合 `$$`，
+> 再整块重写），并且修完后**必须**跑 `--check-output` 确认 `katex-error` 为 0 ——
+> 因为写坏成畸形块时**构建不会报错**。
+>
+> 教训：任何自动改写公式的脚本，改完都要用产物级检查兜底（`--check-output`
+> 查 `katex-error`），不能只看「构建成功」。
+
 ### ⚠️ `\textcolor{red}{…}` 写在**正文里**会炸构建
 
 这是抽象代数那一轮最费时间的坑，**四种写法必须分清**（全部用仓库真实插件链实测，

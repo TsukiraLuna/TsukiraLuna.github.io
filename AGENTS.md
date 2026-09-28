@@ -160,11 +160,15 @@ node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问�
 |---|---|
 | `\textcolor{red}{…}` 写在正文里（不在 `$…$` 内） | 渲染期 `ReferenceError: red is not defined`，整页生成失败 |
 | `$$` 与正文同行 | 退化成行内公式；若夹了孤立 `$` 则 acorn 报错 |
+| **`$$` 与内容同行、闭合 `$$` 在续行尾** | 单看能过；**后面只要有含 `{` 的行内公式就让整个构建失败**，且报错行号指向下一行（真凶在上一行）；被粗暴拆开后又会变成 `katex-error`（构建不报错） |
 | `\textcolor{red}{$…$}`（参数内嵌 `$`） | acorn 报错 |
 | 只有公式的列表项写成「`3.` + 空行 + 缩进 `$$`」 | 公式在页面上变成一段**代码** |
 | frontmatter 里的 `$\sigma$`（应为 `$\\sigma$`） | **文章从站点静默消失** |
 
-细则与自查命令见 `tools/latex-to-blog.md`。
+细则与自查命令见 `tools/latex-to-blog.md`。公式类的改动**一律用
+`node tools/check-mdx-math.mjs <文件> --fix` 规范化，再用
+`--check-output` 确认 `katex-error` 为 0** —— 只跑 `build:verify` 会漏掉
+`katex-error`（那是构建期静默失败）。
 
 ### 改站点信息
 
@@ -229,15 +233,17 @@ node tools/mdx-math-quirks-probe.mjs               # 遇到公式/颜色怪问�
 | `measure-theory-ch01..ch06` | 测度论 第 N 章（集类与测度 / 可测映射 / 积分和空间 $L^p$ / 乘积空间 / Hausdorff 空间 / 复习题） | 数学 | 测度论 |
 | `advanced-numerical-analysis` | 高级数值分析 · 章节索引 | 算法 | 高级数值分析 |
 | `advanced-numerical-analysis-ch01..ch07` | 高级数值分析 第 N 章（函数逼近 / 数值积分 / 常微分方程数值解法 / 矩阵的特征值 / 线性方程组迭代法 / 非线性方程组迭代法 / 复习题） | 算法 | 高级数值分析 |
+| `optimization-numerical-methods` | 优化问题数值方法 · 章节索引 | 算法 | 优化问题数值方法 |
+| `optimization-numerical-methods-ch01..ch05` | 优化问题数值方法 第 N 章（最优化基础 / 无约束优化问题 / 约束优化问题 / ODE 控制优化 / 全书复习题） | 算法 | 优化问题数值方法 |
 | `general-physics-1` | 普通物理（一）复习笔记 | 数学 | — |
 | `latex-math` | LaTeX 公式测试 | 数学 | — |
 | `writing-guide` | 写作指南 — 从 Hexo 迁移到 Next.js 模板 | 技术 | — |
 
 > 模板自带的 `hello-world` 与 `syntax-test` 已按作者要求删除。
 
-**待办**：`E:\pdf workspace\` 下的五份 ElegantBook 手写笔记
-（普通物理一、数值分析初步、抽象代数、测度论、高级数值分析）**已全部转换完毕**。
-流程与硬规则见 `tools/latex-to-blog.md`。
+**待办**：`E:\pdf workspace\` 下的六份 ElegantBook 手写笔记
+（普通物理一、数值分析初步、抽象代数、测度论、高级数值分析、优化问题数值方法）
+**已全部转换完毕**。流程与硬规则见 `tools/latex-to-blog.md`。
 
 **状态会过期** —— 动手前先跑一遍验证命令确认现状，别完全信这张表。
 

@@ -1,0 +1,592 @@
+---
+title: "优化问题数值方法 第 2 章 无约束优化问题"
+pubDate: 2025-07-03
+description: "无约束优化：一阶与二阶最优性条件、线搜索（Armijo 与 Wolfe 准则、Zoutendijk 条件）、梯度下降法及其收敛性、经典牛顿法、拟牛顿法（SR1、BFGS、DFP）。"
+tags: ["优化问题数值方法", "无约束优化", "梯度下降", "拟牛顿法"]
+category: 算法
+series: 优化问题数值方法
+seriesOrder: 20
+tocDepth: 2
+---
+
+> 本文由手写笔记《优化问题数值方法》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+> 定理与定义的编号沿用原稿编号，便于与 PDF 对照。
+
+## 2.1 最优性理论
+
+**定理 2.1（一阶必要条件）**
+
+若 $x^*$ 为 $f(x)$ 的局部极小点，且 $x^*$ 为定义域 $D$ 的内点，则
+
+$$
+\nabla f(x^*)=0.
+$$
+
+驻定点、极点。
+
+关于 $\nabla^2 f(x)$ 的判定：
+
+$$
+\begin{array}{c|c}
+\text{正定} & \text{严格局部极小}\\
+\cdots & \cdots\\
+\text{负定} & \text{严格局部极大}
+\end{array}
+$$
+
+**定理 2.2（二阶必要条件）**
+
+若 $x^*$ 为 $f(x)$ 的局部极小点，且 $f(x)$ 在 $x^*$ 的邻域内二阶连续可微，则
+
+$$
+\nabla f(x^*)=0,
+\qquad
+\nabla^2 f(x^*)\geqslant0.
+$$
+
+适用于 $f(x)=x^3$，$x=0$。
+
+**定理 2.3（二阶充分条件）**
+
+若 $f(x)$ 在 $x^*$ 的开邻域内二阶连续可微，且
+
+$$
+\nabla f(x^*)=0,
+\qquad
+\nabla^2 f(x^*)\text{ 正定},
+$$
+
+则 $x^*$ 为 $f$ 的严格局部极小点。
+
+**定理 2.4**
+
+若 $f(x)$ 为二阶可微凸函数，则
+
+$$
+\text{驻定点}\Longleftrightarrow\text{局部最优}
+\Longleftrightarrow\text{全局最优}.
+$$
+
+## 2.2 线搜索算法
+
+对搜索方向 $d^k$，迭代 $x_k$：
+
+$$
+x^{k+1}=x^k+\alpha^k d^k.
+$$
+
+终止条件
+
+$$
+\|\nabla f(x)\|<\varepsilon.
+$$
+
+若
+
+$$
+(d^k)^T\nabla f(x^k)<0,
+$$
+
+称 $d^k$ 为下降方向。
+
+精确线搜索
+
+$$
+\alpha_k:=\mathop{\arg\min}_{\alpha\geqslant0}
+f(x^k+\alpha d^k).
+$$
+
+令
+
+$$
+\phi(\alpha)=f(x^k+\alpha d^k),
+$$
+
+计算使 $\phi'(\alpha)=0$ 的 $\alpha$。
+
+非精确线搜索。
+
+Armijo：$\alpha^k$ 为在 $x^k$ 处下降的步长，若
+
+$$
+f(x^k+\alpha d^k)
+\leqslant f(x^k)+c\alpha\nabla f(x^k)^T d^k,
+$$
+
+则 $\alpha$ 满足 Armijo 准则，$c\in(0,1)$。
+
+![Armijo 准则示意图](/blog/optimization-numerical-methods-ch02/armijo.svg)
+
+**Wolfe 准则**：
+
+在 Armijo 准则的基础上，还要求
+
+$$
+\nabla f(x^k+\alpha d^k)^T d^k
+\geqslant c_2\nabla f(x^k)^T d^k.
+$$
+
+其中
+
+$$
+0<c_1<c_2<1,
+\qquad c_1=10^{-4},
+\qquad c_2=0.9.
+$$
+
+![Wolfe 准则示意图](/blog/optimization-numerical-methods-ch02/wolfe.svg)
+
+**定义 2.3（梯度 $L$-连续）**
+
+$L$-光滑：存在 $L>0$，使得对任意 $x,y\in\mathbb{R}^n$，
+
+$$
+\|\nabla f(x)-\nabla f(y)\|
+\leqslant L\|x-y\|.
+$$
+
+**定理 2.5（Zoutendijk 条件）**
+
+若 $f(x)$ 有下界、连续可微且梯度 $L$-连续，
+
+$$
+x^{k+1}=x^k+\alpha_kd^k,
+$$
+
+若 $\alpha_k$ 满足 Wolfe 准则，则
+
+$$
+\sum_{k=0}^{\infty}\cos^2\theta_k
+\|\nabla f(x^k)\|^2<+\infty.
+$$
+
+其中
+
+$$
+\cos\theta_k
+=-\frac{\nabla f(x^k)^Td^k}
+{\|\nabla f(x^k)\|\,\|d^k\|}.
+$$
+
+**性质 2.1（线搜索算法的收敛性）**
+
+$$
+x^{k+1}=x^k+\alpha_kd^k,
+$$
+
+设 $\theta_k$ 为 $-\nabla f(x^k)$ 与 $d^k$ 的夹角。给定 $\gamma>0$，使
+
+$$
+\theta_k<\frac{\pi}{2}-\gamma,
+$$
+
+则在上述定理假设下，有
+
+$$
+\lim_{k\to\infty}\nabla f(x^k)=0.
+$$
+
+## 2.3 梯度下降法
+
+选取 $-\nabla f(x^k)$ 方向为搜索方向，即梯度下降方向（梯度下降最快方向）。
+
+优点：一定的全局收敛，计算量小，适合并行。
+
+缺点：易被困在局部最优，收敛慢。
+
+### 2.3.1 步长选择
+
+固定步长 $\alpha_k=\alpha$。
+
+精确线搜索
+
+$$
+\alpha^*:=\mathop{\arg\min}_{\alpha\geqslant0}
+f\bigl(x-\alpha\nabla f(x)\bigr).
+$$
+
+此时左侧对 $\alpha$ 的方向导数满足
+
+$$
+\psi'(\alpha)=0
+\Longleftrightarrow
+\nabla f(x-\alpha\nabla f(x))^T\nabla f(x)=0.
+$$
+
+线搜索固定：$\texttt{while}$
+
+$$
+f\bigl(x^k-\alpha\nabla f(x^k)\bigr)
+>f(x^k)-c\alpha\|\nabla f(x^k)\|^2,
+$$
+
+$$
+\alpha\leftarrow\gamma\alpha
+\qquad\texttt{end while}.
+$$
+
+其中 $c=\gamma=\frac12$，一般取值。
+
+### 2.3.2 梯度 $L$ 连续
+
+**定理 2.6（二次上界）**
+
+设可微函数 $f(x)$ 的定义域为 $\mathbb{R}^n$，梯度 $L$ 连续，
+则 $f(x)$ 有二次上界，即
+
+$$
+f(y)\leqslant f(x)+\nabla f(x)^T(y-x)
++\frac{L}{2}\|y-x\|^2,
+\qquad \forall x,y\in\mathbb{R}^n.
+$$
+
+**推论 2.2**
+
+若 $\alpha\in\left(0,\frac{2}{L}\right)$，则有
+
+$$
+f\bigl(x-\alpha\nabla f(x)\bigr)
+\leqslant f(x)-\alpha\left(1-\frac{L\alpha}{2}\right)
+\|\nabla f(x)\|^2.
+$$
+
+称为梯度下降法充分下降性质：
+
+1. $0<\alpha<\dfrac{2}{L}$ 时，梯度下降法可以保证下降；
+2. $\alpha=\dfrac{2}{L}$ 时，不保证方向也有下降。
+
+### 2.3.3 梯度下降法凸函数的收敛性
+
+**推论 2.3**
+
+设 $f(x)$ 在 $\mathbb{R}^n$ 上为凸函数，且有全局极小点 $x^*$。若 $f(x)$ 有二次上界性质，则对任意 $x$，
+
+$$
+\frac{1}{2L}\|\nabla f(x)\|^2\leqslant f(x)-f(x^*).
+$$
+
+**引理 2.1**
+
+设 $f(x)$ 在 $\mathbb{R}^n$ 上凸且可微，则有：
+
+1. $\nabla f(x)$ 为 $L$-连续；
+2. $g(x):=\dfrac{L}{2}x^Tx-f(x)$ 为凹函数；
+3. $\nabla f(x)$ 有余强单调性，即对任意 $x,y\in\mathbb{R}^n$，
+$$
+\bigl(\nabla f(x)-\nabla f(y)\bigr)^T(x-y)
+\geqslant \frac{1}{L}\|\nabla f(x)-\nabla f(y)\|^2.
+$$
+
+**定理 2.7**
+
+设 $f(x)$ 为凸函数，且梯度 $L$-连续，$f^*=f(x^*)=\inf_{x\in\mathbb{R}^n}f(x)$ 可达。取固定步长 $\alpha_k=\alpha$，其中
+
+$$
+0<\alpha\leqslant\frac{1}{L},
+$$
+
+并令
+
+$$
+x^{k+1}=x^k-\alpha\nabla f(x^k).
+$$
+
+则有如下的函数值收敛率：
+
+$$
+f(x^k)-f^*\leqslant\frac{\|x^0-x^*\|^2}{2\alpha k},
+\qquad\text{即在函数值意义下收敛速度为 }O\!\left(\frac1k\right).
+$$
+
+### 2.3.4 梯度下降法强凸函数下的收敛性
+
+**定义 2.4**
+
+若存在 $m>0$，使得
+
+$$
+g(x):=f(x)-\frac{m}{2}\|x\|^2
+$$
+
+为凸函数，则称 $f(x)$ 为强凸函数，也称 $m$-强凸函数，从而极小点唯一。
+
+**定义 2.5**
+
+若存在 $m>0$，使得对任意 $x,y$ 及 $\theta\in(0,1)$，
+
+$$
+f\bigl(\theta x+(1-\theta)y\bigr)
+\leqslant \theta f(x)+(1-\theta)f(y)
+-\frac{m}{2}\theta(1-\theta)\|x-y\|^2,
+$$
+
+则称 $f(x)$ 为强凸函数。
+
+最大强凸参数。
+
+**例**
+
+$$
+\color{red}{f(x)=\frac12x^TAx+b^Tx+c},
+\qquad A\in S^n,
+\qquad m_{\max}=\lambda_{\min}(A).
+$$
+
+**引理 2.2（二次下界）**
+
+若 $f(x)$ 为 $m$-强凸可微函数，则有
+
+$$
+f(y)\geqslant f(x)+\nabla f(x)^T(y-x)
++\frac{m}{2}\|y-x\|^2,
+\qquad \forall x,y\in\mathbb{R}^n.
+$$
+
+**命题 2.8**
+
+设 $f(x)$ 为 $m$-强凸且梯度 $L$-连续，并且
+
+$$
+f^*=f(x^*)=\inf_{x\in\mathbb{R}^n}f(x)
+$$
+
+可达。若
+
+$$
+0<\alpha\leqslant\frac{2}{m+L},
+\qquad
+x^{k+1}=x^k-\alpha\nabla f(x^k),
+$$
+
+则梯度下降法有如下的 $Q$-线性收敛性。
+
+## 2.4 经典牛顿法
+
+### 2.4.1 迭代格式
+
+在 $x^k$ 附近作二次近似：
+
+$$
+f(x)\approx f(x^k)+\nabla f(x^k)^T(x-x^k)
++\frac12(x-x^k)^T\nabla^2f(x^k)(x-x^k).
+$$
+
+令近似函数满足驻定条件
+
+$$
+\nabla f(x^k)+\nabla^2f(x^k)(x-x^k)=0,
+$$
+
+得到牛顿迭代格式
+
+$$
+\color{red}{x^{k+1}=x^k-\bigl(\nabla^2f(x^k)\bigr)^{-1}\nabla f(x^k)}.
+$$
+
+牛顿方向为
+
+$$
+\color{red}{d^k=-\bigl(\nabla^2f(x^k)\bigr)^{-1}\nabla f(x^k)}.
+$$
+
+当 $\nabla^2f(x^k)$ 正定时，牛顿方向为下降方向。应用于严格凸二次函数时，无论初始点如何，经过一步即可收敛到全局极小点。牛顿法也可能收敛到鞍点而非极值。
+
+**优点**：仿射不变，受Hessian矩阵条件数影响小，$Q$-二次收敛。
+
+**缺点**：局部收敛，需要良好的初始点，计算存储Hessian 矩阵代价大；每一步都需要求解Newton方程。牛顿方向不一定总是下降方向，可采用阻尼 Newton 法。
+
+### 2.4.2 牛顿法收敛性
+
+**定理 2.9**
+
+设 $f(x)$ 二阶连续可微，$x^*$ 满足
+
+$$
+\nabla f(x^*)=0,
+\qquad \nabla^2f(x^*)\succ0,
+$$
+
+且 $\nabla^2f(x)$ 在 $N_{\varepsilon}(x^*)$ 内 $L$-连续。若 $x^0$ 足够接近 $x^*$，则有：
+
+1. $x^k$ $Q$-二次收敛到 $x^*$；
+2. $\|\nabla f(x^k)\|$ $Q$-二次收敛到 $0$。
+
+## 2.5 拟牛顿法
+
+### 2.5.1 迭代格式
+
+使用线搜索框架
+
+$$
+x^{k+1}=x^k+\alpha_kd^k.
+$$
+
+拟牛顿法以
+
+$$
+B^kd^k=-\nabla f(x^k)
+$$
+
+求解方向，其中 $B^k$ 近似 Hessian 矩阵 $\nabla^2f(x^k)$；或者将
+$(\nabla^2f(x^k))^{-1}$ 近似为 $H^k$，从而
+
+$$
+d^k=-H^k\nabla f(x^k).
+$$
+
+### 2.5.2 拟牛顿方程与割线条件
+
+令 $B^{k+1}$ 满足
+
+$$
+\nabla f(x^{k+1})=\nabla f(x^k)+B^{k+1}(x^{k+1}-x^k),
+$$
+
+并记
+
+$$
+y^k=\nabla f(x^{k+1})-\nabla f(x^k),
+\qquad s^k=x^{k+1}-x^k.
+$$
+
+从而有
+
+$$
+B^{k+1}s^k=y^k,
+$$
+
+称为割线方程。拟牛顿矩阵的基本要求为
+
+$$
+\color{red}{(s^k)^Ty^k>0},
+$$
+
+称为曲率条件，是使 $B^{k+1}$ 正定的充分条件。
+
+**命题 2.1**
+
+若 $B^k\succ0$，$\alpha_k$ 满足 Wolfe 条件，且 $\nabla f(x^k)\ne0$，则拟牛顿法生成的迭代点序列满足曲率条件，即 $(s^k)^Ty^k>0$。
+
+### 2.5.3 秩一更新法
+
+**定义 2.6（SR1 公式）**
+
+$$
+\color{red}{
+B^{k+1}=B^k+
+\frac{(y^k-B^ks^k)(y^k-B^ks^k)^T}
+{(y^k-B^ks^k)^Ts^k}}
+,
+\qquad H^k:=(B^k)^{-1}.
+$$
+
+**定义 2.7（Sherman–Morrison–Woodbury 公式）**
+
+设 $A\in\mathbb{R}^{n\times n}$、$C\in\mathbb{R}^{k\times k}$、$U\in\mathbb{R}^{n\times k}$、$V\in\mathbb{R}^{k\times n}$，且 $A$、$C$ 可逆。若 $A+UCV$ 可逆，则
+
+$$
+(A+UCV)^{-1}
+=A^{-1}-A^{-1}U(C^{-1}+VA^{-1}U)^{-1}VA^{-1}.
+$$
+
+秩一情形下，
+
+$$
+(A+uv^T)^{-1}
+=A^{-1}-\frac{A^{-1}uv^TA^{-1}}{1+v^TA^{-1}u}.
+$$
+
+由此有 $H^k$ 的 SR1 公式：
+
+$$
+H^{k+1}=H^k+
+\frac{(s^k-H^ky^k)(s^k-H^ky^k)^T}
+{(s^k-H^ky^k)^Ty^k}.
+$$
+
+其中 $B^k\leftrightarrow H^k$，$y^k\leftrightarrow s^k$。
+
+### 2.5.4 秩二更新法
+
+**定义 2.8（BFGS 公式）**
+
+$$
+\color{red}{
+B^{k+1}=B^k-
+\frac{B^ks^k(s^k)^TB^k}{(s^k)^TB^ks^k}
++\frac{y^k(y^k)^T}{(y^k)^Ts^k}}.
+$$
+
+**命题 2.2**
+
+若 $B^k$ 正定，$\alpha^k$ 满足 Wolfe 条件，且 $\nabla f(x^k)\ne0$，
+则 BFGS 产生的 $B^{k+1}$ 也正定。
+
+从而有 $H^k$ 的 BFGS 公式：
+
+$$
+\color{red}{\underline{
+H^{k+1}=\left(I-\frac{s^k(y^k)^T}{(y^k)^Ts^k}\right)H^k
+\left(I-\frac{y^k(s^k)^T}{(y^k)^Ts^k}\right)
++\frac{s^k(s^k)^T}{(y^k)^Ts^k}}}.
+$$
+
+**定义 2.9（DFP 公式）**
+
+$$
+H^{k+1}=H^k-
+\frac{H^ky^k(y^k)^TH^k}{(y^k)^TH^ky^k}
++\frac{s^k(s^k)^T}{(y^k)^Ts^k}.
+$$
+
+从而有 $B^k$ 的 DFP 公式。
+
+$\textcolor{red}{\underline{\text{DFP 与 BFGS 之对偶公式}}}$
+
+### 2.5.5 BFGS 算法的收敛性分析
+
+**引理 2.3**
+
+设 $f:\mathbb{R}^n\to\mathbb{R}$ 为二阶连续可微实值函数，且存在 $m>0$，使得
+
+$$
+z^T\nabla^2 f(x)z\geqslant m\|z\|^2,
+\qquad \forall z\in\mathbb{R}^n.
+$$
+
+设 $x^*$ 为全局极小点，则有
+
+$$
+\|x-x^*\|\leqslant\frac{1}{m}\|\nabla f(x)\|.
+$$
+
+**定理 2.10（全局收敛性）**
+
+$B^0$ 对称正定，$f(x)\in C^2$，令
+
+$$
+L=\{x\in\mathbb{R}^n\mid f(x)\leqslant f(x^0)\}.
+$$
+
+$L$ 为凸集。若存在 $m,M>0$，使得对任意 $z\in\mathbb{R}^n$、$x\in L$，有
+
+$$
+m\|z\|^2\leqslant z^T\nabla^2 f(x)z\leqslant M\|z\|^2,
+$$
+
+则 BFGS 方法结合 Wolfe 线搜索全局收敛到 $x^*$。
+
+**定理 2.11（收敛速度）**
+
+设 $f(x)\in C^2$，且 $\nabla^2 f(x)$ 在 $x^*$ 附近 $L$-连续。
+BFGS 产生 $x^k\to x^*$，则
+
+$$
+\lim_{k\to\infty}\|x^k-x^*\|<+\infty.
+$$
+
+则 $x^k$ 以 $Q$-超线性收敛到 $x^*$。
+
+$\textcolor{red}{\underline{\text{拟牛顿法利用一阶信息（不需计算 Hessian 矩阵）达到超线性收敛。}}}$
+
+$\textcolor{red}{\underline{\text{缺点：拟牛顿法每次迭代要存储高阶矩阵，存储需 }O(n^2)\text{ 内存。}}}$

@@ -1,0 +1,496 @@
+---
+title: "优化问题数值方法 第 3 章 约束优化问题"
+pubDate: 2025-07-04
+description: "约束优化：Lagrange 对偶与弱/强对偶、Slater 条件、切锥与线性化可行方向锥、Farkas 引理、KKT 条件、二阶最优性条件、二次罚函数法与增广 Lagrange 乘子法。"
+tags: ["优化问题数值方法", "约束优化", "KKT 条件", "对偶理论"]
+category: 算法
+series: 优化问题数值方法
+seriesOrder: 30
+tocDepth: 2
+---
+
+> 本文由手写笔记《优化问题数值方法》扫描件的 LaTeX 转录稿改写而来，公式以**红色**保留原稿的红笔重点标记。
+> 定理与定义的编号沿用原稿编号，便于与 PDF 对照。
+
+## 3.1 对偶理论
+
+考虑约束优化问题
+
+$$
+\begin{aligned}
+  \min_{x\in\mathbb{R}^n}\quad & f(x)\\
+  \text{s.t.}\quad & h_i(x)=0,\quad i\in E,\qquad |E|=p,\\
+  & g_j(x)\color{red}{\leqslant}0,\quad j\in I,\qquad |I|=m.
+\end{aligned}
+$$
+
+可行域
+
+$$
+S=\{x\in\mathbb{R}^n\mid h_i(x)=0,\ i\in E,\ g_j(x)\leqslant0,\ j\in I\}.
+$$
+
+引入 Lagrange 函数
+
+$$
+\color{red}{\underline{
+L(x,\mu,\lambda)=f(x)+\sum_{i\in E}\mu_i h_i(x)
++\sum_{j\in I}\lambda_jg_j(x)}}.
+$$
+
+其中
+
+$$
+\mu=(\mu_1,\ldots,\mu_p)^T\in\mathbb{R}^p,
+\qquad
+\lambda=(\lambda_1,\ldots,\lambda_m)^T\in\color{red}{\mathbb{R}_+^m},
+$$
+
+为拉格朗日乘子。
+
+对偶函数
+
+$$
+\color{red}{\underline{
+d(\mu,\lambda):=\inf_{x\in\mathbb{R}^n}L(x,\mu,\lambda)
+=\inf_{x\in\mathbb{R}^n}\left[f(x)
++\sum_{i\in E}\mu_i h_i(x)
++\sum_{j\in I}\lambda_jg_j(x)\right]}}.
+$$
+
+**定理 3.1（弱对偶原理）**
+
+设原始问题最优值为 $f^*$，则
+
+$$
+\color{red}{\underline{
+\forall\mu\in\mathbb{R}^p,\ \lambda\in\mathbb{R}_+^m,
+\qquad d(\mu,\lambda)\leqslant f^*.}}
+$$
+
+对偶问题
+
+$$
+\color{red}{\underline{
+\begin{aligned}
+  \max_{\mu,\lambda}\quad & d(\mu,\lambda)\\
+  \text{s.t.}\quad & \lambda\geqslant0.
+\end{aligned}}}
+$$
+
+$\mu,\lambda$ 为对偶变量。若 $\lambda\geqslant0$，且
+$d(\mu,\lambda)>-\infty$，则 $(\mu,\lambda)$ 为对偶可行解。
+$(\mu^*,\lambda^*)$ 为对偶问题最优解（最优 Lagrange 乘子）。
+
+对偶问题也为凸优化问题。对偶问题可能不可行（最优值 $-\infty$），
+也可能无上界（最优值 $+\infty$）。
+
+设对偶问题最优值为 $d^*$，则
+
+$$
+\color{red}{\underline{d^*\leqslant f^*}}.
+$$
+
+若
+
+$$
+f^*-d^*=0,
+$$
+
+则强对偶原理成立。
+
+**推论 3.1**
+
+若原始问题有可行解 $\bar{x}$，$(\bar{\mu},\bar{\lambda})$ 为对偶问题可行解，
+且
+
+$$
+f(\bar{x})=d(\bar{\mu},\bar{\lambda}),
+$$
+
+则 $\bar{x}$、$(\bar{\mu},\bar{\lambda})$ 分别为原始问题和对偶问题的最优解，
+对偶间隙为 $0$。
+
+**推论 3.2**
+
+若原始问题无界，则对偶问题无可行解；若对偶问题无上界，则原始问题无可行解。
+
+**定义 3.1（Slater 约束资格）**
+
+设 $A\in\mathbb{R}^{p\times n}$，$b\in\mathbb{R}^p$，考虑凸优化问题
+
+$$
+\begin{aligned}
+  \min_{x\in\mathbb{R}^n}\quad & f(x)\\
+  \text{s.t.}\quad & Ax=b,\\
+  & g_j(x)\leqslant0.
+\end{aligned}
+$$
+
+若可行域内存在严格可行解，则称满足 $\color{red}{\underline{\text{Slater 条件}}}$。
+$\color{red}{\underline{\text{不等式约束为仿射变换时，该约束可以放宽为可行解}}}$
+
+**定理 3.2**
+
+$\color{red}{\underline{\text{若凸优化问题满足 Slater 条件，则强对偶成立。}}}$
+
+## 3.2 约束优化问题最优性条件
+
+**定义 3.2（切锥）**
+
+设可行域为 $S$，给定 $\bar{x}\in S$。若存在 $t_k>0$，$t_k\to0$，以及
+$x^k\in S$，使得
+
+$$
+\lim_{k\to\infty}\frac{x^k-\bar{x}}{t_k}=d,
+$$
+
+则称 $d$ 为 $S$ 在 $\bar{x}$ 处的一个切向量。$S$ 在 $\bar{x}$ 处所有切向量的集合
+称为切锥，用 $T_S(\bar{x})$ 表示。
+
+切向量即从 $\bar{x}$ 出发的可行方向对应的极限向量。
+
+切锥为可行方向的集合。
+
+**定理 3.3（几何最优性条件）**
+
+若 $\bar{x}$ 为约束优化问题的局部相对极小点，且 $f$ 在 $\bar{x}$ 处可微，则
+
+$$
+(\nabla f(\bar{x}))^T d\geqslant0,
+\qquad \forall d\in T_S(\bar{x}).
+$$
+
+**定义 3.3（线性化可行方向锥）**
+
+设可行点 $\bar{x}\in S$，$h_i$、$g_j$ 在 $\bar{x}$ 处可微。定义
+
+$$
+A(\bar{x}):=E\cup\{j\mid g_j(\bar{x})=0,\ j\in I\},
+$$
+
+称为 $\bar{x}$ 处的活跃约束集合。$\bar{x}$ 处的线性化可行方向锥为
+
+$$
+\color{red}{\boxed{
+F_S(\bar{x})=\left\{d\ \middle|\ 
+\begin{aligned}
+  &d^T\nabla h_i(\bar{x})=0, &&\forall i\in E,\\
+  &d^T\nabla g_j(\bar{x})\leqslant0,
+     &&\forall j\in A(\bar{x})\cap I
+\end{aligned}\right\}}}.
+$$
+
+$$
+\color{red}{\underline{
+F_S(\bar{x})\text{只受 }S\text{ 的代数表达式影响，而 }T_S(\bar{x})
+\text{不受 }S\text{ 的代数表达式影响。}}}
+$$
+
+**定理 3.4**
+
+若 $\bar{x}\in S$，$f$ 在 $\bar{x}$ 处可微，且对所有 $i\in E$、$j\in I$，
+$h_i$、$g_j$ 在 $\bar{x}$ 处可微，则有
+
+$$
+T_S(\bar{x})\subseteq F_S(\bar{x}).
+$$
+
+称 $T_S(\bar{x})=F_S(\bar{x})$ 为线性化约束资格（LCQ）。常见的约束资格条件有：
+
+1. 线性化约束资格（LCQ）；
+2. 线性独立约束资格（LICQ）：
+
+$$
+\{\nabla h_i(\bar{x})\mid i\in E\}
+\cup\{\nabla g_j(\bar{x})\mid j\in A(\bar{x})\cap I\}
+$$
+
+线性无关；
+3. Mangasarian–Fromovitz 约束资格（MFCQ）：
+$\{\nabla h_i(\bar{x})\mid i\in E\}$ 线性无关，且存在 $d$，使得
+
+$$
+d^T\nabla h_i(\bar{x})=0,\quad i\in E,
+\qquad
+d^T\nabla g_j(\bar{x})<0,\quad j\in A(\bar{x})\cap I.
+$$
+
+**推论 3.3（约束最优性条件）**
+
+对 $\min f(x)$，若 $\bar{x}$ 为局部极小点，且
+$T_S(\bar{x})=F_S(\bar{x})$，则有
+
+$$
+F_S(\bar{x})\cap\{d\mid d^T\nabla f(\bar{x})<0\}=\varnothing,
+$$
+
+也即
+
+$$
+\left\{d\ \middle|\ 
+\begin{aligned}
+  &d^T\nabla f(\bar{x})<0,\\
+  &d^T\nabla h_i(\bar{x})=0, &&i\in E,\\
+  &d^T\nabla g_j(\bar{x})\leqslant0,
+     &&j\in A(\bar{x})\cap I
+\end{aligned}\right\}=\varnothing.
+$$
+
+**引理 3.1（Farkas 引理）**
+
+设 $q,p\in\mathbb{N}^+$，$c\in\mathbb{R}^n$，
+$a_i,b_j\in\mathbb{R}^n$。系统
+
+$$
+d^Tc<0,\qquad d^Ta_i=0\ (i=1,\ldots,p),\qquad
+d^Tb_j\geqslant0\ (j=1,\ldots,q)
+$$
+
+中的 $d$ 不存在，当且仅当存在 $\mu_i\in\mathbb{R}$、$\lambda_j\in\mathbb{R}_+$，使得
+
+$$
+c=\sum_{i=1}^{p}\mu_i a_i+\sum_{j=1}^{q}\lambda_j b_j,
+\qquad (\lambda_j\geqslant0).
+$$
+
+**定理 3.5（KKT 条件）**
+
+若 $x^*$ 为约束优化问题的一个局部极小点，且有
+$\color{red}{T_S(x^*)=F_S(x^*)}$，则存在 Lagrange 乘子
+$\mu^*\in\mathbb{R}^p$、$\lambda^*\in\mathbb{R}_+^m$，使得：
+
+1. 稳定性条件
+
+$$
+\color{red}{\underline{
+\nabla_x L(x^*,\mu^*,\lambda^*)=
+\nabla f(x^*)+\sum_{i\in E}\mu_i^*\nabla h_i(x^*)
++\sum_{j\in I}\lambda_j^*\nabla g_j(x^*)=0}};
+$$
+
+2. 原始可行性条件
+
+$$
+\color{red}{\underline{h_i(x^*)=0,\ \forall i\in E}},
+\qquad
+\color{red}{\underline{g_j(x^*)\leqslant0,\ \forall j\in I}};
+$$
+
+3. 对偶可行性条件
+
+$$
+\color{red}{\underline{\lambda_j^*\geqslant0,\ \forall j\in I}};
+$$
+
+4. 互补松弛条件
+
+$$
+\color{red}{\underline{\lambda_j^*g_j(x^*)=0,\ \forall j\in I}}.
+$$
+
+$(x^*,\mu^*,\lambda^*)$ 称为 KKT 点。
+
+**定理 3.6**
+
+对于满足 Slater 条件的凸优化问题，$x^*$ 为原问题最优解且
+$(\mu^*,\lambda^*)$ 为对偶问题最优解，当且仅当
+$(x^*,\mu^*,\lambda^*)$ 为 KKT 点。$(\Rightarrow)$ 则不需要 Slater；
+$(\Leftarrow)$ 凸和 Slater 双向都要。
+
+**定义 3.4（临界锥）**
+
+$(x^*,\mu^*,\lambda^*)$ 为 KKT 点，临界锥为
+
+$$
+\color{red}{\boxed{
+C(x^*,\mu^*,\lambda^*)=
+\left\{d\in F_S(x^*)\ \middle|\ 
+(\nabla g_j(x^*))^Td=0,\ \lambda_j^*>0,
+\quad\forall j\in A(x^*)\cap I\right\}}}.
+$$
+
+**定理 3.7（二阶必要条件）**
+
+若 $x^*$ 为局部极小点，$T_S(x^*)=F_S(x^*)$，且
+$(x^*,\mu^*,\lambda^*)$ 为 KKT 点，则有
+
+$$
+\color{red}{\underline{
+d^T\nabla_{xx}^2L(x^*,\mu^*,\lambda^*)d\geqslant0,
+\qquad\forall d\in C(x^*,\mu^*,\lambda^*)}}.
+$$
+
+**定理 3.8（二阶充分条件）**
+
+若 $x^*$ 可行，$(x^*,\mu^*,\lambda^*)$ 为 KKT 点，且
+
+$$
+\color{red}{\underline{
+d^T\nabla_{xx}^2L(x^*,\mu^*,\lambda^*)d>0,
+\quad\forall d\in C(x^*,\mu^*,\lambda^*),\ d\ne0}},
+$$
+
+则 $x^*$ 为严格局部极小点。
+
+## 3.3 罚函数法
+
+### 3.3.1 二次罚函数法
+
+$$
+\begin{aligned}
+  \min\quad & f(x)\\
+  \text{s.t.}\quad & h_i(x)=0,\quad i\in E.
+\end{aligned}
+$$
+
+取
+
+$$
+\color{red}{\underline{
+P_1(x):=\sum_{i\in E}h_i^2(x)}}.
+$$
+
+例如
+
+$$
+\color{red}{\underline{
+P_\epsilon(x,\delta)=f(x)+\delta P_1(x)}}
+$$
+
+称为罚函数无约束问题。$\delta\to+\infty$ 时，
+$P_\epsilon(x,\delta)$ 的最优值趋近于 $f^*$。
+
+这种罚函数方法中，罚因子 $\delta$ 逐渐增大，罚函数的 Hessian 矩阵条件数变坏，
+从而导致数值求解的不稳定性增加。
+
+### 3.3.2 收敛性分析
+
+**引理 3.2（收敛的充分必要条件）**
+
+对于罚函数 $P_E(x,\delta)$，若 $\delta_{k+1}\geqslant\delta_k$，则 $\forall k\geqslant1$，有
+
+1. $P_E(x^{k+1},\delta_{k+1})\geqslant P_E(x^k,\delta_k)$；
+2. $P_1(x^k)\geqslant P_1(x^{k+1})$；
+3. $f(x^k)\leqslant f(x^{k+1})$。
+
+**推论 3.4**
+
+若 $x^*$ 为原问题最优点，则 $\forall k\geqslant1$，有
+
+$$
+f^*:=f(x^*)\geqslant P_E(x^k,\delta_k)\geqslant f(x^k).
+$$
+
+**定理 3.9（二次罚函数收敛性）**
+
+对于问题的 $P_E(x,\delta)$ 罚函数，若 $\delta_k\to+\infty$，且 $\{x^k\}$ 有聚点，则每个聚点都是约束优化问题的解。
+
+**定理 3.10（二次罚函数收敛性）**
+
+生成序列 $\{x^k\}$，满足
+
+$$
+\nabla_xP_E(x^k,\delta^k)=0.
+$$
+
+使 $\delta^k\to+\infty$。若子列满足 $x^{k_j}\to\bar{x}$，则任何满足约束条件的 $\bar{x}$ 都是 KKT 点，且有
+
+$$
+\lim_{j\to\infty}\bigl(2\delta^{k_j}h_i(x^{k_j})\bigr)=\mu_i^*,
+\qquad \forall i\in E,
+$$
+
+其中 $\mu_i^*$ 为 $h_i(\bar{x})=0$ 的 Lagrange 乘子。
+
+**对于一般的约束问题，有**
+
+$$
+P(x,\delta):=f(x)+\delta\left(
+  \sum_{i\in E}\widetilde h_i^{\,2}(x)+\sum_{j\in I}\widetilde g_j^{\,2}(x)
+\right),
+$$
+
+$$
+\widetilde g_j(x):=\max\{g_j(x),0\}.
+$$
+
+其中幂次可被改成 $\alpha,\beta$（$\alpha\geqslant1,\ \beta\geqslant1$）。
+
+## 3.4 增广 Lagrange 乘子法
+
+### 3.4.1 算法流程
+
+对于等式约束，
+
+$$
+L_\delta(x,\mu):=f(x)+\sum_{i\in E}\mu_i h_i(x)
++\frac{\delta}{2}\sum_{i\in E}h_i^2(x).
+$$
+
+以 $x^k$ 为初始点，求
+
+$$
+x^{k+1}:=\mathop{\arg\min}_{x}L_{\delta_k}(x,\mu^k).
+$$
+
+更新乘子
+
+$$
+\mu^{k+1}:=\mu^k+\delta_k h(x^{k+1}),
+$$
+
+更新罚因子
+
+$$
+\delta_{k+1}:=\beta\delta_k,\qquad k\leftarrow k+1\quad(\beta>1).
+$$
+
+**引理 3.3**
+
+$P\in S^n$ 且 $Q\in S_+^n$，若对所有满足 $z^TQz=0$ 的 $z$，有
+$z^TPz\geqslant0$，则存在 $\sigma\geqslant0$，使
+
+$$
+z^T(P+\sigma Q)z\geqslant0,\qquad \forall z.
+$$
+
+**定理 3.11**
+
+$x^*,\mu^*$ 为等式约束问题的局部极小点和相应的最优 Lagrange 乘子，且 $x^*$ 满足 LICQ，二阶充分条件成立，则存在 $\delta_0$，使 $\forall\delta\geqslant\delta_0$，$x^*$ 为 $L_\delta(x,\mu^*)$ 的局部极小点。
+
+反之，若 $x^*$ 为 $L_\delta(x,\mu^*)$ 的局部极小点，且有 $h(x^*)=0$，则 $x^*$ 为约束优化问题的局部极小点。
+
+### 3.4.2 收敛性分析
+
+**定理 3.12（增广 Lagrange 乘子法收敛性）**
+
+生成迭代序列 $\{x^k,\mu^k\}$，其中迭代序列 $\{\delta^k\}$ 满足 $\delta^k\to+\infty$。若 $x^{k+1}$ 为 $L_{\delta^k}(x,\mu^k)$ 的极小点，且 $\{\mu^k\}$ 有界；若 $\{x^k\}$ 有子列 $x^{k_j}\to x^*$，且在 $x^*$ 处满足 LICQ，则存在 $\mu^*$，使 $(x^*,\mu^*)$ 为问题的 KKT 点，且
+
+$$
+\mu^*:=\lim_{j\to\infty}\mu^{k_j}.
+$$
+
+若保证子问题收敛，$\delta^k\to+\infty$ 也成立。
+
+一种可行的增广 Lagrange 函数为
+
+$$
+\begin{aligned}
+  L_\delta(x,\mu,\lambda)
+  := {}& f(x)+\sum_{i\in E}\mu_i h_i(x)
+  +\frac{\delta}{2}\sum_{i\in E}h_i^2(x)\\
+  &+\frac{1}{2\delta}\sum_{j\in I}
+  \left(\max\{\lambda_j+\delta g_j(x),0\}^2-\lambda_j^2\right).
+\end{aligned}
+$$
+
+$$
+\lambda_j^{k+1}:=\max\{\lambda_j^k+\delta_k g_j(x^{k+1}),0\}.
+$$
+
+不需 $\delta\to+\infty$，避免子问题求解数值困难。
+
+罚函数的优点：构造无约束问题；缺点：需 $\delta\to+\infty$，导致子问题数值困难。
+
+增广函数解决以上问题，可避免无约束性。
