@@ -1,5 +1,7 @@
 # TsukiraLuna
 
+[English](./README.en.md) · **中文**
+
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black?logo=next.js)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19.2.4-087ea4?logo=react)](https://react.dev)
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)

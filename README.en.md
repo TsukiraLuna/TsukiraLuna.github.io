@@ -1,4 +1,4 @@
-# Next.js Static Blog Template
+# TsukiraLuna
 
 **English** · [中文](./README.md)
 
@@ -7,373 +7,274 @@
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-A ready-to-use static blog template: static export, dual themes, MDX authoring, full-text search,
-plus a small tool shed. **It builds out of the box** — no environment variables required.
+> **月夜下的旅人** ("a traveller under the moonlit night") — mathematics, and more than mathematics.
+>
+> Live site: <https://tsukiraluna.github.io>
 
-> **Live example** — [wanrenhuifu.github.io](https://wanrenhuifu.github.io) is this framework in
-> production. It is the "full" version: more posts, plus a radar section (AI leaderboards and
-> weather alerts) and extra tools on top of what the template ships. The template itself keeps
-> just one example tool; add the rest as you need them.
+Source repository for a personal blog. The content is mostly **mathematics and algorithms**
+(abstract algebra, measure theory, numerical analysis, optimization), with some general physics,
+technical notes and essays alongside. Most posts are transcribed from handwritten notes typeset in
+ElegantBook, so the formula density is high — roughly 1900 mathematical formulas site-wide.
 
-- **Light theme** — bamboo grove: paper-white canvas (`#FAFAF8`) with a vermilion accent (`#C43A1B`)
-- **Dark theme** — starry night: near-black neutral canvas (`#0A0A0D`), warm-gold moon glow and a brighter vermilion. Blue appears only in the night-glow layer; the canvas itself stays neutral.
-- The theme switches automatically based on the **visitor's local time** (06:00–17:59 is light), and can be toggled manually.
+The site is built on [wanrenhuifu/nextjs-blog-template](https://github.com/wanrenhuifu/nextjs-blog-template)
+(MIT), with substantial changes to the content and tooling. See "Changes from the template" below.
 
-> The site's UI text is in Chinese. All author-facing docs are in Chinese as well
-> (`DESIGN.md`, `CLAUDE.md`, the per-directory `AGENTS.md` files). This English README covers
-> setup and deployment; for anything deeper, the Chinese files are the reference.
+> The site's UI text is in Chinese, and so is every author-facing doc (`CLAUDE.md`, the
+> per-directory `AGENTS.md` files, and the guides in `tools/`). This English README covers the
+> architecture, workflow and deployment; for anything deeper, the Chinese files are the reference.
 
-## Features
+## Stack
 
-| Feature | Notes | Extra config needed |
-|---------|-------|---------------------|
-| Static export | `output: "export"` — plain HTML/CSS/JS, hostable anywhere | — |
-| Dual themes | Light/dark, driven by CSS variables, no flash on first paint | — |
-| MDX authoring | GFM tables, KaTeX math, Shiki highlighting, auto table of contents, reading time | — |
-| Full-text search | Index built at build time, case-insensitive substring match, `Ctrl/Cmd + K` | — |
-| Three index views | By tag, by category, by year | — |
-| SEO | RSS, sitemap, robots, Open Graph, JSON-LD | Set your site URL |
-| Share image / icons | Script-generated OG image and icons; re-run to rebrand | — |
-| Tool shed | One example tool (random numbers), fully client-side; add your own in the same shape | — |
-| Comments | Waline, self-hosted backend | Self-host Waline |
-| Friends | Link cards + application notes | — |
-| Small easter eggs | A bamboo sprout that grows with visit count; the tab title changes when you leave | — |
+| Layer | Technology |
+|------|------|
+| Framework | Next.js 16.2.6 (App Router, `output: "export"` static export) |
+| Runtime | React 19.2.4 |
+| Styling | Tailwind CSS v4 (CSS-first, no `tailwind.config.js`) + `@tailwindcss/typography` |
+| Math | `remark-math` + `rehype-katex` — **rendered to HTML at build time, zero runtime JS** |
+| Code highlighting | Shiki + `rehype-pretty-code` |
+| Fonts | System font stacks only, **no web fonts** (loading a CJK webfont costs far more than it returns) |
+| Theme | `next-themes`; light "bamboo grove" / dark "starry night", switching automatically on the visitor's local time |
+| Animation | Framer Motion |
+| Icons | Lucide React |
+| Validation | Zod (frontmatter and JSON data) |
+| Tests | Vitest |
+| Deployment | GitHub Actions → GitHub Pages |
+| Comments | Waline — **not deployed in this repo**; the guestbook showing "comments not configured" is expected |
 
-## Quick start
+## Content
+
+**48 posts**, organised into 6 series plus a few standalone articles. Chapters inside a series are
+ordered by `seriesOrder`, not by publication date.
+
+| Series | Posts | Category | Topics |
+|---|---|---|---|
+| 抽象代数 (Abstract Algebra) | 5 | 数学 | Prerequisites, group theory, ring theory, field theory, worked problems |
+| 测度论 (Measure Theory) | 6 | 数学 | Set classes and measures, measurable mappings, integration and $L^p$, product spaces, Hausdorff spaces, review problems |
+| 高级数值分析 (Advanced Numerical Analysis) | 7 | 算法 | Function approximation, numerical integration, ODE solvers, matrix eigenvalues, linear and nonlinear iterative solvers, review problems |
+| 优化问题数值方法 (Numerical Methods for Optimization) | 5 | 算法 | Optimization fundamentals, unconstrained optimization, constrained optimization, ODE control optimization, review problems |
+| 数值分析初步 (Introductory Numerical Analysis) | 9 | 算法 | Error and significant digits, interpolation and approximation, numerical integration, direct and iterative linear solvers, ODE solvers |
+| 数学分析讨论班补充 (Mathematical Analysis Seminar Supplements) | 7 | 数学 | Integration techniques, converse of Lagrange's theorem, integrability, improper integrals and series convergence |
+
+Standalone posts: `general-physics-1` (general physics revision notes), `latex-math` (formula
+rendering test), `writing-guide` (notes on migrating this blog from Hexo).
+
+Post sources live in `content/blog/<slug>/index.mdx`; their images live in `public/blog/<slug>/`.
+
+## Local development
 
 Requires **Node ≥ 20.19** (see `engines` in `package.json`).
 
 ```bash
 npm install
-npm run dev          # → http://localhost:3000
+npm run dev            # → http://localhost:3000
 ```
 
-Build the static output into `out/`:
+Common commands:
 
-```bash
-npm run build
+| Command | Purpose |
+|------|------|
+| `npm run dev` | Dev server (`predev` generates the search index first, so search works in dev) |
+| `npm run build:verify` | **Use this after content changes** — generate index + build + prune output, skipping the Waline keepalive |
+| `npm run build` | The full release chain |
+| `npm start` | Preview `out/` locally (same as `npx serve out`) |
+| `npm test` | Unit tests (vitest, 47 of them) |
+| `npx tsc --noEmit` | Type check |
+| `npm run lint` | ESLint |
+| `npm run og` | Regenerate the share image (**must re-run after changing the site name or tagline** — the name is burned into the PNG pixels) |
+| `npm run icons` | Regenerate the site icons |
+| `npm run avatars` | Fetch friends' avatars from GitHub |
+
+> ⚠️ `next build` and `next dev` **must not run at the same time** — they share the `.next`
+> directory, and running both corrupts the incremental build state. Afterwards some routes hang
+> forever (the home page is fine, one subpage stalls for 90 seconds), which is extremely
+> misleading to debug.
+
+## Publishing
+
+```powershell
+npm run build:verify      # 1. always verify
+git add <specific paths>  # 2. use specific paths, never `git add .`
+git commit -m "content: ..."
+git push                  # 3. pushing to main deploys automatically, live in 1–2 minutes
 ```
 
-Other commands:
+Pushing goes over **SSH** (`git@github.com:TsukiraLuna/TsukiraLuna.github.io.git`).
 
-```bash
-npm run build:verify # build only, skipping the rest of the build chain
-npm start            # preview out/ locally (same as npx serve out)
-npm run lint         # ESLint
-npx tsc --noEmit     # type check
-npm test             # unit tests (vitest)
-```
+Deployment is handled by `.github/workflows/deploy.yml`. The site URL and basePath are
+**derived automatically** (this repository is named `<user>.github.io`, i.e. a user site, so it
+is served from the root with no basePath). The workflow runs `lint` → `tsc` → `test` before
+building, so **a type error or a failing test blocks the release**.
 
-> `npm run dev` runs `predev` first, which generates the search index — so search works
-> during development. The index itself is a build artifact and is not committed.
-
-## Make it yours
-
-Do these in order and the site is yours.
-
-### 1. Site identity — edit `site.config.mjs`
-
-Site name, author, tagline, description, locales and GitHub username all live in this one file.
-Page titles, SEO meta, RSS, sitemap, header/footer, the home page headline and the friends page's
-"about this site" block all read from it, so one edit updates the whole site.
-
-```js
-export const siteConfig = {
-  name: "示例博客",           // → page titles, header/footer, home page headline
-  tagline: "记录技术、思考与生活",  // → home page subtitle, share image title line
-  description: "一个记录技术、思考与生活的个人博客。",  // → meta description, friends page
-  author: "示例博主",         // → meta author/creator, article JSON-LD
-  github: "",                // → leave empty to hide the GitHub links in the footer and about page
-  // …
-};
-```
-
-The default values are Chinese; replace them with your own text.
-
-> The home page headline is an **animated, per-character reveal** — it is driven by
-> `Array.from(site.name)`, so any name length works (it does not have to be four characters).
->
-> `author` only affects meta tags and structured data; **there is no visible byline on the page.**
-
-### 2. Site URL — copy `.env.example` to `.env.local`
-
-```bash
-cp .env.example .env.local
-```
-
-Set at least `NEXT_PUBLIC_SITE_URL`. The build still succeeds without it, but canonical URLs,
-the sitemap and the RSS feed will all point at `https://example.com` — the build prints a warning.
-
-### 3. Brand images — re-run the generators
-
-```bash
-npm run og     # → public/og-default.png (must re-run after changing the site name)
-npm run icons  # → public/favicon.svg + apple-touch-icon.png (no text in them; usually not needed)
-```
-
-**The site name is burned into the pixels.** If you change `site.config.mjs` without re-running
-`npm run og`, the share image keeps the old name. This is the easiest step to forget: everything
-else updates automatically, the image does not.
-
-These scripts load `.env.local` just like `next build` does (via `scripts/load-env.mjs`), so
-`npm run og` works as-is once you have configured it. Real environment variables (e.g. CI secrets)
-take precedence and are never overwritten by the file.
-
-### 4. Content
-
-- Delete `content/blog/hello-world/`, or turn it into your first post.
-- Keep `content/blog/syntax-test/`: it exercises every Markdown/MDX rendering path, so an
-  upstream upgrade that breaks one is immediately visible. See `content/AGENTS.md`.
-- Article images go in `public/blog/<slug>/` and are referenced with absolute paths.
-
-### 5. Everything else
-
-| What | Where |
-|------|-------|
-| Friends list | `data/friends.json` (three placeholder entries to replace) |
-| Tools in the shed | `lib/tools.ts` |
-| The "About" page | `app/about/page.tsx` (written as generic wording, fine to leave as-is) |
-| Navigation menu | `components/layout/nav-data.ts` |
-| Site icon | the ink-bamboo geometry in `scripts/generate-icons.mjs` |
-| Copyright holder in the license | line 3 of `LICENSE` (signed `wanrenhuifu`; replace with your own name or handle) |
-
-## Environment variables
-
-All of them are **optional** — `npm run build` succeeds with none of them set.
-See [`.env.example`](./.env.example) for the full annotated list.
-
-| Variable | Purpose | When unset |
-|----------|---------|------------|
-| `NEXT_PUBLIC_SITE_URL` | Site root URL for canonical / sitemap / RSS / JSON-LD | Falls back to `https://example.com` and prints a build warning |
-| `NEXT_PUBLIC_BASE_PATH` | Sub-path prefix, only for project-page deployments | Assumes deployment at the domain root |
-| `NEXT_PUBLIC_WALINE_SERVER_URL` | Waline comment backend URL | Comment areas show a "not configured" notice |
-
-## Deploying to GitHub Pages
-
-The repo ships `.github/workflows/deploy.yml`; pushing to `main` builds and publishes.
-
-**Two things must be done before the first deploy**:
-
-1. Actions are **disabled on forks by default** — open the Actions tab and enable them.
-   (Without this, a push produces no workflow run and no error message.)
-2. Go to **Settings → Pages** and set **Source** to **"GitHub Actions"**.
-
-Skipping step 2 does not produce a red X: the workflow detects that Pages is not enabled,
-**skips the deploy and prints a notice** telling you what is missing (build and checks still run).
-
-The site URL and basePath are derived automatically — no configuration needed in either case:
-
-- **User site** (repository named `<username>.github.io`) → served at the root, no basePath
-- **Project page** (any other repository name, e.g. a fork of this template) → automatically uses
-  `https://<username>.github.io/<repo>` and sets the matching basePath
-
-> ### ⚠️ The sub-path trap
->
-> If your site lives under a **sub-path** (project page), both variables must be correct:
->
-> ```
-> NEXT_PUBLIC_SITE_URL=https://<username>.github.io/<repo>
-> NEXT_PUBLIC_BASE_PATH=/<repo>
-> ```
->
-> Missing `BASE_PATH` gives you a **blank site** (CSS/JS are requested from the domain root).
-> If the two values disagree, canonical URLs and the sitemap point at the wrong place.
->
-> Also note that Next.js does **not** rewrite raw string asset references — `<link href="/favicon.svg">`,
-> `fetch("/search-index.json")` and hand-written `<img src="/...">` in posts all fall outside its
-> automatic prefixing. This template routes those through `publicUrl()` in `lib/site.ts`;
-> **wrap new references the same way**, otherwise they silently 404 under a sub-path.
->
-
-With a custom domain, set repository **Variables** (Settings → Secrets and variables → Actions →
-Variables — note *Variables*, not Secrets):
-
-- `SITE_URL`, e.g. `https://blog.example.com`
-- `BASE_PATH`, usually empty for a custom domain
-
-> `BASE_PATH` is only read when `SITE_URL` is also set; setting `BASE_PATH` alone is silently ignored.
-
-### Other static hosts
-
-The build output is `out/` — plain static files, deployable to Cloudflare Pages, Netlify, Vercel,
-object storage, etc. Note `trailingSlash: true`: the host must serve directory-style URLs correctly.
-
-## Accessibility
-
-- Both themes meet WCAG AA contrast
-- Fully keyboard navigable: skip link, visible focus rings, 44px touch targets
-- Form controls have accessible names; tool errors are announced via `role="alert"`, and `aria-invalid` is set only on the field that actually failed
-- Overlays (search modal, mobile drawer) expose `role="dialog"` + `aria-modal`, trap focus while open, and return focus to the button that opened them
-- `prefers-reduced-motion` disables all looping animations and the entrance choreography
-- With JavaScript disabled, a `<noscript>` style takes over the entrance animations' initial state, so above-the-fold text and lists stay visible
-
-## Optional features
-
-| Feature | Dependency | Without it |
-|---------|------------|------------|
-| Comments | A self-hosted [Waline](https://waline.js.org/) backend (Vercel + Supabase free tier works) | Comment areas show a "not configured" notice |
-| Friend avatars | None — `npm run avatars` downloads them from GitHub | Avatar slot falls back to the name's first letter |
-
-`scripts/keepalive-waline.mjs` pings the Waline backend during the build to keep the free-tier
-database from pausing after ~7 days of inactivity. It **never blocks the build**: failures only warn.
-
-> On GitHub Pages, enabling comments requires a repository secret named
-> **`WALINE_SERVER_URL`** (`deploy.yml` reads that name and assigns it to the environment variable
-> `NEXT_PUBLIC_WALINE_SERVER_URL`).
-
-## Removing pages you don't need
-
-Routes are file-based, so deleting the directory takes the page offline. Update three places too:
-
-1. The static route list in `app/sitemap.ts` (otherwise the sitemap points at 404s)
-2. The nav items in `components/layout/nav-data.ts`
-3. The module guide in `app/about/page.tsx` and the `ENTRIES` list at the bottom of `app/page.tsx`
-
-The usual candidates: `app/friends/`, `app/guestbook/` (the latter needs a Waline backend).
-
-## Known difference: building on Windows
-
-**After `npm run build` on Windows, local preview logs a batch of 404s**
-(like `/blog/__next.blog.__PAGE__.txt`). Verified on Next 16.2.6:
-
-| Build environment | RSC payload filename produced |
-|-------------------|-------------------------------|
-| Linux (including GitHub Actions) | `__next.blog.__PAGE__.txt` (flat file) — this is what the client prefetches |
-| Windows | `__next.blog/__PAGE__.txt` (a directory) |
-
-These files are used for **client-side prefetching**. The only consequence is that prefetch misses
-and clicking a link degrades to a full page load — navigation itself works (verified: all entries
-navigate client-side, just with one extra full load).
-
-**Nothing to do**: this repo deploys via GitHub Actions (`ubuntu-latest`), which produces the flat
-files as expected. To avoid the 404 noise in local Windows previews, use `npm run dev`.
-
-> Recorded from measurements taken while extracting this template. Delete this section once upstream fixes it.
-
-## Project structure
-
-### Code
-
-```
-app/                    # Routes (App Router)
-├── layout.tsx          # Root layout (metadata, theme bootstrap script, Header/GlobalUI)
-├── page.tsx            # Home page (3D hero scene + text-only article index)
-├── blog/[slug]/        # Article detail (SSG)
-├── tags/ types/ archive/   # Three index views
-├── tools/              # Tool shed
-├── friends/            # Friends list
-├── guestbook/          # Guestbook
-├── about/              # About this site
-└── sitemap.ts / robots.ts / rss.xml/route.ts
-
-components/             # React components, grouped by domain
-├── layout/             # Header / DesktopNav / MobileDrawer / Footer / PageShell
-│                       #   SearchModal / ThemeToggle / TimeThemeController
-│                       #   GlobalUI / ErrorFallback / FarewellTitle / JsonLd / nav-data
-├── blog/               # PostCard / PostCardSkeleton / MdxContent
-│                       #   TableOfContents / WalineComments
-├── home/               # HeroSection (composition & timing) / HeroScenery (scene drawing)
-├── tools/              # RandomNumber (the example tool shipped with the template)
-└── ui/                 # FadeUp / GlowCard / BambooSprout / CopyCodeButton
-                        #   BackToTop / ScrollProgress
-
-lib/                    # Core logic (no JSX, no browser APIs)
-├── content.ts          # Content reading/processing (incl. image dimension checks)
-├── data.ts             # Data layer (JSON + Zod validation + graceful fallback)
-├── site.ts             # Site identity outlet (reads site.config.mjs, derives helpers)
-├── schemas.ts          # Zod schemas
-├── types.ts            # Shared types
-├── constants.ts        # Article categories etc.
-├── mdx.ts              # MDX compile config (plugin chain)
-├── readingTime.ts      # Reading-time estimation
-├── timeTheme.ts        # Time-based light/dark switching
-├── bamboo.ts           # Bamboo-sprout easter egg stages
-├── random.ts           # Random-number algorithms
-├── tools.ts            # Tool shed configuration
-└── a11y.ts             # Accessibility helpers
-
-site.config.mjs         # ★ Single source of truth for site identity (shared with Node scripts)
-```
-
-### Content and data
-
-```
-content/blog/<slug>/    # MDX source files (plain text; images live elsewhere)
-data/
-└── friends.json        # Friends list (the only data file; hand-maintained)
-public/                 # Static assets (the only location served by a static export)
-├── blog/<slug>/        #   Article images — see public/AGENTS.md
-├── cursors/            #   Custom cursors (bamboo leaf by day / star by night)
-└── friends/avatars/    #   Friend avatars (generated by npm run avatars, not committed)
-```
-
-### Styles and scripts
-
-```
-styles/                 # Global styles (imported from app/globals.css)
-├── theme.css           #   Design tokens and dual-theme variables (single source)
-├── hero-scene.css      #   Hero scene: SVG drawing + CSS 3D depth
-└── components.css / animations.css / print.css
-                        #   waline.css is imported separately by WalineComments
-
-scripts/                # Build chain and manual generators
-├── keepalive-waline.mjs / generate-search-index.mjs    # in the build chain (never blocking)
-├── generate-og.mjs / generate-icons.mjs / fetch-avatars.mjs   # run manually
-└── audit/              # Dev-time checks (screenshots / perf), manual only
-```
-
-### Documentation
-
-The repo ships design and architecture docs — that is the main difference from a bare template.
-They are written in Chinese.
-
-| File | Contents |
-|------|----------|
-| `DESIGN.md` | Single source of truth for design tokens and visual rules |
-| `CLAUDE.md` | Architecture, coding conventions, code↔doc sync map |
-| `AGENTS.md` under `app/` `components/` `lib/` `content/` `data/` `scripts/` `styles/` `public/` | Per-directory rules and pitfalls |
-| `test/fixtures/blog/README.md` | Test fixture notes |
-
-## Writing
+## Writing a post
 
 One post = one directory + one `index.mdx`:
 
-```
-content/blog/my-first-post/index.mdx
-```
-
 ```mdx
 ---
-title: "文章标题"
-pubDate: 2026-01-01
-description: "文章摘要"
-tags: ["标签1", "标签2"]
-category: 随笔
+title: "抽象代数 第 2 章 群论"
+pubDate: 2025-04-02
+description: "群与子群、陪集与 Lagrange 定理、正规子群与商群……"
+tags: ["抽象代数", "群论", "Sylow 定理"]
+category: 数学          # one of 8 enum values only
+series: 抽象代数        # optional, series name
+seriesOrder: 20         # optional, number; ascending within a series, 10/20/30 leaves room
 tocDepth: 2
 ---
+
+> 本文由手写笔记《抽象代数》扫描件的 LaTeX 转录稿改写而来。
 
 正文……
 ```
 
-All frontmatter fields, image conventions and typography rules are documented in
-[`content/AGENTS.md`](./content/AGENTS.md) (Chinese).
+**`category` must be one of these 8** (`lib/constants.ts`):
+`数学` `算法` `技术` `生活` `观点` `随笔` `游戏` `测试`
+(mathematics, algorithms, technology, life, opinion, essays, games, tests).
+A wrong value does not break the build — the post is **silently dropped** instead (the build
+succeeds and the article simply disappears from the site).
 
-## Tech stack
+Full field reference and typography rules: [`content/AGENTS.md`](./content/AGENTS.md) (Chinese).
+Series conventions: [`tools/series-convention.md`](./tools/series-convention.md) (Chinese).
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16.2.6 (App Router, static export) |
-| Runtime | React 19.2.4 |
-| Styling | Tailwind CSS v4 (CSS-first, no `tailwind.config.js`) + `@tailwindcss/typography` |
-| Fonts | System font stacks only — no webfonts (CJK webfonts are too heavy: removing them cut LCP from 5.5s to 1.7s) |
-| Theming | `next-themes` with `attribute="data-theme"` |
-| MDX | `next-mdx-remote` + remark-gfm + remark-math + rehype-slug + rehype-pretty-code (Shiki) + rehype-katex |
-| Animation | Framer Motion |
-| Icons | Lucide React |
-| Validation | Zod |
-| Testing | Vitest |
-| Comments | Waline (optional) |
+## Changes from the template
+
+### 1. All content is original
+
+The template's sample posts were removed and replaced by 48 original notes (see "Content" above).
+
+### 2. Post category enum
+
+`POST_CATEGORIES` in `lib/constants.ts` was customised to put **mathematics and algorithms first**:
+
+```
+数学  算法  技术  生活  观点  随笔  游戏  测试
+```
+
+(`POST_CATEGORIES` and `CATEGORY_UI` must be edited together — change only one and `tsc` fails.)
+
+### 3. A LaTeX → blog conversion toolchain
+
+Converting ElegantBook-typeset maths handouts into MDX is a long series of traps, so the checks
+accumulated along the way were turned into runnable scripts (full rules in
+[`tools/latex-to-blog.md`](./tools/latex-to-blog.md), Chinese):
+
+| Script | Purpose |
+|---|---|
+| `tools/latex-to-blog-probe.mjs` | **Risk scan**: reports the `.tex` structure, theorem environments, custom macros and commands needing rewrite. `--check-output` checks the rendered output's formula health (requires `katex-error` to be 0); `--check-frontmatter` verifies every post's frontmatter parses |
+| `tools/check-mdx-math.mjs` | Checks the known display-math pitfalls (`$$` not on its own line, `\textcolor` written in text mode, `$` nested inside a `\textcolor` argument). `--fix` normalises them |
+| `tools/check-mdx-lists.mjs` | Checks whether a list item containing only a formula degenerated into an indented code block |
+| `tools/mdx-math-quirks-probe.mjs` | Runs candidate syntax through the real plugin chain and prints what actually renders — for when something behaves strangely |
+
+**These checks are not fussiness.** KaTeX and frontmatter failures are mostly **silent**: the build
+is green, but a formula renders as a red error string, or an entire post vanishes from the site.
+"Build succeeded" is therefore not evidence that the content is correct.
+
+### 4. Two hand-drawn diagrams redrawn as SVG
+
+The Armijo / Wolfe line-search diagrams in chapter 2 of *Numerical Methods for Optimization* were
+LaTeX `tikzpicture` in the original, and tikz cannot render in KaTeX. They were redrawn as SVG in
+`public/blog/optimization-numerical-methods-ch02/`.
+
+### 5. A documentation system
+
+The repository carries a set of rule documents aimed at AI assistants, which is the biggest
+difference from a plain template: a root `AGENTS.md` as the entry point, `CLAUDE.md` for
+architectural conventions, and a per-directory `AGENTS.md` recording that directory's finer rules
+and pitfalls. **Keep the matching document in sync when you change code** — the mapping table is
+in item 14 of `CLAUDE.md`.
+
+## Project layout
+
+```
+app/                    # Route pages (App Router)
+├── page.tsx            # Home page
+├── blog/[slug]/        # Post detail (SSG)
+├── series/[name]/      # Series page (ordered by seriesOrder)
+├── tags/ types/ archive/   # Three index views
+├── tools/ friends/ guestbook/ about/
+└── sitemap.ts / robots.ts / rss.xml/route.ts
+
+components/             # React components, grouped by domain
+├── layout/             # Header / DesktopNav / MobileDrawer / Footer / PageShell
+│                       #   SearchModal / ThemeToggle / TimeThemeController / …
+├── blog/               # PostCard / MdxContent / TableOfContents / WalineComments
+├── home/               # HeroSection / HeroScenery
+└── tools/  ui/
+
+lib/                    # Core logic (no JSX, no browser APIs)
+├── content.ts          # Content reading and processing (series aggregation, image size checks)
+├── site.ts             # Site identity exports + normalizeRouteParam(), publicUrl()
+├── data.ts             # Unified data layer (JSON + Zod validation + fallback)
+├── constants.ts        # Post category enum and icon/colour mapping
+└── schemas.ts  types.ts  mdx.ts  readingTime.ts  timeTheme.ts
+    bamboo.ts   random.ts tools.ts a11y.ts
+
+content/blog/<slug>/    # MDX sources (plain text, no images)
+data/friends.json       # Friends list data
+public/                 # Static assets (the only place served under static export)
+├── blog/<slug>/        #   Post images and diagrams
+└── cursors/  friends/avatars/
+
+styles/                 # Design tokens and dual-theme variables (single source: theme.css)
+scripts/                # Build-chain and manual asset generators
+tools/                  # LaTeX conversion and MDX checks (see above)
+site.config.mjs         # ★ Single source of site identity
+```
+
+## Deploying to GitHub Pages
+
+The repository ships the workflow; pushing to `main` builds and publishes automatically.
+Setting this up from scratch in a new environment requires:
+
+1. **Settings → Pages**, set **Source** to **"GitHub Actions"**
+2. Make sure Actions is enabled
+
+Missing either one does not produce a red X: the workflow detects that Pages is not enabled,
+**skips the deploy and prints a notice**, while the build and checks still run.
+
+The site URL and basePath are **derived automatically**; this repository (a user site) needs no
+configuration. All environment variables (see `.env.example`) are optional:
+
+| Variable | Purpose | Default behaviour |
+|------|------|----------|
+| `NEXT_PUBLIC_SITE_URL` | Site root URL, used for canonical / sitemap / RSS / JSON-LD | Falls back to `https://example.com` and prints a build warning |
+| `NEXT_PUBLIC_BASE_PATH` | Sub-path prefix, only needed for project-page deployments | Assumes deployment at the root |
+| `NEXT_PUBLIC_WALINE_SERVER_URL` | Waline comment backend | The comments area shows "comments not configured" |
+
+> **The sub-path trap**: if the site is served from a sub-path, both `SITE_URL` and `BASE_PATH`
+> must be set correctly — omitting the latter produces a **completely blank page**. Also note that
+> Next does **not** rewrite bare-string asset references; this project routes them all through
+> `publicUrl()` in `lib/site.ts`. When adding code that references anything under `public/`, wrap
+> it the same way, or it will 404 silently under a sub-path.
+
+## Known difference: building on Windows
+
+**After `npm run build` on Windows, previewing locally produces a batch of 404s**
+(like `/blog/__next.blog.__PAGE__.txt`). Verified on Next 16.2.6:
+
+| Build environment | RSC payload filename produced |
+|----------|----------------------|
+| Linux (incl. GitHub Actions) | `__next.blog.__PAGE__.txt` (flat file) — the name clients prefetch |
+| Windows | `__next.blog/__PAGE__.txt` (directory form) |
+
+These files serve **client-side prefetching**. Missing them only means prefetch misses and link
+clicks fall back to a full page load — **navigation itself works fine**. CI builds on ubuntu, where
+the output is correct, so there is nothing to fix. If you want to avoid the 404s while previewing
+on Windows, use `npm run dev` instead.
+
+## Accessibility
+
+- Both the light and dark palettes meet WCAG AA contrast
+- Fully keyboard navigable: skip-to-content link, visible focus rings, 44px touch targets
+- Overlays (search modal, mobile drawer) use `role="dialog"` + `aria-modal`, trap focus inside, and
+  return focus to the element that opened them
+- Under `prefers-reduced-motion` all looping animations and entrance choreography are disabled
+- With JavaScript disabled: the entrance animations' initial state is overridden by a `<noscript>`
+  style block, so the first screen is visible as usual
 
 ## License
 
-[MIT](./LICENSE). Use it, modify it, ship it commercially — just keep the copyright notice.
+[MIT](./LICENSE).
+
+The code is based on [wanrenhuifu/nextjs-blog-template](https://github.com/wanrenhuifu/nextjs-blog-template);
+`LICENSE` keeps the copyright lines of both the template and this site. **The article content (the
+notes under `content/`) is personal study material — please ask before reposting it.**
